@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMC con regresion lineal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="cabecera">
+  <p class="contexto">Prediccion con regresion lineal</p>
+  <h1>IMC con modelo de regresion lineal</h1>
+  <p class="intro">Ingresa peso y altura. Un modelo LinearRegression entrenado con 8 personas sinteticas predice tu IMC a partir del rasgo peso / altura al cuadrado.</p>
+</header>
+
+<main>
+  <section class="tarjeta" aria-labelledby="titulo">
+    <h2 id="titulo">Predice tu IMC</h2>
+
+    <form method="get" action="/" class="formulario">
+      <label for="peso">Peso en kilogramos</label>
+      <input type="text" id="peso" name="peso" value="{{ peso_texto }}" placeholder="ej. 70" inputmode="decimal" autocomplete="off">
+
+      <label for="altura">Altura en metros</label>
+      <input type="text" id="altura" name="altura" value="{{ altura_texto }}" placeholder="ej. 1.75" inputmode="decimal" autocomplete="off">
+
+      <button type="submit">Predecir IMC</button>
+    </form>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if resultado %}
+    <div class="resultado" style="--color-cat: {{ resultado.color }}">
+      <p class="imc">{{ resultado.imc }} kg/m²</p>
+      <p class="categoria">{{ resultado.nombre }}</p>
+    </div>
+    {% endif %}
+  </section>
+
+  <section class="tarjeta modelo-card" aria-labelledby="titulo-modelo">
+    <h2 id="titulo-modelo">El modelo entrenado</h2>
+    <p class="dato-formula">
+      IMC = <span class="mono">{{ "%.3f"|format(pendiente) }}</span> · (peso / altura²) + <span class="mono">{{ "%.3f"|format(intercepto) }}</span>
+    </p>
+    <p class="metrica">Precision R² = <span class="mono">{{ "%.6f"|format(r2) }}</span></p>
+    <p class="metrica">Entrenado con 8 personas sinteticas.</p>
+  </section>
+</main>
+
+<footer class="pie">Rasgo del modelo: x = peso (kg) / altura (m)² · Prediccion hecha por LinearRegression en Python, no por la formula directa.</footer>
+</body>
+</html>

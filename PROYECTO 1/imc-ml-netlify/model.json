@@ -1,0 +1,8 @@
+{
+  "modelo": "LinearRegression",
+  "rasgo": "peso / (altura^2)",
+  "pendiente": 0.9999999999999999,
+  "intercepto": 3.552713678800501e-15,
+  "r2": 1.0,
+  "n_muestras": 8
+}

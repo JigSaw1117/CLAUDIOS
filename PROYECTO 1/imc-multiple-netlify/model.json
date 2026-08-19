@@ -1,0 +1,10 @@
+{
+  "modelo": "LinearRegression",
+  "tipo": "regresion multiple",
+  "variables": ["peso", "altura"],
+  "b_peso": 0.3517630445071617,
+  "b_altura": -31.345973270801718,
+  "intercepto": 52.310187074182195,
+  "r2": 0.9830152597976042,
+  "n": 8
+}

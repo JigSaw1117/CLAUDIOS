@@ -1,0 +1,10 @@
+{
+  "modelo": "PolynomialFeatures + LinearRegression",
+  "grado": 2,
+  "variables": ["peso", "altura"],
+  "features": ["peso", "altura", "peso^2", "peso altura", "altura^2"],
+  "coef": [0.6668484823149371, -1.797411409421334, -0.0005995009092909509, -0.13470511415116013, -5.148404087412558],
+  "intercepto": 14.525316481745866,
+  "r2": 0.9999885476537064,
+  "n": 8
+}

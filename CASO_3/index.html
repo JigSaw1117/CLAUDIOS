@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caso 3 — Universidad Andina del Cusco</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --uac-navy: #0d3c6c;
+      --uac-dark: #0a2540;
+      --uac-amber: #f77f00;
+      --uac-bg: #f4f8fb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--uac-bg); color: #2b2d42; min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: var(--uac-dark); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-weight: 800; font-size: 1.1rem; color: #e0f7f5; display: flex; align-items: center; gap: 10px; }
+    nav a { color: #b8d4e8; text-decoration: none; font-weight: 600; margin-left: 20px; font-size: 0.9rem; transition: color 0.2s; }
+    nav a:hover, nav a.active { color: #00b4d8; }
+    .container { max-width: 900px; margin: 60px auto; padding: 0 20px; flex: 1; text-align: center; }
+    .card { background: white; border-radius: 16px; padding: 40px 30px; box-shadow: 0 10px 30px rgba(13,60,108,0.08); border-top: 4px solid var(--uac-amber); }
+    .icon { font-size: 50px; margin-bottom: 20px; }
+    h1 { color: var(--uac-navy); font-size: 1.8rem; margin-bottom: 12px; }
+    p { color: #5c6b73; font-size: 1rem; line-height: 1.6; margin-bottom: 24px; }
+    .status-badge { display: inline-block; background: #fff3e0; color: #e65100; padding: 6px 16px; border-radius: 100px; font-weight: 700; font-size: 0.85rem; margin-bottom: 30px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--uac-navy); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; transition: background 0.2s; }
+    .btn:hover { background: #0077b6; }
+    footer { background: var(--uac-dark); color: #b8d4e8; text-align: center; padding: 20px; font-size: 0.85rem; margin-top: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🦅 UAC — Caso 3</div>
+    <nav>
+      <a href="../index.html">🏠 Portada Principal</a>
+      <a href="../CASO_1/index.html">📌 Caso 1</a>
+      <a href="../CASO_2/index.html">🍷 Caso 2 (Vinos)</a>
+      <a href="./index.html" class="active">📈 Caso 3</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="icon">📊</div>
+      <div class="status-badge">⏳ Módulo en Desarrollo / Pendiente de Subida</div>
+      <h1>Caso de Estudio N° 3</h1>
+      <p>Esta carpeta <code>/CASO_3/</code> está configurada y lista para recibir el modelo entrenado y la aplicación interactiva de la tercera sección del taller.</p>
+      <a href="../index.html" class="btn">⬅️ Volver a la Portada Principal</a>
+    </div>
+  </div>
+
+  <footer>
+    Universidad Andina del Cusco — Inteligencia Artificial (2026-II)
+  </footer>
+</body>
+</html>

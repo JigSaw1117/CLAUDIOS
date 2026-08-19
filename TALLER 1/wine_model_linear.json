@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "model_id": "linear",
+    "model_type": "Multiple Linear Regression (OLS)",
+    "degree": 1,
+    "n_features_in": 11,
+    "n_features_used": 12,
+    "dataset": "WineQT.csv",
+    "n_samples": 1143,
+    "n_train": 914,
+    "n_test": 229,
+    "target": "quality",
+    "original_features": [
+      "fixed acidity",
+      "volatile acidity",
+      "citric acid",
+      "residual sugar",
+      "chlorides",
+      "free sulfur dioxide",
+      "total sulfur dioxide",
+      "density",
+      "pH",
+      "sulphates",
+      "alcohol"
+    ],
+    "formula": "y_hat = B0 + B1*X1_sc + B2*X2_sc + ... + B11*X11_sc",
+    "description": "Modela relaciones lineales entre propiedades químicas y la calidad del vino."
+  },
+  "preprocessing": {
+    "scaler": "StandardScaler",
+    "formula": "X_scaled = (X - mean) / std",
+    "means": {
+      "fixed acidity": 8.258096280087534,
+      "volatile acidity": 0.5310175054704594,
+      "citric acid": 0.2657986870897156,
+      "residual sugar": 2.519091903719909,
+      "chlorides": 0.08647592997811804,
+      "free sulfur dioxide": 15.706783369803064,
+      "total sulfur dioxide": 45.838621444201316,
+      "density": 0.9966827242888401,
+      "pH": 3.314234135667395,
+      "sulphates": 0.6556455142231953,
+      "alcohol": 10.43918672501822
+    },
+    "stds": {
+      "fixed acidity": 1.6954260412031144,
+      "volatile acidity": 0.17894919917708096,
+      "citric acid": 0.19487488821079296,
+      "residual sugar": 1.3050102686115965,
+      "chlorides": 0.04741058577816551,
+      "free sulfur dioxide": 10.231880389516325,
+      "total sulfur dioxide": 31.911931715986025,
+      "density": 0.0019133479989592098,
+      "pH": 0.15281284549872468,
+      "sulphates": 0.16605497608869363,
+      "alcohol": 1.0741877134665558
+    }
+  },
+  "model_parameters": {
+    "intercept": 5.656455142231951,
+    "coefficients": {
+      "fixed acidity": 0.08704837017354405,
+      "volatile acidity": -0.23912210345232315,
+      "citric acid": -0.06608222229394528,
+      "residual sugar": 0.005378510722629178,
+      "chlorides": -0.08564866217749845,
+      "free sulfur dioxide": 0.019243729876503263,
+      "total sulfur dioxide": -0.0728567967560595,
+      "density": -0.05865034648595574,
+      "pH": -0.03808651485496864,
+      "sulphates": 0.16157815006661094,
+      "alcohol": 0.2863634785283069
+    }
+  },
+  "performance": {
+    "R2_train": 0.3822,
+    "R2_test": 0.3171,
+    "MSE_test": 0.38,
+    "RMSE_test": 0.6165,
+    "MAE_test": 0.4773
+  }
+}

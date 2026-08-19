@@ -1,0 +1,353 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wine Quality Predictor — Regresion Lineal Multiple</title>
+  <meta name="description" content="Predictor de calidad de vino tinto usando regresion lineal multiple. Analiza propiedades fisico-quimicas: acidez, azucar residual, cloruros y alcohol." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --wine-deep:#1a0a0d;--wine-dark:#2d1117;--wine-mid:#4a1525;
+      --wine-accent:#8b1a35;--wine-bright:#c1294d;--wine-rose:#e85d82;
+      --wine-glow:#ff8fab;--gold:#d4a853;--gold-light:#f0c97a;
+      --cream:#fef6ec;--text-pri:#fef6ec;--text-sec:#c9a0b0;--text-muted:#7a5060;
+      --glass-bg:rgba(255,255,255,0.04);--glass-border:rgba(200,120,140,0.18);
+      --radius-sm:8px;--radius-md:14px;--radius-lg:22px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--wine-deep);color:var(--text-pri);min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;z-index:0;
+      background:radial-gradient(ellipse 60% 50% at 20% 30%,rgba(139,26,53,.25) 0%,transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 70%,rgba(74,21,37,.35) 0%,transparent 60%),
+      radial-gradient(ellipse 80% 40% at 50% 100%,rgba(45,17,23,.8) 0%,transparent 60%);
+      pointer-events:none;}
+    .particles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+    .particle{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(232,93,130,.6),transparent);animation:float linear infinite;}
+    @keyframes float{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:.3}100%{transform:translateY(-10vh) scale(1.2);opacity:0}}
+    .container{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px 80px;}
+    header{text-align:center;padding:60px 0 40px;}
+    .header-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(139,26,53,.3);border:1px solid var(--glass-border);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--wine-glow);margin-bottom:20px;backdrop-filter:blur(10px);}
+    h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;background:linear-gradient(135deg,var(--cream) 0%,var(--wine-glow) 50%,var(--gold-light) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px;}
+    .header-sub{font-size:1.05rem;color:var(--text-sec);max-width:600px;margin:0 auto 32px;line-height:1.7;}
+    .metrics-strip{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+    .metric-chip{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:100px;padding:8px 18px;font-size:13px;backdrop-filter:blur(10px);display:flex;align-items:center;gap:6px;}
+    .metric-chip strong{color:var(--gold-light);}
+    .main-grid{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start;}
+    @media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
+    .card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);backdrop-filter:blur(20px);padding:28px;}
+    .card-title{font-size:13px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--wine-rose);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+    .card-title::before{content:'';width:20px;height:2px;background:linear-gradient(90deg,var(--wine-bright),var(--wine-rose));border-radius:2px;}
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+    .field{display:flex;flex-direction:column;gap:6px;}
+    .field label{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-sec);display:flex;align-items:center;justify-content:space-between;}
+    .field-unit{font-size:10px;color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0;}
+    .field input[type="number"]{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(200,120,140,.2);border-radius:var(--radius-sm);padding:10px 14px;color:var(--cream);font-family:'JetBrains Mono',monospace;font-size:14px;transition:border-color .2s,box-shadow .2s;-moz-appearance:textfield;}
+    .field input:focus{outline:none;border-color:var(--wine-rose);box-shadow:0 0 0 3px rgba(232,93,130,.12);}
+    .field-hint{font-size:10px;color:var(--text-muted);}
+    input[type="range"]{width:100%;-webkit-appearance:none;height:4px;background:rgba(200,120,140,.2);border-radius:4px;cursor:pointer;margin-top:4px;}
+    input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--wine-rose);box-shadow:0 0 8px rgba(232,93,130,.6);transition:transform .15s;}
+    input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.3);}
+    .predict-btn{width:100%;margin-top:24px;background:linear-gradient(135deg,var(--wine-accent),var(--wine-bright));border:none;border-radius:var(--radius-md);padding:16px;color:white;font-family:'Inter',sans-serif;font-size:16px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 24px rgba(193,41,77,.4);position:relative;overflow:hidden;}
+    .predict-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(193,41,77,.55);}
+    .predict-btn:active{transform:translateY(0);}
+    .right-panel{display:flex;flex-direction:column;gap:20px;}
+    .result-card{background:linear-gradient(135deg,rgba(139,26,53,.25),rgba(74,21,37,.2));border:1px solid rgba(232,93,130,.3);border-radius:var(--radius-lg);padding:28px;text-align:center;backdrop-filter:blur(20px);min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+    .result-empty{color:var(--text-muted);font-size:14px;line-height:1.7;}
+    .result-empty .icon{font-size:48px;margin-bottom:8px;}
+    .gauge-wrap{position:relative;width:180px;height:100px;}
+    .gauge-svg{width:180px;height:100px;}
+    .gauge-bg{fill:none;stroke:rgba(255,255,255,.07);stroke-width:14;stroke-linecap:round;}
+    .gauge-fill{fill:none;stroke-width:14;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1),stroke .6s ease;}
+    .result-label{font-size:1.1rem;font-weight:600;color:var(--wine-rose);letter-spacing:.5px;}
+    .quality-bar-wrap{width:100%;}
+    .quality-bar-track{width:100%;height:8px;background:rgba(255,255,255,.06);border-radius:100px;overflow:hidden;margin-top:6px;}
+    .quality-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--wine-accent),var(--wine-rose),var(--gold));width:0%;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+    .result-meta{font-size:11px;color:var(--text-muted);}
+    .formula-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);backdrop-filter:blur(20px);}
+    .formula-header{padding:20px 24px 0;}
+    .formula-title{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--wine-rose);display:flex;align-items:center;gap:8px;}
+    .formula-title::before{content:'';width:16px;height:2px;background:linear-gradient(90deg,var(--wine-bright),var(--wine-rose));border-radius:2px;}
+    .formula-eq{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold-light);background:rgba(0,0,0,.3);border-radius:var(--radius-sm);padding:10px 14px;margin:12px 0;line-height:1.7;word-break:break-all;white-space:pre-wrap;}
+    .terms-list{padding:0 24px 20px;max-height:400px;overflow-y:auto;}
+    .terms-list::-webkit-scrollbar{width:4px;}
+    .terms-list::-webkit-scrollbar-thumb{background:rgba(232,93,130,.3);border-radius:2px;}
+    .term-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);gap:8px;font-size:12px;}
+    .term-row:last-child{border-bottom:none;}
+    .term-name{color:var(--text-sec);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:145px;}
+    .term-value{font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap;}
+    .term-value.pos{color:#7ee8a2;}.term-value.neg{color:var(--wine-rose);}
+    .term-bar{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:2px;min-width:30px;max-width:60px;overflow:hidden;}
+    .term-bar-fill{height:100%;border-radius:2px;transition:width .8s ease;}
+    .info-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:24px;}
+    .info-chip{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:16px;backdrop-filter:blur(10px);}
+    .info-chip-icon{font-size:22px;margin-bottom:8px;}
+    .info-chip-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--wine-rose);margin-bottom:4px;}
+    .info-chip-desc{font-size:11.5px;color:var(--text-sec);line-height:1.5;}
+    .model-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .stat-box{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-sm);padding:12px;text-align:center;}
+    .stat-val{font-size:1.4rem;font-weight:700;color:var(--gold-light);}
+    .stat-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-top:2px;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp .5s ease both;}
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--wine-accent),var(--wine-bright));color:white;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(193,41,77,.4);opacity:0;transition:all .3s;z-index:999;white-space:nowrap;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .coef-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px;}
+    .coef-row:last-child{border-bottom:none;}
+    .coef-name{color:var(--text-sec);font-weight:500;flex:0 0 auto;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .coef-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+    .coef-bar-fill{height:100%;border-radius:2px;}
+    .coef-val{font-family:'JetBrains Mono',monospace;font-size:11px;flex:0 0 auto;white-space:nowrap;}
+  </style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+<div class="container">
+  <header>
+    <div class="header-badge"><span>🍷</span> Taller 1 — Machine Learning</div>
+    <h1>Wine Quality Predictor</h1>
+    <p class="header-sub">
+      Modelo de <strong>Regresion Lineal Multiple (OLS)</strong> entrenado sobre 1,143 muestras de vino tinto.<br>
+      Analiza 11 propiedades fisico-quimicas y predice la calidad en escala 0-10.
+    </p>
+    <div class="metrics-strip">
+      <div class="metric-chip">📊 R² Test <strong>0.3171</strong></div>
+      <div class="metric-chip">📉 RMSE <strong>0.6165 pts</strong></div>
+      <div class="metric-chip">📏 MAE <strong>0.4773 pts</strong></div>
+      <div class="metric-chip">🧪 Muestras <strong>1,143</strong></div>
+    </div>
+  </header>
+
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="card-title">Propiedades Fisico-Quimicas del Vino</div>
+        <form id="wineForm">
+          <div class="form-grid" id="formGrid"></div>
+          <button type="submit" class="predict-btn" id="predictBtn">🔬 Predecir Calidad del Vino</button>
+        </form>
+      </div>
+      <div class="info-strip" id="infoStrip"></div>
+      <div class="formula-card" id="formulaCard" style="display:none;margin-top:24px;">
+        <div class="formula-header">
+          <div class="formula-title">Desglose Paso a Paso de la Formula OLS</div>
+          <div class="formula-eq" id="formulaEq"></div>
+        </div>
+        <div class="terms-list" id="termsList"></div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="result-card" id="resultCard">
+        <div class="result-empty" id="resultEmpty">
+          <div class="icon">🍷</div>
+          Ingresa las propiedades fisico-quimicas<br>del vino y presiona <strong>Predecir</strong>
+        </div>
+        <div id="resultContent" style="display:none;width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;">
+          <div class="gauge-wrap">
+            <svg class="gauge-svg" viewBox="0 0 180 100">
+              <path class="gauge-bg" d="M20,90 A70,70,0,0,1,160,90"/>
+              <path class="gauge-fill" id="gaugeFill" d="M20,90 A70,70,0,0,1,160,90"/>
+              <text x="90" y="78" text-anchor="middle" fill="#fef6ec" font-size="28" font-weight="800" font-family="Inter,sans-serif" id="gaugeNum">0</text>
+              <text x="90" y="96" text-anchor="middle" fill="#c9a0b0" font-size="9" font-family="Inter,sans-serif">CALIDAD PREDICHA</text>
+            </svg>
+          </div>
+          <div class="result-label" id="resultLabel">—</div>
+          <div class="quality-bar-wrap">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted)"><span>0</span><span>10</span></div>
+            <div class="quality-bar-track"><div class="quality-bar-fill" id="qualityBar"></div></div>
+          </div>
+          <div class="result-meta" id="resultMeta"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Metricas del Modelo Entrenado</div>
+        <div class="model-stats">
+          <div class="stat-box"><div class="stat-val">0.3171</div><div class="stat-lbl">R² Test</div></div>
+          <div class="stat-box"><div class="stat-val">0.6165</div><div class="stat-lbl">RMSE (pts)</div></div>
+          <div class="stat-box"><div class="stat-val">0.4773</div><div class="stat-lbl">MAE (pts)</div></div>
+          <div class="stat-box"><div class="stat-val">914</div><div class="stat-lbl">Train Set</div></div>
+          <div class="stat-box" style="grid-column:span 2">
+            <div class="stat-val" style="font-size:.95rem">OLS — Minimos Cuadrados</div>
+            <div class="stat-lbl">B = (X'X)^-1 · X'y</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Coeficientes Beta (estandarizados)</div>
+        <div id="coefList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const MODEL = {
+  intercept: 5.656455142231951,
+  features: ["fixed acidity","volatile acidity","citric acid","residual sugar","chlorides","free sulfur dioxide","total sulfur dioxide","density","pH","sulphates","alcohol"],
+  means: {"fixed acidity":8.258096280087534,"volatile acidity":0.5310175054704594,"citric acid":0.2657986870897156,"residual sugar":2.519091903719909,"chlorides":0.08647592997811804,"free sulfur dioxide":15.706783369803064,"total sulfur dioxide":45.838621444201316,"density":0.9966827242888401,"pH":3.314234135667395,"sulphates":0.6556455142231953,"alcohol":10.43918672501822},
+  stds: {"fixed acidity":1.6954260412031144,"volatile acidity":0.17894919917708096,"citric acid":0.19487488821079296,"residual sugar":1.3050102686115965,"chlorides":0.04741058577816551,"free sulfur dioxide":10.231880389516325,"total sulfur dioxide":31.911931715986025,"density":0.0019133479989592098,"pH":0.15281284549872468,"sulphates":0.16605497608869363,"alcohol":1.0741877134665558},
+  coefficients: {"fixed acidity":0.08704837017354405,"volatile acidity":-0.23912210345232315,"citric acid":-0.06608222229394528,"residual sugar":0.005378510722629178,"chlorides":-0.08564866217749845,"free sulfur dioxide":0.019243729876503263,"total sulfur dioxide":-0.0728567967560595,"density":-0.05865034648595574,"pH":-0.03808651485496864,"sulphates":0.16157815006661094,"alcohol":0.2863634785283069}
+};
+
+const FIELDS = [
+  {key:"fixed acidity",label:"Acidez Fija",unit:"g/L",min:4.6,max:15.9,step:0.1,def:7.9,icon:"🍋",desc:"Acido tartarico. Contribuye a frescura y estabilidad del vino."},
+  {key:"volatile acidity",label:"Acidez Volatil",unit:"g/L",min:0.12,max:1.58,step:0.01,def:0.52,icon:"💨",desc:"Acido acetico. Niveles altos producen sabor avinagrado."},
+  {key:"citric acid",label:"Acido Citrico",unit:"g/L",min:0,max:1.0,step:0.01,def:0.26,icon:"🍊",desc:"Anade frescura y sabor frutal al vino."},
+  {key:"residual sugar",label:"Azucar Residual",unit:"g/L",min:0.9,max:15.5,step:0.1,def:2.2,icon:"🍬",desc:"Azucar que permanece tras la fermentacion. Determina dulzura."},
+  {key:"chlorides",label:"Cloruros",unit:"g/L (NaCl)",min:0.012,max:0.611,step:0.001,def:0.079,icon:"🧂",desc:"Sal presente en el vino. Concentraciones altas afectan negativamente."},
+  {key:"free sulfur dioxide",label:"SO2 Libre",unit:"mg/L",min:1,max:72,step:1,def:14,icon:"🛡️",desc:"Dioxido de azufre libre. Actua como conservante y antioxidante."},
+  {key:"total sulfur dioxide",label:"SO2 Total",unit:"mg/L",min:6,max:289,step:1,def:38,icon:"🧪",desc:"SO2 total (libre + combinado). Excesos producen olor desagradable."},
+  {key:"density",label:"Densidad",unit:"g/mL",min:0.990,max:1.004,step:0.0001,def:0.9967,icon:"⚖️",desc:"Densidad relativa al agua. Relacionada con alcohol y azucar."},
+  {key:"pH",label:"pH",unit:"0-14",min:2.74,max:4.01,step:0.01,def:3.31,icon:"🔬",desc:"Potencial de hidrogeno. Los vinos tienen pH entre 3.0 y 4.0."},
+  {key:"sulphates",label:"Sulfatos",unit:"g/L",min:0.33,max:2.0,step:0.01,def:0.66,icon:"💎",desc:"Contribuye a SO2. Niveles moderados mejoran conservacion y calidad."},
+  {key:"alcohol",label:"Alcohol",unit:"% vol",min:8.4,max:14.9,step:0.1,def:10.4,icon:"🥃",desc:"Porcentaje de alcohol. Vinos de mayor alcohol tienden a mayor calidad."}
+];
+
+function predictQuality(values) {
+  let result = MODEL.intercept;
+  const terms = [{name:"Intercepto B0",contribution:MODEL.intercept,xScaled:null,coef:MODEL.intercept}];
+  MODEL.features.forEach(feat => {
+    const Xi = values[feat], mu = MODEL.means[feat], sigma = MODEL.stds[feat], beta = MODEL.coefficients[feat];
+    const xs = (Xi - mu) / sigma;
+    const contrib = beta * xs;
+    result += contrib;
+    terms.push({name:feat,Xi,mu,sigma,xScaled:xs,coef:beta,contribution:contrib});
+  });
+  return {predicted:result, terms};
+}
+
+function qualityLabel(s) {
+  const r = Math.round(s);
+  if(r>=8) return {text:"🏆 Excelente",color:"#f0c97a"};
+  if(r>=7) return {text:"⭐ Muy Bueno",color:"#7ee8a2"};
+  if(r>=6) return {text:"✅ Bueno",color:"#6ee7f7"};
+  if(r>=5) return {text:"⚪ Regular",color:"#c9a0b0"};
+  if(r>=4) return {text:"⚠️ Bajo",color:"#f5a623"};
+  return {text:"❌ Deficiente",color:"#ff6b6b"};
+}
+
+function gaugeColor(s) {
+  if(s>=7) return "#7ee8a2";
+  if(s>=5) return "#e85d82";
+  return "#ff6b6b";
+}
+
+function buildForm() {
+  const grid = document.getElementById("formGrid");
+  FIELDS.forEach(f => {
+    const div = document.createElement("div");
+    div.className = "field";
+    div.innerHTML = `<label for="inp_${f.key.replace(/ /g,"_")}">${f.label}<span class="field-unit">${f.unit}</span></label><input type="number" id="inp_${f.key.replace(/ /g,"_")}" name="${f.key}" min="${f.min}" max="${f.max}" step="${f.step}" value="${f.def}" required /><input type="range" id="rng_${f.key.replace(/ /g,"_")}" min="${f.min}" max="${f.max}" step="${f.step}" value="${f.def}"/><span class="field-hint">Rango: ${f.min} – ${f.max} | Media dataset: ${MODEL.means[f.key].toFixed(3)}</span>`;
+    grid.appendChild(div);
+    const inp = document.getElementById(`inp_${f.key.replace(/ /g,"_")}`);
+    const rng = document.getElementById(`rng_${f.key.replace(/ /g,"_")}`);
+    inp.addEventListener("input",()=>rng.value=inp.value);
+    rng.addEventListener("input",()=>inp.value=rng.value);
+  });
+}
+
+function buildInfoStrip() {
+  const strip = document.getElementById("infoStrip");
+  FIELDS.forEach(f => {
+    const chip = document.createElement("div"); chip.className = "info-chip";
+    chip.innerHTML = `<div class="info-chip-icon">${f.icon}</div><div class="info-chip-name">${f.label}</div><div class="info-chip-desc">${f.desc}</div>`;
+    strip.appendChild(chip);
+  });
+}
+
+function buildCoefList() {
+  const list = document.getElementById("coefList");
+  const maxAbs = Math.max(...MODEL.features.map(f=>Math.abs(MODEL.coefficients[f])));
+  MODEL.features.forEach(feat => {
+    const coef = MODEL.coefficients[feat];
+    const pct = Math.abs(coef)/maxAbs*100;
+    const isPos = coef>=0;
+    const label = FIELDS.find(f=>f.key===feat);
+    const row = document.createElement("div"); row.className = "coef-row";
+    row.innerHTML = `<span class="coef-name">${label?label.icon+" "+label.label:feat}</span><div class="coef-bar-wrap"><div class="coef-bar-fill" style="width:${pct}%;background:${isPos?"#7ee8a2":"#e85d82"}"></div></div><span class="coef-val" style="color:${isPos?"#7ee8a2":"#e85d82"}">${coef>=0?"+":""}${coef.toFixed(4)}</span>`;
+    list.appendChild(row);
+  });
+}
+
+function showResult(predicted, terms) {
+  const clamped = Math.min(10,Math.max(0,predicted));
+  const lbl = qualityLabel(predicted);
+  document.getElementById("resultEmpty").style.display="none";
+  const rc = document.getElementById("resultContent");
+  rc.style.display="flex"; rc.style.flexDirection="column"; rc.style.alignItems="center"; rc.style.gap="12px";
+  const pct = clamped/10;
+  document.getElementById("gaugeFill").style.strokeDashoffset = 283-(pct*283);
+  document.getElementById("gaugeFill").style.stroke = gaugeColor(clamped);
+  document.getElementById("gaugeNum").textContent = clamped.toFixed(2);
+  document.getElementById("qualityBar").style.width = `${pct*100}%`;
+  document.getElementById("resultLabel").textContent = lbl.text;
+  document.getElementById("resultLabel").style.color = lbl.color;
+  document.getElementById("resultMeta").textContent = `Prediccion cruda: ${predicted.toFixed(4)} | Redondeado: ${Math.round(clamped)}/10`;
+
+  const fc = document.getElementById("formulaCard");
+  fc.style.display="block"; fc.classList.add("fade-up");
+  document.getElementById("formulaEq").textContent =
+    "FORMULA OLS:\n  y_hat = B0 + SUM( Bi * ((Xi - mu_i) / sigma_i) )\n\nCALCULO DETALLADO:\n" +
+    terms.map((t,i)=>{
+      if(i===0) return `  B0 = ${t.contribution.toFixed(6)}`;
+      return `  B_${t.name} = ${t.coef.toFixed(6)} x ((${t.Xi.toFixed(4)}-${t.mu.toFixed(4)})/${t.sigma.toFixed(4)}) = ${t.coef.toFixed(6)} x ${t.xScaled.toFixed(4)} = ${t.contribution.toFixed(6)}`;
+    }).join("\n") +
+    `\n\n  y_hat (TOTAL) = ${predicted.toFixed(6)}`;
+
+  const tl = document.getElementById("termsList"); tl.innerHTML="";
+  const maxAbs = Math.max(...terms.slice(1).map(t=>Math.abs(t.contribution)));
+  terms.forEach((t,i)=>{
+    const row = document.createElement("div"); row.className="term-row fade-up";
+    row.style.animationDelay=`${i*35}ms`;
+    const isPos=t.contribution>=0;
+    const pct2=maxAbs>0?Math.abs(t.contribution)/maxAbs*100:0;
+    if(i===0){
+      row.innerHTML=`<span class="term-name" style="color:var(--gold-light);font-weight:700">B0 (Intercepto)</span><div class="term-bar"><div class="term-bar-fill" style="width:100%;background:var(--gold)"></div></div><span class="term-value pos">${t.contribution.toFixed(6)}</span>`;
+    } else {
+      const lf=FIELDS.find(f=>f.key===t.name);
+      row.innerHTML=`<span class="term-name" title="X=${t.Xi.toFixed(4)}, mu=${t.mu.toFixed(4)}, sigma=${t.sigma.toFixed(4)}, Xsc=${t.xScaled.toFixed(4)}">${lf?lf.icon:""} ${lf?lf.label:t.name}</span><div class="term-bar"><div class="term-bar-fill" style="width:${pct2}%;background:${isPos?"#7ee8a2":"#e85d82"}"></div></div><span class="term-value ${isPos?"pos":"neg"}">${t.contribution>=0?"+":""}${t.contribution.toFixed(6)}</span>`;
+    }
+    tl.appendChild(row);
+  });
+  const sumRow=document.createElement("div"); sumRow.className="term-row";
+  sumRow.innerHTML=`<span class="term-name" style="color:var(--gold-light);font-weight:700">SUMA TOTAL (y_hat)</span><div class="term-bar"></div><span class="term-value" style="color:var(--gold-light);font-weight:700">${predicted.toFixed(6)}</span>`;
+  tl.appendChild(sumRow);
+}
+
+function showToast(msg) {
+  const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+document.getElementById("wineForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const values={};
+  FIELDS.forEach(f=>{values[f.key]=parseFloat(document.getElementById(`inp_${f.key.replace(/ /g,"_")}`).value);});
+  document.getElementById("predictBtn").textContent="⏳ Calculando...";
+  setTimeout(()=>{
+    const {predicted,terms}=predictQuality(values);
+    showResult(predicted,terms);
+    document.getElementById("predictBtn").textContent="🔬 Predecir Calidad del Vino";
+    showToast(`Calidad predicha: ${predicted.toFixed(2)} / 10`);
+  },300);
+});
+
+function initParticles() {
+  const c=document.getElementById("particles");
+  for(let i=0;i<16;i++){
+    const p=document.createElement("div"); p.className="particle";
+    const sz=Math.random()*6+2;
+    p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*10}s;`;
+    c.appendChild(p);
+  }
+}
+
+buildForm(); buildInfoStrip(); buildCoefList(); initParticles();
+</script>
+</body>
+</html>

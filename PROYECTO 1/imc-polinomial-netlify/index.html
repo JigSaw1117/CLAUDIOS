@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Calculadora de IMC con regresion polinomial de grado 2 exportada a model.json, lista para Netlify.">
+<title>IMC con regresion polinomial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fondo: #F3F4F0;
+  --superficie: #FFFFFF;
+  --tinta: #1B1F27;
+  --mutado: #5A6472;
+  --acento: #1F4E3D;
+  --acento-bajo: #E3ECE7;
+  --linea: #D7DCD2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  color: var(--tinta);
+  background: var(--fondo);
+  line-height: 1.5;
+  padding: 3.5rem 1.25rem 2rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.contexto {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mutado);
+  margin-bottom: 0.75rem;
+}
+h1 {
+  font-family: "Fraunces", serif;
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1.12;
+}
+.intro {
+  max-width: 36rem;
+  margin-top: 0.9rem;
+  color: var(--mutado);
+  font-size: 1.02rem;
+}
+.cabecera { margin-bottom: 2.5rem; }
+main { display: grid; gap: 1.5rem; }
+.tarjeta {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  padding: 1.75rem;
+}
+h2 { font-family: "Fraunces", serif; font-size: 1.3rem; font-weight: 600; margin-bottom: 1.1rem; }
+.formulario { display: flex; flex-direction: column; gap: 0.4rem; }
+.formulario label { font-size: 0.85rem; font-weight: 500; color: var(--mutado); margin-top: 0.5rem; }
+input {
+  font: inherit;
+  color: var(--tinta);
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  padding: 0.55rem 0.6rem;
+}
+button {
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--acento);
+  border: 1px solid var(--acento);
+  padding: 0.6rem;
+  margin-top: 0.9rem;
+  cursor: pointer;
+}
+button:hover { background: var(--acento-bajo); color: var(--acento); border-color: var(--acento); }
+.error {
+  margin-top: 1.1rem;
+  color: #8a2b1f;
+  background: #f4e4e0;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+}
+.resultado {
+  margin-top: 1.2rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--color-cat);
+  background: color-mix(in srgb, var(--color-cat), white 90%);
+}
+.imc { font-family: "Fraunces", serif; font-size: 1.7rem; font-weight: 700; }
+.categoria { margin-top: 0.2rem; font-weight: 500; color: var(--color-cat); }
+.dato-formula { font-family: "IBM Plex Mono", monospace; font-size: 0.92rem; color: var(--mutado); margin-bottom: 1rem; }
+.term { font-family: "IBM Plex Mono", monospace; font-size: 0.84rem; }
+.modelo-card { background: var(--acento-bajo); }
+.metrica { font-size: 0.95rem; color: var(--mutado); margin-top: 0.4rem; }
+.pie {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--linea);
+  color: var(--mutado);
+  font-size: 0.85rem;
+}
+@media (max-width: 480px) { h1 { font-size: 2rem; } }
+</style>
+</head>
+<body>
+<header class="cabecera">
+  <p class="contexto">Regresion polinomial · modelo en model.json · Netlify</p>
+  <h1>IMC con regresion polinomial</h1>
+  <p class="intro">Ingresa peso y altura. La web carga el <strong>modelo entrenado</strong> desde <span class="mono">model.json</span>, reconstruye las 5 features polinomiales y predice tu IMC.</p>
+</header>
+
+<main>
+  <section class="tarjeta" aria-labelledby="titulo">
+    <h2 id="titulo">Predice tu IMC</h2>
+
+    <form id="formulario" class="formulario" novalidate>
+      <label for="peso">Peso en kilogramos</label>
+      <input type="text" id="peso" placeholder="ej. 70" inputmode="decimal" autocomplete="off">
+
+      <label for="altura">Altura en metros</label>
+      <input type="text" id="altura" placeholder="ej. 1.75" inputmode="decimal" autocomplete="off">
+
+      <button type="submit">Predecir IMC</button>
+    </form>
+
+    <p id="error" class="error" hidden></p>
+
+    <div id="resultado" class="resultado" hidden>
+      <p id="imc" class="imc"></p>
+      <p id="categoria" class="categoria"></p>
+    </div>
+  </section>
+
+  <section class="tarjeta modelo-card" aria-labelledby="titulo-modelo">
+    <h2 id="titulo-modelo">El modelo cargado</h2>
+    <p id="formula" class="dato-formula">Cargando modelo…</p>
+    <p id="metrica" class="metrica"></p>
+    <div id="terminos"></div>
+  </section>
+</main>
+
+<footer class="pie">Modelo PolynomialFeatures(2) + LinearRegression entrenado en Python y exportado a model.json para servir la web sin servidor Python.</footer>
+
+<script>
+  const categorias = [
+    { max: 18.5, nombre: "Bajo peso", color: "#7a8aa0" },
+    { max: 25,   nombre: "Peso normal", color: "#1F4E3D" },
+    { max: 30,   nombre: "Sobrepeso", color: "#a3662b" },
+    { max: 999,  nombre: "Obesidad", color: "#8a2b1f" },
+  ];
+
+  const form = document.getElementById("formulario");
+  const campoError = document.getElementById("error");
+  const bloqueResultado = document.getElementById("resultado");
+  const campoImc = document.getElementById("imc");
+  const campoCategoria = document.getElementById("categoria");
+  const campoFormula = document.getElementById("formula");
+  const campoMetrica = document.getElementById("metrica");
+  const campoTerminos = document.getElementById("terminos");
+
+  let modelo = null;
+
+  function categoriaImc(valor) {
+    for (const c of categorias) {
+      if (valor < c.max) return c;
+    }
+    return categorias[categorias.length - 1];
+  }
+
+  function vectorFeatures(peso, altura) {
+    const p = peso;
+    const a = altura;
+    return [p, a, p * p, p * a, a * a];
+  }
+
+  function prediccion(peso, altura) {
+    const vec = vectorFeatures(peso, altura);
+    let total = modelo.intercepto;
+    for (let i = 0; i < modelo.coef.length; i++) {
+      total += modelo.coef[i] * vec[i];
+    }
+    return total;
+  }
+
+  function formatear(valor) {
+    const r = Math.round(valor * 10) / 10;
+    return Number.isInteger(r) ? String(r) : r.toFixed(1);
+  }
+
+  function mostrarError(mensaje) {
+    campoError.textContent = mensaje;
+    campoError.hidden = false;
+    bloqueResultado.hidden = true;
+  }
+
+  fetch("model.json")
+    .then((r) => r.json())
+    .then((datos) => {
+      modelo = datos;
+      campoFormula.textContent =
+        "IMC = " + datos.coef.map((c, i) => c.toFixed(4) + "·" + datos.features[i]).join(" + ") + " + " + datos.intercepto.toFixed(3);
+      campoMetrica.textContent = "Grado " + datos.grado + " · R² = " + datos.r2.toFixed(6) + " · N = " + datos.n;
+      campoTerminos.innerHTML =
+        "<ul style='list-style:none;margin-top:0.6rem;display:grid;gap:0.2rem'>" +
+        datos.features.map((f, i) =>
+          "<li class='term'>" + f + " → " + datos.coef[i].toFixed(4) + "</li>"
+        ).join("") +
+        "<li class='term'>intercepto → " + datos.intercepto.toFixed(4) + "</li>" +
+        "</ul>";
+    })
+    .catch(() => {
+      mostrarError("No se pudo cargar model.json. Revisa que el archivo exista junto a la pagina.");
+    });
+
+  form.addEventListener("submit", (evento) => {
+    evento.preventDefault();
+    if (!modelo) {
+      mostrarError("El modelo todavia no cargo. Espera un momento.");
+      return;
+    }
+
+    const pesoTexto = document.getElementById("peso").value.trim().replace(",", ".");
+    const alturaTexto = document.getElementById("altura").value.trim().replace(",", ".");
+
+    const peso = Number(pesoTexto);
+    const altura = Number(alturaTexto);
+
+    if (!pesoTexto || !alturaTexto || isNaN(peso) || isNaN(altura)) {
+      mostrarError("Usa numeros, ej. peso 70 y altura 1.75.");
+      return;
+    }
+    if (peso <= 0 || altura <= 0) {
+      mostrarError("Peso y altura deben ser mayores a cero.");
+      return;
+    }
+
+    const imc = prediccion(peso, altura);
+    const cat = categoriaImc(imc);
+
+    campoImc.textContent = formatear(imc) + " kg/m²";
+    campoCategoria.textContent = cat.nombre;
+    bloqueResultado.style.setProperty("--color-cat", cat.color);
+
+    campoError.hidden = true;
+    bloqueResultado.hidden = false;
+  });
+</script>
+</body>
+</html>
