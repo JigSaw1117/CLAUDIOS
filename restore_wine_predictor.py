@@ -1,4 +1,11 @@
-<!DOCTYPE html>
+"""
+Restaura la interfaz rica en el tema oscuro original para CASO_2 (wine_predictor_v2.html e index.html),
+integrando el logo institucional logo-uac.jpg en la barra de navegación superior,
+con fuentes altamente legibles, medidores de reloj SVG, desglose de fórmula,
+tarjetas de información, barras de coeficientes y notaciones toast.
+"""
+
+rich_wine_html = r"""<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
@@ -607,3 +614,12 @@ buildForm(); buildChips(); buildCoefs('linear'); initPts(); setMode('linear');
 </script>
 </body>
 </html>
+"""
+
+with open(r"c:\Users\Usuario\Desktop\OPENCODE\CASO_2\index.html", "w", encoding="utf-8") as f:
+    f.write(rich_wine_html)
+
+with open(r"c:\Users\Usuario\Desktop\OPENCODE\CASO_2\wine_predictor_v2.html", "w", encoding="utf-8") as f:
+    f.write(rich_wine_html)
+
+print("Interfaz rica en tema oscuro del predictor de vino restaurada con éxito.")

@@ -2,1011 +2,608 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Wine Quality Predictor — Universidad Andina del Cusco | Caso 2</title>
-<meta name="description" content="Predicción de calidad de vino mediante Regresión Lineal Múltiple y Regresión Polinómica. Universidad Andina del Cusco."/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Wine Quality Predictor — Lineal vs Polinómico | Universidad Andina del Cusco</title>
+<meta name="description" content="Comparador de modelos de regresión lineal múltiple y polinómica para predicción de calidad de vino tinto."/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --uac-dark: #0a2540;
-  --uac-navy: #0d3c6c;
-  --uac-blue: #0077b6;
-  --uac-cyan: #00b4d8;
-  --uac-light-cyan: #e6f9f6;
-  --uac-border: rgba(0,180,216,0.25);
-  
-  --lin-color: #2563eb;
-  --lin-bg: #eff6ff;
-  --lin-border: #bfdbfe;
-  
-  --poly-color: #7c3aed;
-  --poly-bg: #f5f3ff;
-  --poly-border: #ddd6fe;
-
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --gold: #d97706;
-  --green: #059669;
-  --red: #dc2626;
+:root{
+  --bg:#0f0a12;--surface:#1a1025;--surface2:#221535;--border:rgba(180,100,220,0.22);
+  --lin:#3b82f6;--lin-g:rgba(59,130,246,0.35);--lin-d:#1d4ed8;
+  --poly:#a855f7;--poly-g:rgba(168,85,247,0.35);--poly-d:#7e22ce;
+  --gold:#f0c97a;--cream:#faf5ff;--ok:#34d399;--warn:#fb923c;
+  --text:#e8d5f5;--text2:#c8b3e6;--text3:#8c6fa8;
+  --r:10px;--r2:18px;--r3:26px;
 }
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 45% at 15% 25%,rgba(59,130,246,.14) 0%,transparent 65%),
+    radial-gradient(ellipse 45% 55% at 85% 75%,rgba(168,85,247,.16) 0%,transparent 65%),
+    radial-gradient(ellipse 70% 35% at 50% 5%,rgba(20,10,40,.9) 0%,transparent 55%);
+  pointer-events:none;}
+.pts{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.pt{position:absolute;border-radius:50%;animation:flt linear infinite;}
+@keyframes flt{0%{transform:translateY(105vh) scale(0);opacity:0}8%{opacity:.8}92%{opacity:.2}100%{transform:translateY(-5vh) scale(1.3);opacity:0}}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f8fafc;
-  color: var(--text-primary);
-  line-height: 1.5;
-  font-size: 15px;
-}
-
-/* NAVBAR INSTITUCIONAL UAC */
-.uac-navbar {
-  background: var(--uac-dark);
-  color: white;
-  padding: 10px 28px;
+/* NAVBAR UAC INSTITUCIONAL */
+.uac-nav {
+  background: #0a2540;
+  border-bottom: 1px solid rgba(0,180,216,0.3);
+  padding: 12px 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 14px rgba(10,37,64,0.25);
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 100;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.4);
 }
-.uac-nav-left {
+.uac-brand {
   display: flex;
   align-items: center;
   gap: 14px;
+  text-decoration: none;
 }
-.uac-nav-left img {
+.uac-brand img {
   height: 52px;
   width: auto;
   border-radius: 6px;
   background: white;
   padding: 3px;
 }
-.uac-nav-links {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-.uac-nav-links a {
-  color: #cbd5e1;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  transition: all 0.2s;
-}
-.uac-nav-links a:hover {
-  background: rgba(255,255,255,0.12);
-  color: white;
-}
-.uac-nav-links a.active {
-  background: var(--uac-cyan);
-  color: var(--uac-dark);
-  font-weight: 700;
-}
-
-/* HEADER CON FOTO REAL DE FONDO (FONDO.JPG) */
-header.page-header {
-  background: linear-gradient(135deg, rgba(10, 37, 64, 0.88) 0%, rgba(13, 60, 108, 0.82) 100%), url('fondo.jpg') center/cover no-repeat;
-  color: white;
-  padding: 50px 28px;
-  text-align: center;
-  border-bottom: 4px solid var(--uac-cyan);
-}
-.header-badge {
-  display: inline-block;
-  background: rgba(0,180,216,0.25);
-  border: 1px solid rgba(0,180,216,0.5);
-  color: #38bdf8;
-  padding: 6px 16px;
-  border-radius: 100px;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  margin-bottom: 14px;
-  backdrop-filter: blur(4px);
-}
-header.page-header h1 {
-  font-size: 2.2rem;
-  font-weight: 800;
-  margin-bottom: 10px;
-  color: #ffffff;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-}
-header.page-header p {
-  font-size: 1.05rem;
-  color: #f1f5f9;
-  max-width: 750px;
-  margin: 0 auto 24px;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
-}
-
-/* BOTONES DE MODO DE MODELO */
-.mode-selector {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-.mode-btn {
-  background: rgba(10, 37, 64, 0.85);
-  border: 1px solid rgba(255,255,255,0.25);
-  color: #e2e8f0;
-  padding: 10px 24px;
-  border-radius: 100px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  backdrop-filter: blur(4px);
-}
-.mode-btn:hover {
-  background: rgba(255,255,255,0.2);
-  color: white;
-}
-.mode-btn.active.lin {
-  background: var(--lin-color);
-  border-color: var(--lin-color);
-  color: white;
-  box-shadow: 0 4px 12px rgba(37,99,235,0.35);
-}
-.mode-btn.active.poly {
-  background: var(--poly-color);
-  border-color: var(--poly-color);
-  color: white;
-  box-shadow: 0 4px 12px rgba(124,58,237,0.35);
-}
-.mode-btn.active.both {
-  background: linear-gradient(90deg, var(--lin-color), var(--poly-color));
-  border-color: transparent;
-  color: white;
-  box-shadow: 0 4px 14px rgba(124,58,237,0.4);
-}
-
-/* LAYOUT GENERAL */
-.container {
-  max-width: 1280px;
-  margin: 36px auto;
-  padding: 0 24px;
-}
-.main-grid {
-  display: grid;
-  grid-template-columns: 1fr 440px;
-  gap: 28px;
-  align-items: start;
-}
-@media (max-width: 980px) {
-  .main-grid { grid-template-columns: 1fr; }
-}
-
-/* CARDS */
-.card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 26px;
-  box-shadow: 0 4px 16px rgba(15,23,42,0.04);
-  margin-bottom: 24px;
-}
-.card-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--uac-navy);
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 2px solid #f1f5f9;
-  padding-bottom: 10px;
-}
-
-/* FORMULARIO */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 18px;
-}
-.field {
+.uac-brand-text {
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
-.field label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  display: flex;
-  justify-content: space-between;
+.uac-brand-text .title {
+  font-weight: 800; font-size: 15px; color: #ffffff;
 }
-.unit-tag {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 500;
+.uac-brand-text .sub {
+  font-size: 12px; font-weight: 700; color: #00b4d8; text-transform: uppercase; letter-spacing: 0.5px;
 }
-.field input[type=number] {
-  width: 100%;
-  background: #f8fafc;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  transition: border-color 0.2s;
+.uac-menu {
+  display: flex; gap: 12px; align-items: center;
 }
-.field input[type=number]:focus {
-  outline: none;
-  border-color: var(--uac-blue);
-  background: white;
+.uac-menu a {
+  color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 14px; padding: 8px 16px; border-radius: 8px; transition: all 0.2s;
 }
-input[type=range] {
-  width: 100%;
-  height: 6px;
-  background: #e2e8f0;
-  border-radius: 4px;
-  cursor: pointer;
-  accent-color: var(--uac-blue);
-}
-.field-hint {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
+.uac-menu a:hover { background: rgba(255,255,255,0.12); color: white; }
+.uac-menu a.active { background: #00b4d8; color: #0a2540; font-weight: 700; }
+
+.wrap{position:relative;z-index:1;max-width:1380px;margin:0 auto;padding:0 18px 80px;}
+
+/* HEADER DE LA APLICACIÓN */
+header.app-header{text-align:center;padding:40px 0 28px;}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(168,85,247,.18);border:1px solid rgba(168,85,247,.35);border-radius:100px;padding:6px 18px;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#c084fc;margin-bottom:16px;}
+h1{font-size:clamp(1.8rem,4.5vw,3.2rem);font-weight:800;line-height:1.1;
+  background:linear-gradient(135deg,#e0d0ff 0%,#a78bfa 40%,#60a5fa 80%,#f0c97a 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;}
+.sub-desc{font-size:1.05rem;color:var(--text2);max-width:680px;margin:0 auto 24px;line-height:1.7;}
+
+/* TOGGLE BAR DE MODELOS */
+.tbar{display:flex;align-items:center;justify-content:center;gap:0;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:100px;padding:5px;width:fit-content;margin:0 auto 26px;}
+.tbtn{padding:10px 28px;border-radius:100px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;transition:all .25s;background:transparent;color:var(--text2);}
+.tbtn.lin.active{background:linear-gradient(135deg,var(--lin-d),var(--lin));color:#fff;box-shadow:0 2px 18px var(--lin-g);}
+.tbtn.poly.active{background:linear-gradient(135deg,var(--poly-d),var(--poly));color:#fff;box-shadow:0 2px 18px var(--poly-g);}
+.tbtn.both.active{background:linear-gradient(135deg,var(--lin-d),var(--poly));color:#fff;box-shadow:0 2px 20px rgba(168,85,247,.4);}
+.tbtn:hover:not(.active){background:rgba(255,255,255,.08);color:var(--text);}
+
+/* METRIC PILLS */
+.mprow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
+.mp{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:100px;padding:8px 18px;font-size:13px;}
+.mp .lbl{color:var(--text2);}
+.mp .val{font-weight:700; font-family:'JetBrains Mono',monospace;}
+.mp.ml .val{color:#60a5fa;} .mp.mp2 .val{color:#c084fc;}
+
+/* LAYOUT PRINCIPAL */
+.main{display:grid;grid-template-columns:1fr 450px;gap:22px;align-items:start;}
+@media(max-width:980px){.main{grid-template-columns:1fr;}}
+
+/* CARD Y ESTILOS */
+.card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r3);backdrop-filter:blur(16px);padding:24px;}
+.ct{font-size:13px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.ct::before{content:'';width:18px;height:3px;border-radius:2px;}
+.ct.cl{color:#60a5fa;} .ct.cl::before{background:linear-gradient(90deg,var(--lin-d),var(--lin));}
+.ct.cp{color:#c084fc;} .ct.cp::before{background:linear-gradient(90deg,var(--poly-d),var(--poly));}
+.ct.cm{color:#a78bfa;} .ct.cm::before{background:linear-gradient(90deg,var(--lin-d),var(--poly));}
+
+/* FORMULARIO E INPUTS */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text2);display:flex;justify-content:space-between;align-items:center;}
+.fu{font-size:11px;color:var(--text3);font-weight:500;text-transform:none;letter-spacing:0;}
+.field input[type=number]{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(180,120,240,.25);border-radius:var(--r);padding:10px 12px;color:var(--cream);font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;transition:border-color .2s,box-shadow .2s;-moz-appearance:textfield;}
+.field input[type=number]::-webkit-inner-spin-button{opacity:.3;}
+.field input:focus{outline:none;border-color:#a78bfa;box-shadow:0 0 0 3px rgba(167,139,250,.2);}
+input[type=range]{width:100%;-webkit-appearance:none;height:4px;background:rgba(180,120,240,.2);border-radius:4px;cursor:pointer;margin-top:3px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px rgba(167,139,250,.6);transition:transform .15s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3);}
+.fh{font-size:11px;color:var(--text3);font-weight:500;}
 
 /* BOTÓN DE PREDICCIÓN */
-.predict-btn {
-  width: 100%;
-  margin-top: 24px;
-  padding: 16px;
-  border: none;
-  border-radius: 12px;
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 800;
-  color: white;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.predict-btn.lin-btn {
-  background: var(--lin-color);
-  box-shadow: 0 4px 16px rgba(37,99,235,0.3);
-}
-.predict-btn.poly-btn {
-  background: var(--poly-color);
-  box-shadow: 0 4px 16px rgba(124,58,237,0.3);
-}
-.predict-btn.both-btn {
-  background: linear-gradient(90deg, var(--lin-color), var(--poly-color));
-  box-shadow: 0 4px 16px rgba(124,58,237,0.35);
-}
-.predict-btn:hover { transform: translateY(-2px); }
-.predict-btn:active { transform: translateY(0); }
+.pbtn{width:100%;margin-top:22px;border:none;border-radius:var(--r2);padding:16px;color:#fff;font-family:'Inter',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.pbtn.pl{background:linear-gradient(135deg,var(--lin-d),var(--lin));box-shadow:0 4px 20px var(--lin-g);}
+.pbtn.pp{background:linear-gradient(135deg,var(--poly-d),var(--poly));box-shadow:0 4px 20px var(--poly-g);}
+.pbtn.pb{background:linear-gradient(135deg,var(--lin-d),var(--poly));box-shadow:0 4px 20px rgba(168,85,247,.35);}
+.pbtn:hover{transform:translateY(-2px);} .pbtn:active{transform:translateY(0);}
 
-/* PANELES DE RESULTADOS */
-.results-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-.results-container.both-mode {
-  grid-template-columns: 1fr 1fr;
-}
-@media (max-width: 600px) {
-  .results-container.both-mode { grid-template-columns: 1fr; }
-}
+/* PANEL DERECHO Y RESULTADOS */
+.rp{display:flex;flex-direction:column;gap:16px;}
+.rw{display:grid;grid-template-columns:1fr;gap:12px;transition:all .3s;}
+.rw.bm{grid-template-columns:1fr 1fr;}
+@media(max-width:600px){.rw.bm{grid-template-columns:1fr;}}
+.rc{border-radius:var(--r3);padding:22px;text-align:center;backdrop-filter:blur(16px);display:flex;flex-direction:column;align-items:center;gap:10px;min-height:240px;justify-content:center;}
+.rc.rl{background:linear-gradient(135deg,rgba(29,78,216,.22),rgba(59,130,246,.08));border:1px solid rgba(96,165,250,.3);}
+.rc.rp2{background:linear-gradient(135deg,rgba(126,34,206,.22),rgba(168,85,247,.08));border:1px solid rgba(192,132,252,.3);}
+.rem{color:var(--text2);font-size:14px;line-height:1.6;}
+.remico{font-size:40px;margin-bottom:6px;display:block;}
 
-.result-card {
-  border-radius: 16px;
-  padding: 24px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 240px;
-}
-.result-card.lin-res {
-  background: var(--lin-bg);
-  border: 2px solid var(--lin-border);
-}
-.result-card.poly-res {
-  background: var(--poly-bg);
-  border: 2px solid var(--poly-border);
-}
+/* GAUGE DE RELOJ SVG Y BARRAS */
+.gw{width:160px;height:88px;}
+.gsvg{width:160px;height:88px;}
+.gbg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:13;stroke-linecap:round;}
+.gf{fill:none;stroke-width:13;stroke-linecap:round;stroke-dasharray:244;stroke-dashoffset:244;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1),stroke .5s;}
+.rlbl{font-size:1.1rem;font-weight:700;letter-spacing:.3px;}
+.rl{color:#60a5fa;} .rp2c{color:#c084fc;}
+.rmeta{font-size:12px;color:var(--text2);font-weight:500;}
+.qbt{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:100px;overflow:hidden;margin-top:4px;}
+.qbf{height:100%;border-radius:100px;width:0%;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.qbfl{background:linear-gradient(90deg,var(--lin-d),var(--lin),#93c5fd);}
+.qbfp{background:linear-gradient(90deg,var(--poly-d),var(--poly),#e9d5ff);}
+.qbw{width:100%;}
+.mtag{display:inline-flex;align-items:center;border-radius:100px;padding:3px 12px;font-size:11px;font-weight:800;letter-spacing:.6px;}
+.mtagl{background:rgba(59,130,246,.2);color:#93c5fd;border:1px solid rgba(59,130,246,.35);}
+.mtagp{background:rgba(168,85,247,.2);color:#d8b4fe;border:1px solid rgba(168,85,247,.35);}
 
-.res-tag {
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 4px 12px;
-  border-radius: 100px;
-  margin-bottom: 12px;
-}
-.res-tag.lin { background: #dbeafe; color: #1e40af; }
-.res-tag.poly { background: #ede9fe; color: #5b21b6; }
+/* TABLA COMPARATIVA DE MODELOS */
+.ct2{width:100%;border-collapse:collapse;font-size:13.5px;}
+.ct2 th{text-align:left;padding:8px 10px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.6px;font-size:11px;border-bottom:1px solid rgba(255,255,255,.1);}
+.ct2 td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-weight:500;}
+.ct2 tr:last-child td{border-bottom:none;}
+.ml2{color:#60a5fa;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;}
+.mp3{color:#c084fc;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;}
+.mlb{color:var(--text);}
+.wl{background:rgba(59,130,246,.15);border-radius:6px;padding:2px 8px;font-size:11px;color:#60a5fa;font-weight:800;border:1px solid rgba(59,130,246,.3);}
+.wp{background:rgba(168,85,247,.15);border-radius:6px;padding:2px 8px;font-size:11px;color:#c084fc;font-weight:800;border:1px solid rgba(168,85,247,.3);}
 
-.score-display {
-  font-size: 3.2rem;
-  font-weight: 800;
-  line-height: 1;
-  margin: 8px 0;
-  font-family: 'JetBrains Mono', monospace;
-}
-.score-display.lin-score { color: var(--lin-color); }
-.score-display.poly-score { color: var(--poly-color); }
-
-.quality-label {
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.res-meta {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-/* TABLA COMPARATIVA */
-.cmp-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  font-size: 14px;
-}
-.cmp-table th {
-  text-align: left;
-  padding: 10px 12px;
-  background: #f1f5f9;
-  color: var(--text-secondary);
-  font-weight: 700;
-  font-size: 13px;
-  border-bottom: 2px solid #cbd5e1;
-}
-.cmp-table td {
-  padding: 12px;
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 500;
-}
-.cmp-table .val-lin {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  color: var(--lin-color);
-}
-.cmp-table .val-poly {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  color: var(--poly-color);
-}
-.winner-pill {
-  font-size: 12px;
-  font-weight: 800;
-  padding: 3px 10px;
-  border-radius: 100px;
-}
-.winner-pill.lin { background: #dbeafe; color: #1e40af; }
-.winner-pill.poly { background: #ede9fe; color: #5b21b6; }
-
-/* MÉTRICAS STATS GRID */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.stat-box {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 14px;
-  text-align: center;
-}
-.stat-box .val {
-  font-size: 1.6rem;
-  font-weight: 800;
-  font-family: 'JetBrains Mono', monospace;
-}
-.stat-box .val.lin-v { color: var(--lin-color); }
-.stat-box .val.poly-v { color: var(--poly-color); }
-.stat-box .lbl {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-.warning-box {
-  margin-top: 14px;
-  padding: 14px 16px;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  border-radius: 12px;
-  font-size: 13px;
-  color: #9a3412;
-  line-height: 1.6;
-}
+/* BARRAS DE COEFICIENTES BETA */
+.coeflist{display:flex;flex-direction:column;gap:6px;}
+.cr{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;}
+.cr:last-child{border-bottom:none;}
+.cn{color:var(--text);font-weight:600;flex:0 0 auto;max-width:145px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cb{flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;}
+.cbf{height:100%;border-radius:3px;}
+.cv{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;flex:0 0 auto;}
+.cv.pos{color:#34d399;} .cv.neg{color:#f87171;}
 
 /* DESGLOSE FÓRMULA DE DESCOMPOSICIÓN */
-.formula-box {
-  background: #0f172a;
-  color: #f8fafc;
-  border-radius: 12px;
-  padding: 16px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  line-height: 1.7;
-  overflow-x: auto;
-  margin-bottom: 16px;
-}
-.terms-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 360px;
-  overflow-y: auto;
-  padding-right: 6px;
-}
-.term-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  font-size: 13.5px;
-}
-.term-name {
-  font-weight: 600;
-  color: var(--text-secondary);
-  max-width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.term-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  font-size: 14px;
-}
-.term-val.pos { color: var(--green); }
-.term-val.neg { color: var(--red); }
+.fc{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r3);backdrop-filter:blur(16px);}
+.fh2{padding:18px 22px 0;}
+.fti{font-size:12.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.fti::before{content:'';width:14px;height:3px;border-radius:2px;}
+.feq{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);background:rgba(0,0,0,.45);border-radius:var(--r);padding:12px 14px;margin:10px 0;line-height:1.7;word-break:break-all;white-space:pre-wrap;}
+.tlist{padding:0 22px 18px;max-height:360px;overflow-y:auto;}
+.tlist::-webkit-scrollbar{width:4px;}
+.tlist::-webkit-scrollbar-thumb{background:rgba(167,139,250,.3);border-radius:2px;}
+.trow{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);gap:8px;font-size:13px;}
+.trow:last-child{border-bottom:none;}
+.tn{color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;}
+.tb{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:2px;min-width:20px;max-width:60px;overflow:hidden;}
+.tbf{height:100%;border-radius:2px;}
+.tv{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;white-space:nowrap;}
+.tv.pos{color:#34d399;} .tv.neg{color:#f87171;}
 
-/* BARRAS DE COEFICIENTES */
-.coef-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.coef-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
-}
-.coef-name {
-  width: 140px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.coef-bar-track {
-  flex: 1;
-  height: 8px;
-  background: #e2e8f0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-.coef-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-}
-.coef-val {
-  width: 75px;
-  text-align: right;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  font-size: 13px;
-}
+/* ESTADÍSTICAS DEL DATASET */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.sb{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:12px;text-align:center;}
+.sv{font-size:1.45rem;font-weight:800;font-family:'JetBrains Mono',monospace;}.sl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text2);margin-top:2px;font-weight:700;}
 
-/* DESCRIPCIÓN DE VARIABLES */
-.info-chips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
-  margin-top: 20px;
-}
-.info-chip {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 14px;
-}
-.info-chip .icon { font-size: 22px; margin-bottom: 6px; }
-.info-chip .title { font-size: 13px; font-weight: 700; color: var(--uac-navy); margin-bottom: 4px; }
-.info-chip .desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+/* CARDS DE INFORMACIÓN DE VARIABLES */
+.ics{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:18px;}
+.ic{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r2);padding:14px;}
+.ii{font-size:22px;margin-bottom:4px;} .in{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#c084fc;margin-bottom:3px;}
+.id{font-size:12px;color:var(--text2);line-height:1.5;}
 
-.hidden { display: none !important; }
+@keyframes fU{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fU .4s ease both;}
+.hidden{display:none!important;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:700;box-shadow:0 6px 24px rgba(124,58,237,.5);opacity:0;transition:all .3s;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.ovf-warn{margin-top:12px;padding:12px;background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);border-radius:var(--r);font-size:12px;color:#fdba74;line-height:1.6;}
 </style>
 </head>
 <body>
 
-<!-- NAVBAR INSTITUCIONAL UAC -->
-<header class="uac-navbar">
-  <div class="uac-nav-left">
-    <a href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:12px;">
-      <img src="logo-uac.jpg" alt="Universidad Andina del Cusco" />
-      <div style="display:flex; flex-direction:column; text-align:left; line-height:1.15;">
-        <span style="font-size:15px; font-weight:800; color:#ffffff;">Universidad Andina del Cusco</span>
-        <span style="font-size:12px; font-weight:700; color:#00b4d8;">Ingeniería de Sistemas — IA</span>
-      </div>
-    </a>
-  </div>
-  <div class="uac-nav-links">
-    <a href="index.html">🏠 Portada Principal</a>
-    <a href="CASO_1/index.html">📌 Caso 1</a>
-    <a href="CASO_2/index.html" class="active">🍷 Caso 2 (Vinos)</a>
-    <a href="CASO_3/index.html">📈 Caso 3</a>
+<!-- ANIMACIÓN DE FONDOS DE PARTÍCULAS -->
+<div class="pts" id="pts"></div>
+
+<!-- NAVBAR UAC INSTITUCIONAL -->
+<header class="uac-nav">
+  <a href="../index.html" class="uac-brand">
+    <img src="logo-uac.jpg" alt="Universidad Andina del Cusco" />
+    <div class="uac-brand-text">
+      <span class="title">Universidad Andina del Cusco</span>
+      <span class="sub">Ingeniería de Sistemas — IA</span>
+    </div>
+  </a>
+  <div class="uac-menu">
+    <a href="../index.html">🏠 Portada Principal</a>
+    <a href="../CASO_1/index.html">📌 Caso 1</a>
+    <a href="./index.html" class="active">🍷 Caso 2 (Vinos)</a>
+    <a href="../CASO_3/index.html">📈 Caso 3</a>
   </div>
 </header>
 
-<!-- HEADER DE LA PÁGINA CON FOTO REAL DE FONDO (FONDO.JPG) -->
-<header class="page-header">
-  <div class="header-badge">UNIVERSIDAD ANDINA DEL CUSCO — INTELIGENCIA ARTIFICIAL</div>
-  <h1>Predictor de Calidad del Vino Tinto</h1>
-  <p>Comparación en tiempo real entre el modelo de <strong>Regresión Lineal Múltiple (OLS)</strong> y <strong>Regresión Polinómica (Grado 2)</strong> entrenados con 1,143 muestras del dataset <code>WineQT.csv</code>.</p>
+<div class="wrap">
+
+<header class="app-header">
+  <div class="badge">🍷 Taller 1 — Caso 2 | Machine Learning</div>
+  <h1>Wine Quality Predictor</h1>
+  <p class="sub-desc">Comparador de modelos predictivos: <strong style="color:#60a5fa">Regresión Lineal Múltiple (OLS)</strong> vs <strong style="color:#c084fc">Regresión Polinómica (Grado 2)</strong><br>Entrenados con 1,143 muestras de vino tinto — Dataset WineQT.csv</p>
   
-  <div class="mode-selector">
-    <button class="mode-btn lin active" id="btnModeLin" onclick="setMode('linear')">📈 Modelo Lineal (OLS)</button>
-    <button class="mode-btn both" id="btnModeBoth" onclick="setMode('both')">⚖️ Comparar Ambos Modelos</button>
-    <button class="mode-btn poly" id="btnModePoly" onclick="setMode('poly')">📐 Modelo Polinómico (Grado 2)</button>
+  <div class="tbar">
+    <button class="tbtn lin active" id="tLin" onclick="setMode('linear')">📈 Solo Lineal</button>
+    <button class="tbtn both" id="tBoth" onclick="setMode('both')">⚖️ Comparar Ambos</button>
+    <button class="tbtn poly" id="tPoly" onclick="setMode('poly')">📐 Solo Polinómico</button>
+  </div>
+  
+  <div class="mprow">
+    <div class="mp ml"><span class="lbl">📈 R² Lineal</span><span class="val">0.3171</span></div>
+    <div class="mp ml"><span class="lbl">RMSE</span><span class="val">0.6165 pts</span></div>
+    <div class="mp ml"><span class="lbl">Terms</span><span class="val">12</span></div>
+    <div class="mp mp2"><span class="lbl">📐 R² Poly</span><span class="val">0.2809</span></div>
+    <div class="mp mp2"><span class="lbl">RMSE</span><span class="val">0.6326 pts</span></div>
+    <div class="mp mp2"><span class="lbl" style="color:var(--gold)">Features</span><span class="val" style="color:var(--gold)">77+1</span></div>
   </div>
 </header>
 
-<!-- CONTENIDO PRINCIPAL -->
-<main class="container">
-  <div class="main-grid">
-    
-    <div style="display:flex; flex-direction:column;">
-      <div class="card">
-        <div class="card-title" id="formTitle">🧪 Propiedades Físico-Químicas del Vino</div>
-        <form id="wineForm">
-          <div class="form-grid" id="formGrid"></div>
-          <button type="submit" class="predict-btn lin-btn" id="btnPredict">🔬 Calcular Calidad Predicha</button>
-        </form>
-      </div>
-
-      <div class="card">
-        <div class="card-title">📚 Guía de Variables Físico-Químicas</div>
-        <div class="info-chips-grid" id="infoGrid"></div>
-      </div>
-
-      <div class="card hidden" id="formulaCard">
-        <div class="card-title" id="formulaTitle">🧮 Desglose Matemático de la Fórmula</div>
-        <div class="formula-box" id="formulaBox"></div>
-        <div class="terms-list" id="termsList"></div>
-      </div>
+<div class="main">
+  <div>
+    <div class="card">
+      <div class="ct cl" id="fmtitle">Propiedades Físico-Químicas del Vino</div>
+      <form id="wineForm">
+        <div class="fgrid" id="fgrid"></div>
+        <button type="submit" class="pbtn pl" id="pbtn">🔬 Predecir con Modelo Lineal</button>
+      </form>
     </div>
-
-    <div>
-      <div class="card">
-        <div class="card-title">📊 Resultado de Predicción (Escala 0 a 10)</div>
-        <div class="results-container" id="resultsContainer">
-          
-          <div class="result-card lin-res" id="resLinCard">
-            <span class="res-tag lin">📈 Regresión Lineal</span>
-            <div id="resLinEmpty" style="color:var(--text-muted); font-size:14px;">
-              Ingresa los parámetros y presiona <strong>Calcular Calidad</strong>
-            </div>
-            <div id="resLinContent" class="hidden">
-              <div class="score-display lin-score" id="scoreLin">0.00</div>
-              <div class="quality-label" id="labelLin">—</div>
-              <div class="res-meta" id="metaLin"></div>
-            </div>
-          </div>
-
-          <div class="result-card poly-res hidden" id="resPolyCard">
-            <span class="res-tag poly">📐 Regresión Polinómica</span>
-            <div id="resPolyEmpty" style="color:var(--text-muted); font-size:14px;">
-              Ingresa los parámetros y presiona <strong>Calcular Calidad</strong>
-            </div>
-            <div id="resPolyContent" class="hidden">
-              <div class="score-display poly-score" id="scorePoly">0.00</div>
-              <div class="quality-label" id="labelPoly">—</div>
-              <div class="res-meta" id="metaPoly"></div>
-            </div>
-          </div>
-
-        </div>
+    
+    <div class="ics" id="ichips"></div>
+    
+    <div class="fc hidden" id="fc" style="margin-top:18px;">
+      <div class="fh2">
+        <div class="fti" id="fti" style="color:#60a5fa;">Desglose de la Fórmula</div>
+        <div class="feq" id="feq"></div>
       </div>
-
-      <div class="card hidden" id="cmpCard">
-        <div class="card-title">⚖️ Comparación Directa de Predicciones</div>
-        <table class="cmp-table">
-          <thead>
-            <tr>
-              <th>Métrica</th>
-              <th style="color:var(--lin-color)">📈 Lineal</th>
-              <th style="color:var(--poly-color)">📐 Polinómico</th>
-              <th>Mejor Opción</th>
-            </tr>
-          </thead>
-          <tbody id="cmpBody"></tbody>
-        </table>
-      </div>
-
-      <div class="card">
-        <div class="card-title">📊 Métricas del Modelo en Dataset WineQT</div>
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="val lin-v">0.3171</div>
-            <div class="lbl">R² Test Lineal</div>
-          </div>
-          <div class="stat-box">
-            <div class="val poly-v">0.2809</div>
-            <div class="lbl">R² Test Poly</div>
-          </div>
-          <div class="stat-box">
-            <div class="val lin-v">0.6165</div>
-            <div class="lbl">RMSE Lineal (pts)</div>
-          </div>
-          <div class="stat-box">
-            <div class="val poly-v">0.6326</div>
-            <div class="lbl">RMSE Poly (pts)</div>
-          </div>
-        </div>
-        <div class="warning-box">
-          <strong>⚠️ Análisis Estadístico de Sobreajuste (Overfitting):</strong><br>
-          El modelo polinómico logra R² = 0.4591 en entrenamiento, pero su rendimiento cae a R² = 0.2809 en prueba. Al expandir a 77 variables sobre 914 muestras, memoriza el ruido. El modelo lineal (R² = 0.3171) es más robusto y fiable.
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title" id="coefTitle">📈 Coeficientes Beta (Estandarizados)</div>
-        <div class="coef-list" id="coefList"></div>
-      </div>
-
+      <div class="tlist" id="tlist"></div>
     </div>
   </div>
-</main>
+
+  <div class="rp">
+    <div class="rw" id="rw">
+      <div class="rc rl" id="rcL">
+        <div class="rem" id="remL"><span class="remico">📈</span>Modelo Lineal OLS<br><small>Presiona Predecir Calidad</small></div>
+        <div class="hidden" id="rcLC" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <span class="mtag mtagl">📈 LINEAL OLS</span>
+          <svg class="gsvg" viewBox="0 0 160 88">
+            <path class="gbg" d="M16,78 A62,62,0,0,1,144,78"/>
+            <path class="gf" id="gfL" d="M16,78 A62,62,0,0,1,144,78"/>
+            <text x="80" y="68" text-anchor="middle" fill="#e0f2fe" font-size="25" font-weight="800" font-family="Inter,sans-serif" id="gnL">0</text>
+            <text x="80" y="84" text-anchor="middle" fill="#7094b8" font-size="9" font-family="Inter,sans-serif">CALIDAD</text>
+          </svg>
+          <div class="rlbl rl" id="rLL">—</div>
+          <div class="qbw"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2)"><span>0</span><span>10</span></div><div class="qbt"><div class="qbf qbfl" id="qbL"></div></div></div>
+          <div class="rmeta" id="rmL"></div>
+        </div>
+      </div>
+      
+      <div class="rc rp2 hidden" id="rcP">
+        <div class="rem" id="remP"><span class="remico">📐</span>Modelo Polinómico<br><small>Presiona Predecir Calidad</small></div>
+        <div class="hidden" id="rcPC" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <span class="mtag mtagp">📐 POLY deg=2</span>
+          <svg class="gsvg" viewBox="0 0 160 88">
+            <path class="gbg" d="M16,78 A62,62,0,0,1,144,78"/>
+            <path class="gf" id="gfP" d="M16,78 A62,62,0,0,1,144,78"/>
+            <text x="80" y="68" text-anchor="middle" fill="#f3e8ff" font-size="25" font-weight="800" font-family="Inter,sans-serif" id="gnP">0</text>
+            <text x="80" y="84" text-anchor="middle" fill="#8b6faa" font-size="9" font-family="Inter,sans-serif">CALIDAD</text>
+          </svg>
+          <div class="rlbl rp2c" id="rLP">—</div>
+          <div class="qbw"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2)"><span>0</span><span>10</span></div><div class="qbt"><div class="qbf qbfp" id="qbP"></div></div></div>
+          <div class="rmeta" id="rmP"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card hidden" id="cmpCard">
+      <div class="ct cm">Comparación de Predicciones</div>
+      <table class="ct2">
+        <thead><tr><th>Métrica</th><th style="color:#60a5fa">📈 Lineal</th><th style="color:#c084fc">📐 Poly</th><th>Ganador</th></tr></thead>
+        <tbody id="cmpBody"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="ct cm">Métricas del Dataset WineQT</div>
+      <div class="sg">
+        <div class="sb"><div class="sv" style="color:#60a5fa">0.3171</div><div class="sl">R² Lineal Test</div></div>
+        <div class="sb"><div class="sv" style="color:#c084fc">0.2809</div><div class="sl">R² Poly Test</div></div>
+        <div class="sb"><div class="sv" style="color:#60a5fa">0.6165</div><div class="sl">RMSE Lineal</div></div>
+        <div class="sb"><div class="sv" style="color:#c084fc">0.6326</div><div class="sl">RMSE Poly</div></div>
+        <div class="sb"><div class="sv" style="color:#60a5fa">12</div><div class="sl">Terms Lineal</div></div>
+        <div class="sb"><div class="sv" style="color:#c084fc">78</div><div class="sl">Terms Poly</div></div>
+      </div>
+      <div class="ovf-warn"><strong>Overfitting detectado:</strong> El modelo polinómico tiene R²_train=0.4591 vs R²_test=0.2809. Con 77 features sobre 914 muestras captura ruido. El modelo lineal es más robusto y generaliza mejor.</div>
+    </div>
+
+    <div class="card">
+      <div class="ct cl" id="coefTitle">Coeficientes Beta (Estandarizados)</div>
+      <div class="coeflist" id="coefList"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-const LIN = {
-  intercept: 5.656455142231951,
-  features: ["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide", "total sulfur dioxide", "density", "pH", "sulphates", "alcohol"],
-  means: {"fixed acidity":8.258096280087534,"volatile acidity":0.5310175054704594,"citric acid":0.2657986870897156,"residual sugar":2.519091903719909,"chlorides":0.08647592997811804,"free sulfur dioxide":15.706783369803064,"total sulfur dioxide":45.838621444201316,"density":0.9966827242888401,"pH":3.314234135667395,"sulphates":0.6556455142231953,"alcohol":10.43918672501822},
-  stds: {"fixed acidity":1.6954260412031144,"volatile acidity":0.17894919917708096,"citric acid":0.19487488821079296,"residual sugar":1.3050102686115965,"chlorides":0.04741058577816551,"free sulfur dioxide":10.231880389516325,"total sulfur dioxide":31.911931715986025,"density":0.0019133479989592098,"pH":0.15281284549872468,"sulphates":0.16605497608869363,"alcohol":1.0741877134665558},
-  coef: {"fixed acidity":0.08704837017354405,"volatile acidity":-0.23912210345232315,"citric acid":-0.06608222229394528,"residual sugar":0.005378510722629178,"chlorides":-0.08564866217749845,"free sulfur dioxide":0.019243729876503263,"total sulfur dioxide":-0.0728567967560595,"density":-0.05865034648595574,"pH":-0.03808651485496864,"sulphates":0.16157815006661094,"alcohol":0.2863634785283069}
+const LIN={
+  intercept:5.656455142231951,
+  features:["fixed acidity","volatile acidity","citric acid","residual sugar","chlorides","free sulfur dioxide","total sulfur dioxide","density","pH","sulphates","alcohol"],
+  means:{"fixed acidity":8.258096280087534,"volatile acidity":0.5310175054704594,"citric acid":0.2657986870897156,"residual sugar":2.519091903719909,"chlorides":0.08647592997811804,"free sulfur dioxide":15.706783369803064,"total sulfur dioxide":45.838621444201316,"density":0.9966827242888401,"pH":3.314234135667395,"sulphates":0.6556455142231953,"alcohol":10.43918672501822},
+  stds:{"fixed acidity":1.6954260412031144,"volatile acidity":0.17894919917708096,"citric acid":0.19487488821079296,"residual sugar":1.3050102686115965,"chlorides":0.04741058577816551,"free sulfur dioxide":10.231880389516325,"total sulfur dioxide":31.911931715986025,"density":0.0019133479989592098,"pH":0.15281284549872468,"sulphates":0.16605497608869363,"alcohol":1.0741877134665558},
+  coef:{"fixed acidity":0.08704837017354405,"volatile acidity":-0.23912210345232315,"citric acid":-0.06608222229394528,"residual sugar":0.005378510722629178,"chlorides":-0.08564866217749845,"free sulfur dioxide":0.019243729876503263,"total sulfur dioxide":-0.0728567967560595,"density":-0.05865034648595574,"pH":-0.03808651485496864,"sulphates":0.16157815006661094,"alcohol":0.2863634785283069}
 };
 
-const POLY = {
-  intercept: 5.754802195873957,
-  features: LIN.features,
-  means: LIN.means,
-  stds: LIN.stds,
-  coef: {"fixed acidity":0.09194370988710356,"volatile acidity":-0.19906239080512825,"citric acid":-0.07946466609196945,"residual sugar":0.05654242044961014,"chlorides":-0.001789732412472607,"free sulfur dioxide":0.10002287869939885,"total sulfur dioxide":-0.1441791415107374,"density":-0.10123266637956477,"pH":-0.04858308163331418,"sulphates":0.24648789996918172,"alcohol":0.2919886944013289,"fixed acidity^2":0.06477969336243167,"fixed acidity volatile acidity":-0.07061253642126337,"fixed acidity citric acid":-0.15734637758958492,"fixed acidity residual sugar":0.035693411906689496,"fixed acidity chlorides":-0.00743363843830018,"fixed acidity free sulfur dioxide":-0.17162668119096589,"fixed acidity total sulfur dioxide":0.150377795106346,"fixed acidity density":-0.1621098506139108,"fixed acidity pH":0.03111963243107217,"fixed acidity sulphates":0.10550161571335628,"fixed acidity alcohol":-0.041010777289298306,"volatile acidity^2":-0.011827575619583558,"volatile acidity citric acid":0.0667184443688086,"volatile acidity residual sugar":-0.09233927898915774,"volatile acidity chlorides":-0.01706884658879715,"volatile acidity free sulfur dioxide":-0.034249182604286416,"volatile acidity total sulfur dioxide":0.11761558238335201,"volatile acidity density":0.05900505937891856,"volatile acidity pH":-0.0665890706503992,"volatile acidity sulphates":-0.0827591846445867,"volatile acidity alcohol":0.06600208460527879,"citric acid^2":0.03123578977675244,"citric acid residual sugar":-0.12457822658872578,"citric acid chlorides":-0.11829514921982397,"citric acid free sulfur dioxide":0.09626741407035684,"citric acid total sulfur dioxide":-0.037697046925923156,"citric acid density":0.16373117520234542,"citric acid pH":-0.21030157727004814,"citric acid sulphates":-0.02998950440666387,"citric acid alcohol":0.1490335999120304,"residual sugar^2":-0.03252893402291615,"residual sugar chlorides":0.10492459286585787,"residual sugar free sulfur dioxide":-0.06953216636925325,"residual sugar total sulfur dioxide":0.1082404200890263,"residual sugar density":0.06698965011729259,"residual sugar pH":-0.057986437018469256,"residual sugar sulphates":-0.04296553210842922,"residual sugar alcohol":0.06994225521942257,"chlorides^2":0.015930482017619277,"chlorides free sulfur dioxide":0.013650635643071375,"chlorides total sulfur dioxide":-0.06671241455069525,"chlorides density":0.06222131007142648,"chlorides pH":0.003846465728573327,"chlorides sulphates":0.04298524182007413,"chlorides alcohol":0.03859854304051927,"free sulfur dioxide^2":-0.043208763109588516,"free sulfur dioxide total sulfur dioxide":-0.013672191317627189,"free sulfur dioxide density":0.1758006551437425,"free sulfur dioxide pH":-0.03168767203064658,"free sulfur dioxide sulphates":-0.13152325141209548,"free sulfur dioxide alcohol":0.16766263367019912,"total sulfur dioxide^2":0.011300513403073156,"total sulfur dioxide density":-0.25247078850245824,"total sulfur dioxide pH":0.07712296916814562,"total sulfur dioxide sulphates":0.12142086856478175,"total sulfur dioxide alcohol":-0.20440469926056748,"density^2":0.06017031065706921,"density pH":0.04870075640954182,"density sulphates":-0.112670074378653,"density alcohol":-0.042636426511268394,"pH^2":-0.0238785315638307,"pH sulphates":0.1036636002333373,"pH alcohol":0.04706145615173661,"sulphates^2":-0.027405652829982002,"sulphates alcohol":0.018844848726351116,"alcohol^2":-0.08935371392356031}
+const POLY={
+  intercept:5.754802195873957,
+  features:LIN.features,
+  means:LIN.means,
+  stds:LIN.stds,
+  coef:{"fixed acidity":0.09194370988710356,"volatile acidity":-0.19906239080512825,"citric acid":-0.07946466609196945,"residual sugar":0.05654242044961014,"chlorides":-0.001789732412472607,"free sulfur dioxide":0.10002287869939885,"total sulfur dioxide":-0.1441791415107374,"density":-0.10123266637956477,"pH":-0.04858308163331418,"sulphates":0.24648789996918172,"alcohol":0.2919886944013289,"fixed acidity^2":0.06477969336243167,"fixed acidity volatile acidity":-0.07061253642126337,"fixed acidity citric acid":-0.15734637758958492,"fixed acidity residual sugar":0.035693411906689496,"fixed acidity chlorides":-0.00743363843830018,"fixed acidity free sulfur dioxide":-0.17162668119096589,"fixed acidity total sulfur dioxide":0.150377795106346,"fixed acidity density":-0.1621098506139108,"fixed acidity pH":0.03111963243107217,"fixed acidity sulphates":0.10550161571335628,"fixed acidity alcohol":-0.041010777289298306,"volatile acidity^2":-0.011827575619583558,"volatile acidity citric acid":0.0667184443688086,"volatile acidity residual sugar":-0.09233927898915774,"volatile acidity chlorides":-0.01706884658879715,"volatile acidity free sulfur dioxide":-0.034249182604286416,"volatile acidity total sulfur dioxide":0.11761558238335201,"volatile acidity density":0.05900505937891856,"volatile acidity pH":-0.0665890706503992,"volatile acidity sulphates":-0.0827591846445867,"volatile acidity alcohol":0.06600208460527879,"citric acid^2":0.03123578977675244,"citric acid residual sugar":-0.12457822658872578,"citric acid chlorides":-0.11829514921982397,"citric acid free sulfur dioxide":0.09626741407035684,"citric acid total sulfur dioxide":-0.037697046925923156,"citric acid density":0.16373117520234542,"citric acid pH":-0.21030157727004814,"citric acid sulphates":-0.02998950440666387,"citric acid alcohol":0.1490335999120304,"residual sugar^2":-0.03252893402291615,"residual sugar chlorides":0.10492459286585787,"residual sugar free sulfur dioxide":-0.06953216636925325,"residual sugar total sulfur dioxide":0.1082404200890263,"residual sugar density":0.06698965011729259,"residual sugar pH":-0.057986437018469256,"residual sugar sulphates":-0.04296553210842922,"residual sugar alcohol":0.06994225521942257,"chlorides^2":0.015930482017619277,"chlorides free sulfur dioxide":0.013650635643071375,"chlorides total sulfur dioxide":-0.06671241455069525,"chlorides density":0.06222131007142648,"chlorides pH":0.003846465728573327,"chlorides sulphates":0.04298524182007413,"chlorides alcohol":0.03859854304051927,"free sulfur dioxide^2":-0.043208763109588516,"free sulfur dioxide total sulfur dioxide":-0.013672191317627189,"free sulfur dioxide density":0.1758006551437425,"free sulfur dioxide pH":-0.03168767203064658,"free sulfur dioxide sulphates":-0.13152325141209548,"free sulfur dioxide alcohol":0.16766263367019912,"total sulfur dioxide^2":0.011300513403073156,"total sulfur dioxide density":-0.25247078850245824,"total sulfur dioxide pH":0.07712296916814562,"total sulfur dioxide sulphates":0.12142086856478175,"total sulfur dioxide alcohol":-0.20440469926056748,"density^2":0.06017031065706921,"density pH":0.04870075640954182,"density sulphates":-0.112670074378653,"density alcohol":-0.042636426511268394,"pH^2":-0.0238785315638307,"pH sulphates":0.1036636002333373,"pH alcohol":0.04706145615173661,"sulphates^2":-0.027405652829982002,"sulphates alcohol":0.018844848726351116,"alcohol^2":-0.08935371392356031}
 };
 
-const FIELDS = [
-  { k: "fixed acidity", l: "Acidez Fija", u: "g/L", mn: 4.6, mx: 15.9, st: 0.1, df: 7.9, ic: "🍋", d: "Ácido tartárico principal. Aporta frescura y estabilidad." },
-  { k: "volatile acidity", l: "Acidez Volátil", u: "g/L", mn: 0.12, mx: 1.58, st: 0.01, df: 0.52, ic: "💨", d: "Ácido acético. Excesos producen sabor avinagrado." },
-  { k: "citric acid", l: "Ácido Cítrico", u: "g/L", mn: 0, mx: 1.0, st: 0.01, df: 0.26, ic: "🍊", d: "Otorga frescura y sabor a frutas." },
-  { k: "residual sugar", l: "Azúcar Residual", u: "g/L", mn: 0.9, mx: 15.5, st: 0.1, df: 2.2, ic: "🍬", d: "Azúcar tras fermentar. Define la dulzura del vino." },
-  { k: "chlorides", l: "Cloruros (Sal)", u: "g/L", mn: 0.012, mx: 0.611, st: 0.001, df: 0.079, ic: "🧂", d: "Sal de NaCl. Niveles altos perjudican el gusto." },
-  { k: "free sulfur dioxide", l: "SO2 Libre", u: "mg/L", mn: 1, mx: 72, st: 1, df: 14, ic: "🛡️", d: "Dióxido de azufre libre. Evita microbios u oxidación." },
-  { k: "total sulfur dioxide", l: "SO2 Total", u: "mg/L", mn: 6, mx: 289, st: 1, df: 38, ic: "🧪", d: "SO2 total. Excesos producen olor desagradable." },
-  { k: "density", l: "Densidad", u: "g/mL", mn: 0.990, mx: 1.004, st: 0.0001, df: 0.9967, ic: "⚖️", d: "Relación peso/volumen vinculada a alcohol y azúcar." },
-  { k: "pH", l: "pH (Acidez Total)", u: "0-14", mn: 2.74, mx: 4.01, st: 0.01, df: 3.31, ic: "🔬", d: "Escala de acidez. Vinos típicos: pH 3.0 a 4.0." },
-  { k: "sulphates", l: "Sulfatos", u: "g/L", mn: 0.33, mx: 2.0, st: 0.01, df: 0.66, ic: "💎", d: "Aditivo de K2SO4. Favorece la conservación y sabor." },
-  { k: "alcohol", l: "Alcohol", u: "% vol", mn: 8.4, mx: 14.9, st: 0.1, df: 10.4, ic: "🥃", d: "Porcentaje de graduación alcohólica. Gran impacto en calidad." }
+const FIELDS=[
+  {k:"fixed acidity",l:"Acidez Fija",u:"g/L",mn:4.6,mx:15.9,st:.1,df:7.9,ic:"🍋",d:"Ácido tartárico principal. Aporta frescura y estabilidad."},
+  {k:"volatile acidity",l:"Acidez Volátil",u:"g/L",mn:.12,mx:1.58,st:.01,df:.52,ic:"💨",d:"Ácido acético. Excesos = sabor avinagrado."},
+  {k:"citric acid",l:"Ácido Cítrico",u:"g/L",mn:0,mx:1,st:.01,df:.26,ic:"🍊",d:"Añade frescura y notas frutales."},
+  {k:"residual sugar",l:"Azúcar Residual",u:"g/L",mn:.9,mx:15.5,st:.1,df:2.2,ic:"🍬",d:"Azúcar post-fermentación. Define dulzura."},
+  {k:"chlorides",l:"Cloruros",u:"g/L",mn:.012,mx:.611,st:.001,df:.079,ic:"🧂",d:"Sal. Excesos afectan negativamente el sabor."},
+  {k:"free sulfur dioxide",l:"SO2 Libre",u:"mg/L",mn:1,mx:72,st:1,df:14,ic:"🛡️",d:"Conservante y antioxidante natural."},
+  {k:"total sulfur dioxide",l:"SO2 Total",u:"mg/L",mn:6,mx:289,st:1,df:38,ic:"🧪",d:"SO2 total. Excesos = olor desagradable."},
+  {k:"density",l:"Densidad",u:"g/mL",mn:.990,mx:1.004,st:.0001,df:.9967,ic:"⚖️",d:"Relacionada con alcohol y azúcar."},
+  {k:"pH",l:"pH",u:"0-14",mn:2.74,mx:4.01,st:.01,df:3.31,ic:"🔬",d:"Acidez total. Vinos: pH 3.0-4.0."},
+  {k:"sulphates",l:"Sulfatos",u:"g/L",mn:.33,mx:2,st:.01,df:.66,ic:"💎",d:"Mejoran conservación y calidad."},
+  {k:"alcohol",l:"Alcohol",u:"%vol",mn:8.4,mx:14.9,st:.1,df:10.4,ic:"🥃",d:"Mayor alcohol tiende a mayor calidad."}
 ];
 
-let mode = 'linear';
+let mode='linear';
 
-function predLin(v) {
-  let y = LIN.intercept;
-  const T = [{ n: "Intercepto β0", c: LIN.intercept }];
-  LIN.features.forEach(f => {
-    const xs = (v[f] - LIN.means[f]) / LIN.stds[f];
-    const c = LIN.coef[f] * xs;
-    y += c;
-    T.push({ n: f, xi: v[f], mu: LIN.means[f], sg: LIN.stds[f], xs, b: LIN.coef[f], c });
+function predLin(v){
+  let y=LIN.intercept;
+  const T=[{n:"B0 Intercepto",c:LIN.intercept}];
+  LIN.features.forEach(f=>{
+    const xs=(v[f]-LIN.means[f])/LIN.stds[f];
+    const c=LIN.coef[f]*xs; y+=c;
+    T.push({n:f,xi:v[f],mu:LIN.means[f],sg:LIN.stds[f],xs,b:LIN.coef[f],c});
   });
-  return { y, T };
+  return{y,T};
 }
 
-function predPoly(v) {
-  const F = POLY.features;
-  const Xsc = F.map(f => (v[f] - POLY.means[f]) / POLY.stds[f]);
-  const EN = [], EV = [];
-  F.forEach((f, i) => { EN.push(f); EV.push(Xsc[i]); });
-  for (let i = 0; i < F.length; i++) {
-    for (let j = i; j < F.length; j++) {
-      EN.push(i === j ? F[i] + "^2" : F[i] + " " + F[j]);
-      EV.push(Xsc[i] * Xsc[j]);
+function predPoly(v){
+  const F=POLY.features;
+  const Xsc=F.map(f=>(v[f]-POLY.means[f])/POLY.stds[f]);
+  const EN=[],EV=[];
+  F.forEach((f,i)=>{EN.push(f);EV.push(Xsc[i]);});
+  for(let i=0;i<F.length;i++)
+    for(let j=i;j<F.length;j++){
+      EN.push(i===j?F[i]+"^2":F[i]+" "+F[j]);
+      EV.push(Xsc[i]*Xsc[j]);
     }
-  }
-  let y = POLY.intercept;
-  const T = [{ n: "Intercepto β0", c: POLY.intercept }];
-  EN.forEach((n, k) => {
-    const b = POLY.coef[n] || 0;
-    const c = b * EV[k];
-    y += c;
-    T.push({ n, v: EV[k], b, c });
-  });
-  return { y, T };
+  let y=POLY.intercept;
+  const T=[{n:"B0 Intercepto",c:POLY.intercept}];
+  EN.forEach((n,k)=>{const b=POLY.coef[n]||0;const c=b*EV[k];y+=c;T.push({n,v:EV[k],b,c});});
+  return{y,T};
 }
 
-function qlbl(s) {
-  const r = Math.round(s);
-  if (r >= 8) return { t: "🏆 Excelente (8-10)", col: "#059669" };
-  if (r >= 7) return { t: "⭐ Muy Bueno (7)", col: "#0284c7" };
-  if (r >= 6) return { t: "✅ Bueno (6)", col: "#2563eb" };
-  if (r >= 5) return { t: "⚪ Regular (5)", col: "#d97706" };
-  if (r >= 4) return { t: "⚠️ Bajo (4)", col: "#ea580c" };
-  return { t: "❌ Deficiente (0-3)", col: "#dc2626" };
+function qlbl(s){
+  const r=Math.round(s);
+  if(r>=8)return{t:"🏆 Excelente",col:"#f0c97a"};
+  if(r>=7)return{t:"⭐ Muy Bueno",col:"#34d399"};
+  if(r>=6)return{t:"✅ Bueno",col:"#6ee7f7"};
+  if(r>=5)return{t:"⚪ Regular",col:"#c9a0b0"};
+  if(r>=4)return{t:"⚠️ Bajo",col:"#fb923c"};
+  return{t:"❌ Deficiente",col:"#f87171"};
+}
+function gc(s){return s>=7?"#34d399":s>=5?"#a78bfa":"#f87171";}
+
+function showRes(y,T,side){
+  const cl=Math.min(10,Math.max(0,y)),p=cl/10,lb=qlbl(y);
+  const isL=side==='lin';
+  const remId=isL?"remL":"remP",rcId=isL?"rcLC":"rcPC";
+  const gfId=isL?"gfL":"gfP",gnId=isL?"gnL":"gnP";
+  const qbId=isL?"qbL":"qbP",rLId=isL?"rLL":"rLP",rmId=isL?"rmL":"rmP";
+  document.getElementById(remId).classList.add("hidden");
+  const rc=document.getElementById(rcId); rc.classList.remove("hidden"); rc.style.display="flex";
+  document.getElementById(gfId).style.strokeDashoffset=244-(p*244);
+  document.getElementById(gfId).style.stroke=gc(cl);
+  document.getElementById(gnId).textContent=cl.toFixed(2);
+  document.getElementById(qbId).style.width=`${p*100}%`;
+  document.getElementById(rLId).textContent=lb.t;
+  document.getElementById(rLId).style.color=lb.col;
+  document.getElementById(rmId).textContent=`Pred: ${y.toFixed(4)} | Redondeado: ${Math.round(cl)}/10`;
 }
 
-function showRes(y, T, side) {
-  const cl = Math.min(10, Math.max(0, y));
-  const lb = qlbl(y);
-  const isL = side === 'lin';
-  
-  const empId = isL ? "resLinEmpty" : "resPolyEmpty";
-  const cntId = isL ? "resLinContent" : "resPolyContent";
-  const scId  = isL ? "scoreLin" : "scorePoly";
-  const lbId  = isL ? "labelLin" : "labelPoly";
-  const mtId  = isL ? "metaLin" : "metaPoly";
-  
-  document.getElementById(empId).classList.add("hidden");
-  const cnt = document.getElementById(cntId);
-  cnt.classList.remove("hidden");
-  
-  document.getElementById(scId).textContent = cl.toFixed(2);
-  document.getElementById(lbId).textContent = lb.t;
-  document.getElementById(lbId).style.color = lb.col;
-  document.getElementById(mtId).textContent = `Predicción cruda: ${y.toFixed(4)} | Redondeado: ${Math.round(cl)} / 10`;
-}
-
-function buildCmp(ly, py) {
+function buildCmp(ly,py){
   document.getElementById("cmpCard").classList.remove("hidden");
-  const b = document.getElementById("cmpBody");
-  b.innerHTML = "";
-  
-  const lc = Math.min(10, Math.max(0, ly));
-  const pc = Math.min(10, Math.max(0, py));
-  const diff = Math.abs(ly - py);
-  
-  const rows = [
-    { l: "Predicción Exacta", lv: ly.toFixed(4), pv: py.toFixed(4), w: null },
-    { l: "Calidad Redondeada", lv: Math.round(lc) + " / 10", pv: Math.round(pc) + " / 10", w: null },
-    { l: "Diferencia Absoluta", lv: "—", pv: "± " + diff.toFixed(4), w: null },
-    { l: "R² en Datos Nuevos (Test)", lv: "0.3171", pv: "0.2809", w: "lin" },
-    { l: "Error Promedio RMSE (Test)", lv: "0.6165 pts", pv: "0.6326 pts", w: "lin" },
-    { l: "N° de Parámetros del Modelo", lv: "12", pv: "78", w: null },
-    { l: "Riesgo de Sobreajuste", lv: "Bajo (Recomendado)", pv: "Alto (Overfitting)", w: "lin" },
+  const b=document.getElementById("cmpBody"); b.innerHTML="";
+  const lc=Math.min(10,Math.max(0,ly)),pc=Math.min(10,Math.max(0,py));
+  const diff=Math.abs(ly-py);
+  const rows=[
+    {l:"Predicción cruda",lv:ly.toFixed(4),pv:py.toFixed(4),w:null},
+    {l:"Calidad (0-10)",lv:lc.toFixed(2),pv:pc.toFixed(2),w:null},
+    {l:"Diferencia entre modelos",lv:"—",pv:"±"+diff.toFixed(4),w:null},
+    {l:"R² en test (Mayor es mejor)",lv:"0.3171",pv:"0.2809",w:"lin"},
+    {l:"RMSE en test (Menor es mejor)",lv:"0.6165",pv:"0.6326",w:"lin"},
+    {l:"N° Parámetros",lv:"12",pv:"78",w:null},
+    {l:"Riesgo Sobreajuste",lv:"Bajo",pv:"Alto",w:"lin"},
   ];
-  
-  rows.forEach(r => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${r.l}</td>
-      <td class="val-lin">${r.lv}</td>
-      <td class="val-poly">${r.pv}</td>
-      <td>${r.w === "lin" ? '<span class="winner-pill lin">📈 Lineal</span>' : r.w === "poly" ? '<span class="winner-pill poly">📐 Poly</span>' : ''}</td>
-    `;
+  rows.forEach(r=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="mlb">${r.l}</td><td class="ml2">${r.lv}</td><td class="mp3">${r.pv}</td><td>${r.w==="lin"?'<span class="wl">Lineal</span>':r.w==="poly"?'<span class="wp">Poly</span>':''}</td>`;
     b.appendChild(tr);
   });
 }
 
-function showFormula(T, m) {
-  const fc = document.getElementById("formulaCard");
-  fc.classList.remove("hidden");
-  
-  const fti = document.getElementById("formulaTitle");
-  const fbox = document.getElementById("formulaBox");
-  const tl = document.getElementById("termsList");
-  
-  if (m === 'linear') {
-    fti.textContent = "🧮 Fórmula Regresión Lineal OLS";
-    fbox.textContent = "ŷ = β0 + Σ β_i * ((X_i - μ_i) / σ_i)
-
-ŷ = " + T.reduce((a, t) => a + t.c, 0).toFixed(6);
+function showFormula(T,m){
+  const fc=document.getElementById("fc"); fc.classList.remove("hidden"); fc.classList.add("fu");
+  const fti=document.getElementById("fti"),feq=document.getElementById("feq"),tl=document.getElementById("tlist");
+  if(m==='linear'){
+    fti.textContent="Desglose Lineal OLS — y = B0 + SUM(Bi * Xi_sc)";
+    fti.style.color="#60a5fa";
+    feq.textContent="y = B0 + B1*(X1-mu1)/s1 + B2*(X2-mu2)/s2 + ... + B11*(X11-mu11)/s11\n\ny_hat = "+T.reduce((a,t)=>a+t.c,0).toFixed(6);
   } else {
-    fti.textContent = "🧮 Fórmula Regresión Polinómica (Grado 2)";
-    fbox.textContent = "Pipeline: StandardScaler -> PolynomialFeatures(77) -> LinearRegression
-
-ŷ = " + T.reduce((a, t) => a + t.c, 0).toFixed(6);
+    fti.textContent="Desglose Polinómico — Pipeline: Scale -> PolyExpand(77) -> LinReg";
+    fti.style.color="#c084fc";
+    feq.textContent="Pipeline: StandardScaler -> PolynomialFeatures(deg=2,no_bias) -> LinearRegression\n77 features: 11 lineales + 55 interacciones + 11 cuadráticos\n\ny_hat = "+T.reduce((a,t)=>a+t.c,0).toFixed(6);
   }
-  
-  tl.innerHTML = "";
-  const topT = m === 'linear' ? T : [T[0], ...T.slice(1).sort((a, b) => Math.abs(b.c) - Math.abs(a.c)).slice(0, 18)];
-  
-  topT.forEach((t, i) => {
-    const row = document.createElement("div");
-    row.className = "term-row";
-    const ip = t.c >= 0;
-    
-    if (i === 0) {
-      row.innerHTML = `
-        <span class="term-name" style="color:var(--gold); font-weight:800;">Intercepto β0</span>
-        <span class="term-val pos">+ ${t.c.toFixed(6)}</span>
-      `;
+  tl.innerHTML="";
+  const topT=m==='linear'?T:[T[0],...T.slice(1).sort((a,b)=>Math.abs(b.c)-Math.abs(a.c)).slice(0,18)];
+  const mx=Math.max(...topT.slice(1).map(t=>Math.abs(t.c)));
+  topT.forEach((t,i)=>{
+    const row=document.createElement("div"); row.className="trow fu"; row.style.animationDelay=`${i*22}ms`;
+    const ip=t.c>=0,p2=mx>0?Math.abs(t.c)/mx*100:0;
+    const col=m==='linear'?ip?"#3b82f6":"#60a5fa":ip?"#a855f7":"#c084fc";
+    if(i===0){
+      row.innerHTML=`<span class="tn" style="color:var(--gold);font-weight:700">B0 Intercepto</span><div class="tb"><div class="tbf" style="width:100%;background:var(--gold)"></div></div><span class="tv pos">${t.c.toFixed(6)}</span>`;
     } else {
-      row.innerHTML = `
-        <span class="term-name" title="${t.n}">${t.n}</span>
-        <span class="term-val ${ip ? 'pos' : 'neg'}">${ip ? '+' : ''}${t.c.toFixed(6)}</span>
-      `;
+      row.innerHTML=`<span class="tn" title="${t.n}">${t.n}</span><div class="tb"><div class="tbf" style="width:${p2}%;background:${col}"></div></div><span class="tv ${ip?'pos':'neg'}">${ip?"+":""}${t.c.toFixed(6)}</span>`;
     }
     tl.appendChild(row);
   });
-  
-  const tot = T.reduce((a, t) => a + t.c, 0);
-  const sr = document.createElement("div");
-  sr.className = "term-row";
-  sr.style.background = "#e2e8f0";
-  sr.innerHTML = `
-    <span class="term-name" style="color:var(--uac-navy); font-weight:800;">SUMA TOTAL ŷ</span>
-    <span class="term-val" style="color:var(--uac-navy); font-weight:800;">${tot.toFixed(6)}</span>
-  `;
+  if(m==='poly'){const n=document.createElement("div");n.style.cssText="font-size:11px;color:var(--text2);margin-top:6px;";n.textContent="Top 18 términos de 77 totales por magnitud de contribución.";tl.appendChild(n);}
+  const sr=document.createElement("div"); sr.className="trow";
+  const tot=T.reduce((a,t)=>a+t.c,0);
+  sr.innerHTML=`<span class="tn" style="color:var(--gold);font-weight:800">TOTAL y_hat</span><div class="tb"></div><span class="tv" style="color:var(--gold);font-weight:800">${tot.toFixed(6)}</span>`;
   tl.appendChild(sr);
 }
 
-function setMode(m) {
-  mode = m;
-  ['Lin', 'Both', 'Poly'].forEach(x => document.getElementById("btnMode" + x).classList.remove('active'));
-  document.getElementById("btnMode" + (m === 'linear' ? "Lin" : m === 'poly' ? "Poly" : "Both")).classList.add('active');
-  
-  const pb = document.getElementById("btnPredict");
-  const resLinCard = document.getElementById("resLinCard");
-  const resPolyCard = document.getElementById("resPolyCard");
-  const resultsContainer = document.getElementById("resultsContainer");
-  const cmpCard = document.getElementById("cmpCard");
-  const coefTitle = document.getElementById("coefTitle");
-  
-  if (m === 'linear') {
-    pb.className = "predict-btn lin-btn";
-    pb.textContent = "🔬 Calcular Calidad con Modelo Lineal";
-    resultsContainer.className = "results-container";
-    resLinCard.classList.remove("hidden");
-    resPolyCard.classList.add("hidden");
-    cmpCard.classList.add("hidden");
-    coefTitle.textContent = "📈 Coeficientes Beta — Modelo Lineal";
-    buildCoefs('linear');
-  } else if (m === 'poly') {
-    pb.className = "predict-btn poly-btn";
-    pb.textContent = "🔬 Calcular Calidad con Modelo Polinómico";
-    resultsContainer.className = "results-container";
-    resLinCard.classList.add("hidden");
-    resPolyCard.classList.remove("hidden");
-    cmpCard.classList.add("hidden");
-    coefTitle.textContent = "📐 Top Coeficientes — Modelo Polinómico";
-    buildCoefs('poly');
+function setMode(m){
+  mode=m;
+  ['Lin','Both','Poly'].forEach(x=>document.getElementById("t"+x).classList.remove('active'));
+  document.getElementById("t"+(m==='linear'?"Lin":m==='poly'?"Poly":"Both")).classList.add('active');
+  const pb=document.getElementById("pbtn"),rw=document.getElementById("rw");
+  const rcL=document.getElementById("rcL"),rcP=document.getElementById("rcP");
+  const cc=document.getElementById("cmpCard"),ct=document.getElementById("coefTitle"),ft=document.getElementById("fmtitle");
+  ct.className="ct"; ft.className="ct";
+  if(m==='linear'){
+    pb.className="pbtn pl"; pb.textContent="Predecir con Modelo Lineal";
+    rw.className="rw"; rcP.classList.add("hidden"); rcL.classList.remove("hidden");
+    ct.classList.add("cl"); ct.textContent="Coeficientes Beta — Modelo Lineal";
+    ft.classList.add("cl"); cc.classList.add("hidden"); buildCoefs('linear');
+  } else if(m==='poly'){
+    pb.className="pbtn pp"; pb.textContent="Predecir con Modelo Polinómico";
+    rw.className="rw"; rcL.classList.add("hidden"); rcP.classList.remove("hidden");
+    ct.classList.add("cp"); ct.textContent="Top Coeficientes — Poly (deg=2)";
+    ft.classList.add("cp"); cc.classList.add("hidden"); buildCoefs('poly');
   } else {
-    pb.className = "predict-btn both-btn";
-    pb.textContent = "⚖️ Calcular y Comparar Ambos Modelos";
-    resultsContainer.className = "results-container both-mode";
-    resLinCard.classList.remove("hidden");
-    resPolyCard.classList.remove("hidden");
-    buildCoefs('both');
+    pb.className="pbtn pb"; pb.textContent="Predecir y Comparar Ambos Modelos";
+    rw.className="rw bm"; rcL.classList.remove("hidden"); rcP.classList.remove("hidden");
+    ct.classList.add("cm"); ct.textContent="Coeficientes Comparados";
+    ft.classList.add("cm"); buildCoefs('both');
   }
 }
 
-function buildCoefs(m) {
-  const l = document.getElementById("coefList");
-  l.innerHTML = "";
-  
-  if (m === 'linear' || m === 'both') {
-    const mx = Math.max(...LIN.features.map(f => Math.abs(LIN.coef[f])));
-    LIN.features.forEach(f => {
-      const c = LIN.coef[f];
-      const p2 = Math.abs(c) / mx * 100;
-      const fd = FIELDS.find(x => x.k === f);
-      
-      const row = document.createElement("div");
-      row.className = "coef-item";
-      row.innerHTML = `
-        <span class="coef-name" title="${f}">${fd ? fd.ic + " " + fd.l : f}</span>
-        <div class="coef-bar-track">
-          <div class="coef-bar-fill" style="width:${p2}%; background:${c >= 0 ? 'var(--lin-color)' : '#93c5fd'};"></div>
-        </div>
-        <span class="coef-val" style="color:${c >= 0 ? 'var(--green)' : 'var(--red)'}">${c >= 0 ? '+' : ''}${c.toFixed(4)}</span>
-      `;
+function buildCoefs(m){
+  const l=document.getElementById("coefList"); l.innerHTML="";
+  if(m==='linear'||m==='both'){
+    const mx=Math.max(...LIN.features.map(f=>Math.abs(LIN.coef[f])));
+    LIN.features.forEach(f=>{
+      const c=LIN.coef[f],p2=Math.abs(c)/mx*100;
+      const fd=FIELDS.find(x=>x.k===f);
+      const row=document.createElement("div"); row.className="cr";
+      row.innerHTML=`<span class="cn" title="${f}">${fd?fd.ic+" "+fd.l:f}</span><div class="cb"><div class="cbf" style="width:${p2}%;background:${c>=0?"#3b82f6":"#60a5fa"}"></div></div><span class="cv ${c>=0?'pos':'neg'}">${c>=0?"+":""}${c.toFixed(4)}</span>`;
+      if(m==='both'){const pc=POLY.coef[f]||0;row.innerHTML+=`<span class="cv ${pc>=0?'pos':'neg'}" style="color:${pc>=0?'#a855f7':'#c084fc'}">${pc>=0?"+":""}${pc.toFixed(4)}</span>`;}
       l.appendChild(row);
     });
+    if(m==='both'){const n=document.createElement("div");n.style.cssText="font-size:11px;color:var(--text2);margin-top:6px;display:flex;gap:12px;";n.innerHTML='<span style="color:#60a5fa">▌ Lineal</span><span style="color:#c084fc">▌ Polinómico (parte lineal)</span>';l.appendChild(n);}
   } else {
-    const pc = Object.entries(POLY.coef).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, 15);
-    const mx = Math.max(...pc.map(([, v]) => Math.abs(v)));
-    
-    pc.forEach(([n, c]) => {
-      const p2 = Math.abs(c) / mx * 100;
-      const row = document.createElement("div");
-      row.className = "coef-item";
-      row.innerHTML = `
-        <span class="coef-name" title="${n}">${n}</span>
-        <div class="coef-bar-track">
-          <div class="coef-bar-fill" style="width:${p2}%; background:${c >= 0 ? 'var(--poly-color)' : '#c4b5fd'};"></div>
-        </div>
-        <span class="coef-val" style="color:${c >= 0 ? 'var(--green)' : 'var(--red)'}">${c >= 0 ? '+' : ''}${c.toFixed(4)}</span>
-      `;
+    const pc=Object.entries(POLY.coef).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).slice(0,15);
+    const mx=Math.max(...pc.map(([,v])=>Math.abs(v)));
+    pc.forEach(([n,c])=>{
+      const p2=Math.abs(c)/mx*100,row=document.createElement("div"); row.className="cr";
+      const isQ=n.includes("^2"),isI=n.split(" ").length>1&&!isQ;
+      row.innerHTML=`<span class="cn" title="${n}">${isQ?"🔲":isI?"🔗":"📌"} ${n}</span><div class="cb"><div class="cbf" style="width:${p2}%;background:${c>=0?"#a855f7":"#c084fc"}"></div></div><span class="cv ${c>=0?'pos':'neg'}">${c>=0?"+":""}${c.toFixed(4)}</span>`;
       l.appendChild(row);
     });
+    const n=document.createElement("div");n.style.cssText="font-size:11px;color:var(--text2);margin-top:6px;";n.innerHTML="Top 15 de 77 coefs. 🔲=cuadrático 🔗=interacción 📌=lineal";l.appendChild(n);
   }
 }
 
-function buildForm() {
-  const g = document.getElementById("formGrid");
-  FIELDS.forEach(f => {
-    const id = f.k.replace(/ /g, "_");
-    const d = document.createElement("div");
-    d.className = "field";
-    d.innerHTML = `
-      <label for="i_${id}">
-        ${f.l}
-        <span class="unit-tag">${f.u}</span>
-      </label>
-      <input type="number" id="i_${id}" name="${f.k}" min="${f.mn}" max="${f.mx}" step="${f.st}" value="${f.df}" required />
-      <input type="range" id="r_${id}" min="${f.mn}" max="${f.mx}" step="${f.st}" value="${f.df}" />
-      <span class="field-hint">Rango: ${f.mn} – ${f.mx}</span>
-    `;
+function buildForm(){
+  const g=document.getElementById("fgrid");
+  FIELDS.forEach(f=>{
+    const id=f.k.replace(/ /g,"_");
+    const d=document.createElement("div"); d.className="field";
+    d.innerHTML=`<label for="i_${id}">${f.l}<span class="fu">${f.u}</span></label><input type="number" id="i_${id}" name="${f.k}" min="${f.mn}" max="${f.mx}" step="${f.st}" value="${f.df}" required/><input type="range" id="r_${id}" min="${f.mn}" max="${f.mx}" step="${f.st}" value="${f.df}"/><span class="fh">Rango: ${f.mn}–${f.mx} | Media: ${LIN.means[f.k].toFixed(3)}</span>`;
     g.appendChild(d);
-    
-    const inp = document.getElementById(`i_${id}`);
-    const rng = document.getElementById(`r_${id}`);
-    inp.addEventListener("input", () => rng.value = inp.value);
-    rng.addEventListener("input", () => inp.value = rng.value);
+    const inp=document.getElementById(`i_${id}`),rng=document.getElementById(`r_${id}`);
+    inp.addEventListener("input",()=>rng.value=inp.value);
+    rng.addEventListener("input",()=>inp.value=rng.value);
   });
 }
 
-function buildInfo() {
-  const g = document.getElementById("infoGrid");
-  FIELDS.forEach(f => {
-    const c = document.createElement("div");
-    c.className = "info-chip";
-    c.innerHTML = `
-      <div class="icon">${f.ic}</div>
-      <div class="title">${f.l}</div>
-      <div class="desc">${f.d}</div>
-    `;
-    g.appendChild(c);
+function buildChips(){
+  const s=document.getElementById("ichips");
+  FIELDS.forEach(f=>{
+    const c=document.createElement("div"); c.className="ic";
+    c.innerHTML=`<div class="ii">${f.ic}</div><div class="in">${f.l}</div><div class="id">${f.d}</div>`;
+    s.appendChild(c);
   });
 }
 
-document.getElementById("wineForm").addEventListener("submit", e => {
+function showToast(msg){
+  const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3200);
+}
+
+document.getElementById("wineForm").addEventListener("submit",e=>{
   e.preventDefault();
-  const v = {};
-  FIELDS.forEach(f => { v[f.k] = parseFloat(document.getElementById(`i_${f.k.replace(/ /g, "_")}`).value); });
-  
-  if (mode === 'linear') {
-    const { y, T } = predLin(v);
-    showRes(y, T, 'lin');
-    showFormula(T, 'linear');
-  } else if (mode === 'poly') {
-    const { y, T } = predPoly(v);
-    showRes(y, T, 'poly');
-    showFormula(T, 'poly');
-  } else {
-    const { y: ly, T: lT } = predLin(v);
-    const { y: py, T: pT } = predPoly(v);
-    showRes(ly, lT, 'lin');
-    showRes(py, pT, 'poly');
-    buildCmp(ly, py);
-    showFormula(lT, 'linear');
-  }
+  const v={};
+  FIELDS.forEach(f=>{v[f.k]=parseFloat(document.getElementById(`i_${f.k.replace(/ /g,"_")}`).value);});
+  document.getElementById("pbtn").textContent="Calculando...";
+  setTimeout(()=>{
+    if(mode==='linear'){
+      const{y,T}=predLin(v);
+      showRes(y,T,'lin'); showFormula(T,'linear');
+      showToast("Lineal: "+y.toFixed(2)+" / 10");
+    } else if(mode==='poly'){
+      const{y,T}=predPoly(v);
+      showRes(y,T,'poly'); showFormula(T,'poly');
+      showToast("Polinómico: "+y.toFixed(2)+" / 10");
+    } else {
+      const{y:ly,T:lT}=predLin(v);
+      const{y:py,T:pT}=predPoly(v);
+      showRes(ly,lT,'lin'); showRes(py,pT,'poly');
+      buildCmp(ly,py); showFormula(lT,'linear');
+      showToast("Lineal: "+ly.toFixed(2)+" | Poly: "+py.toFixed(2));
+    }
+    document.getElementById("pbtn").textContent=
+      mode==='linear'?"Predecir con Modelo Lineal":
+      mode==='poly'?"Predecir con Modelo Polinómico":"Predecir y Comparar Ambos Modelos";
+  },280);
 });
 
-buildForm();
-buildInfo();
-setMode('linear');
+function initPts(){
+  const c=document.getElementById("pts");
+  for(let i=0;i<18;i++){
+    const p=document.createElement("div"); p.className="pt";
+    const sz=Math.random()*5+1.5,bl=Math.random()>.5;
+    p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:radial-gradient(circle,${bl?"rgba(96,165,250,.6)":"rgba(192,132,252,.6)"},transparent);animation-duration:${Math.random()*13+7}s;animation-delay:${Math.random()*11}s;`;
+    c.appendChild(p);
+  }
+}
+buildForm(); buildChips(); buildCoefs('linear'); initPts(); setMode('linear');
 </script>
 </body>
 </html>
