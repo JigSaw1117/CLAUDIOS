@@ -45,11 +45,11 @@ body {
 .uac-navbar {
   background: var(--uac-dark);
   color: white;
-  padding: 12px 28px;
+  padding: 10px 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 14px rgba(10,37,64,0.15);
+  box-shadow: 0 4px 14px rgba(10,37,64,0.25);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -57,7 +57,14 @@ body {
 .uac-nav-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+}
+.uac-nav-left img {
+  height: 52px;
+  width: auto;
+  border-radius: 6px;
+  background: white;
+  padding: 3px;
 }
 .uac-nav-links {
   display: flex;
@@ -74,7 +81,7 @@ body {
   transition: all 0.2s;
 }
 .uac-nav-links a:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.12);
   color: white;
 }
 .uac-nav-links a.active {
@@ -83,37 +90,40 @@ body {
   font-weight: 700;
 }
 
-/* HEADER DE LA PÁGINA */
+/* HEADER CON FOTO REAL DE FONDO (FONDO.JPG) */
 header.page-header {
-  background: linear-gradient(135deg, var(--uac-dark) 0%, var(--uac-navy) 100%);
+  background: linear-gradient(135deg, rgba(10, 37, 64, 0.88) 0%, rgba(13, 60, 108, 0.82) 100%), url('fondo.jpg') center/cover no-repeat;
   color: white;
-  padding: 40px 28px;
+  padding: 50px 28px;
   text-align: center;
   border-bottom: 4px solid var(--uac-cyan);
 }
 .header-badge {
   display: inline-block;
-  background: rgba(0,180,216,0.18);
-  border: 1px solid rgba(0,180,216,0.4);
+  background: rgba(0,180,216,0.25);
+  border: 1px solid rgba(0,180,216,0.5);
   color: #38bdf8;
   padding: 6px 16px;
   border-radius: 100px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 1px;
   margin-bottom: 14px;
+  backdrop-filter: blur(4px);
 }
 header.page-header h1 {
   font-size: 2.2rem;
   font-weight: 800;
   margin-bottom: 10px;
   color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 header.page-header p {
   font-size: 1.05rem;
-  color: #94a3b8;
+  color: #f1f5f9;
   max-width: 750px;
   margin: 0 auto 24px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
 
 /* BOTONES DE MODO DE MODELO */
@@ -124,8 +134,8 @@ header.page-header p {
   margin-top: 10px;
 }
 .mode-btn {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(10, 37, 64, 0.85);
+  border: 1px solid rgba(255,255,255,0.25);
   color: #e2e8f0;
   padding: 10px 24px;
   border-radius: 100px;
@@ -134,9 +144,10 @@ header.page-header p {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
+  backdrop-filter: blur(4px);
 }
 .mode-btn:hover {
-  background: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.2);
   color: white;
 }
 .mode-btn.active.lin {
@@ -532,31 +543,23 @@ input[type=range] {
 <!-- NAVBAR INSTITUCIONAL UAC -->
 <header class="uac-navbar">
   <div class="uac-nav-left">
-    <a href="../index.html" style="text-decoration:none; display:flex; align-items:center; gap:10px;">
-      <svg class="uac-logo-img" viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg" style="height:44px; width:auto;">
-  <!-- Emblem background -->
-  <g transform="translate(5, 5)">
-    <path d="M 25 0 C 38 0, 50 10, 50 25 C 50 40, 38 50, 25 50 C 12 50, 0 40, 0 25 C 0 10, 12 0, 25 0 Z" fill="#0d3c6c"/>
-    <!-- Condor / Eagle Icon -->
-    <path d="M 25 8 L 30 18 L 42 16 L 33 25 L 38 37 L 25 30 L 12 37 L 17 25 L 8 16 L 20 18 Z" fill="#00b4d8"/>
-    <circle cx="25" cy="23" r="4" fill="#ffffff"/>
-  </g>
-  <!-- Text -->
-  <text x="65" y="24" fill="#ffffff" font-family="'Inter', sans-serif" font-weight="800" font-size="14" letter-spacing="0.5">UNIVERSIDAD ANDINA</text>
-  <text x="65" y="40" fill="#00b4d8" font-family="'Inter', sans-serif" font-weight="700" font-size="12" letter-spacing="1.5">DEL CUSCO</text>
-  <text x="65" y="51" fill="#a0c4e2" font-family="'Inter', sans-serif" font-weight="500" font-size="8" letter-spacing="0.8">Acreditada Internacionalmente</text>
-</svg>
+    <a href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:12px;">
+      <img src="logo-uac.jpg" alt="Universidad Andina del Cusco" />
+      <div style="display:flex; flex-direction:column; text-align:left; line-height:1.15;">
+        <span style="font-size:15px; font-weight:800; color:#ffffff;">Universidad Andina del Cusco</span>
+        <span style="font-size:12px; font-weight:700; color:#00b4d8;">Ingeniería de Sistemas — IA</span>
+      </div>
     </a>
   </div>
   <div class="uac-nav-links">
-    <a href="../index.html">🏠 Portada Principal</a>
-    <a href="../CASO_1/index.html">📌 Caso 1</a>
-    <a href="../CASO_2/index.html" class="active">🍷 Caso 2 (Vinos)</a>
-    <a href="../CASO_3/index.html">📈 Caso 3</a>
+    <a href="index.html">🏠 Portada Principal</a>
+    <a href="CASO_1/index.html">📌 Caso 1</a>
+    <a href="CASO_2/index.html" class="active">🍷 Caso 2 (Vinos)</a>
+    <a href="CASO_3/index.html">📈 Caso 3</a>
   </div>
 </header>
 
-<!-- HEADER DE LA PÁGINA -->
+<!-- HEADER DE LA PÁGINA CON FOTO REAL DE FONDO (FONDO.JPG) -->
 <header class="page-header">
   <div class="header-badge">UNIVERSIDAD ANDINA DEL CUSCO — INTELIGENCIA ARTIFICIAL</div>
   <h1>Predictor de Calidad del Vino Tinto</h1>
@@ -573,8 +576,7 @@ input[type=range] {
 <main class="container">
   <div class="main-grid">
     
-    <!-- COLUMNA IZQUIERDA: FORMULARIO -->
-    <div>
+    <div style="display:flex; flex-direction:column;">
       <div class="card">
         <div class="card-title" id="formTitle">🧪 Propiedades Físico-Químicas del Vino</div>
         <form id="wineForm">
@@ -583,13 +585,11 @@ input[type=range] {
         </form>
       </div>
 
-      <!-- DESCRIPCIÓN DE VARIABLES -->
       <div class="card">
         <div class="card-title">📚 Guía de Variables Físico-Químicas</div>
         <div class="info-chips-grid" id="infoGrid"></div>
       </div>
 
-      <!-- FÓRMULA PASO A PASO -->
       <div class="card hidden" id="formulaCard">
         <div class="card-title" id="formulaTitle">🧮 Desglose Matemático de la Fórmula</div>
         <div class="formula-box" id="formulaBox"></div>
@@ -597,14 +597,11 @@ input[type=range] {
       </div>
     </div>
 
-    <!-- COLUMNA DERECHA: RESULTADOS Y MÉTRICAS -->
     <div>
-      <!-- RESULTADOS PREDICCIÓN -->
       <div class="card">
         <div class="card-title">📊 Resultado de Predicción (Escala 0 a 10)</div>
         <div class="results-container" id="resultsContainer">
           
-          <!-- RESULTADO LINEAL -->
           <div class="result-card lin-res" id="resLinCard">
             <span class="res-tag lin">📈 Regresión Lineal</span>
             <div id="resLinEmpty" style="color:var(--text-muted); font-size:14px;">
@@ -617,7 +614,6 @@ input[type=range] {
             </div>
           </div>
 
-          <!-- RESULTADO POLINÓMICO -->
           <div class="result-card poly-res hidden" id="resPolyCard">
             <span class="res-tag poly">📐 Regresión Polinómica</span>
             <div id="resPolyEmpty" style="color:var(--text-muted); font-size:14px;">
@@ -633,7 +629,6 @@ input[type=range] {
         </div>
       </div>
 
-      <!-- TABLA COMPARATIVA -->
       <div class="card hidden" id="cmpCard">
         <div class="card-title">⚖️ Comparación Directa de Predicciones</div>
         <table class="cmp-table">
@@ -649,7 +644,6 @@ input[type=range] {
         </table>
       </div>
 
-      <!-- MÉTRICAS DEL DATASET -->
       <div class="card">
         <div class="card-title">📊 Métricas del Modelo en Dataset WineQT</div>
         <div class="stats-grid">
@@ -676,7 +670,6 @@ input[type=range] {
         </div>
       </div>
 
-      <!-- COEFICIENTES BARS -->
       <div class="card">
         <div class="card-title" id="coefTitle">📈 Coeficientes Beta (Estandarizados)</div>
         <div class="coef-list" id="coefList"></div>
@@ -687,9 +680,6 @@ input[type=range] {
 </main>
 
 <script>
-/**
- * PARÁMETROS MODELO 1: REGRESIÓN LINEAL MÚLTIPLE (OLS)
- */
 const LIN = {
   intercept: 5.656455142231951,
   features: ["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide", "total sulfur dioxide", "density", "pH", "sulphates", "alcohol"],
@@ -698,9 +688,6 @@ const LIN = {
   coef: {"fixed acidity":0.08704837017354405,"volatile acidity":-0.23912210345232315,"citric acid":-0.06608222229394528,"residual sugar":0.005378510722629178,"chlorides":-0.08564866217749845,"free sulfur dioxide":0.019243729876503263,"total sulfur dioxide":-0.0728567967560595,"density":-0.05865034648595574,"pH":-0.03808651485496864,"sulphates":0.16157815006661094,"alcohol":0.2863634785283069}
 };
 
-/**
- * PARÁMETROS MODELO 2: REGRESIÓN POLINÓMICA (GRADO 2)
- */
 const POLY = {
   intercept: 5.754802195873957,
   features: LIN.features,

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 260" width="260" height="260">
+  <!-- OFFICIAL UAC NAVY COLOR -->
+  <g fill="#0b3c6d">
+    <!-- CONDOR EMBLEM FROM OFFICIAL LOGO -->
+    <g transform="translate(130, 75) scale(1.15)">
+      <!-- Head & Beak -->
+      <path d="M 0,-38 C -4,-38 -7,-34 -6,-29 C -5,-24 -1,-20 0,-15 C 1,-20 5,-24 6,-29 C 7,-34 4,-38 0,-38 Z"/>
+      <path d="M 0,-34 C 3,-34 6,-32 8,-29 L 12,-30 L 9,-26 L 6,-28 C 3,-25 0,-22 0,-22 C 0,-22 -3,-25 -6,-28 L -9,-26 L -12,-30 L -8,-29 C -6,-32 -3,-34 0,-34 Z"/>
+      <!-- Body & Neck Collar -->
+      <path d="M -8,-16 C -12,-20 -20,-24 -28,-22 C -36,-20 -42,-14 -46,-6 C -50,2 -52,12 -50,22 L -38,18 C -40,10 -38,3 -34,-2 C -30,-7 -24,-10 -18,-11 L -12,2 L 0,8 L 12,2 L 18,-11 C 24,-10 30,-7 34,-2 C 38,3 40,10 38,18 L 50,22 C 52,12 50,2 -46,-6 C 42,-14 36,-20 28,-22 C 20,-24 12,-20 8,-16 Z"/>
+      <!-- Wings (Upward Spread Feathers) -->
+      <path d="M -12,-10 L -42,-45 C -44,-47 -48,-46 -47,-43 L -36,-22 L -50,-42 C -52,-44 -56,-43 -55,-40 L -42,-18 L -56,-36 C -58,-38 -62,-37 -61,-34 L -46,-12 L -58,-28 C -60,-30 -64,-29 -63,-26 L -48,-5 L -56,-16 C -58,-18 -62,-17 -61,-14 L -44,8 C -32,22 -18,32 0,35 C 18,32 32,22 44,8 L 61,-14 C 62,-17 58,-18 56,-16 L 48,-5 C 64,-29 60,-30 58,-28 L 46,-12 C 62,-37 58,-38 56,-36 L 42,-18 C 55,-40 52,-44 50,-42 L 36,-22 C 47,-43 44,-47 42,-45 L 12,-10 Z"/>
+      <!-- Tail Feathers -->
+      <path d="M -22,25 L -28,45 L -18,48 L -14,56 L -6,52 L 0,60 L 6,52 L 14,56 L 18,48 L 28,45 L 22,25 C 14,32 0,35 -22,25 Z"/>
+    </g>
+
+    <!-- OFFICIAL TYPOGRAPHY -->
+    <text x="130" y="172" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-weight="800" font-size="21" text-anchor="middle" letter-spacing="-0.2">Universidad</text>
+    <text x="130" y="197" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-weight="800" font-size="21" text-anchor="middle" letter-spacing="-0.2">Andina</text>
+    <text x="130" y="222" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-weight="800" font-size="21" text-anchor="middle" letter-spacing="-0.2">del Cusco</text>
+  </g>
+</svg>

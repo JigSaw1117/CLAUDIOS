@@ -1,4 +1,11 @@
-<!DOCTYPE html>
+"""
+Generador de CASO_2/index.html y CASO_2/wine_predictor_v2.html con las imágenes reales logo-uac.jpg y fondo.jpg
+"""
+
+def get_wine_html(is_root_caso=False):
+    img_prefix = "" if is_root_caso else "../"
+    
+    html = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
@@ -8,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
 <style>
-:root {
+:root {{
   --uac-dark: #0a2540;
   --uac-navy: #0d3c6c;
   --uac-blue: #0077b6;
@@ -30,19 +37,19 @@
   --gold: #d97706;
   --green: #059669;
   --red: #dc2626;
-}
+}}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
+* {{ box-sizing: border-box; margin: 0; padding: 0; }}
+body {{
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: #f8fafc;
   color: var(--text-primary);
   line-height: 1.5;
   font-size: 15px;
-}
+}}
 
 /* NAVBAR INSTITUCIONAL UAC */
-.uac-navbar {
+.uac-navbar {{
   background: var(--uac-dark);
   color: white;
   padding: 10px 28px;
@@ -53,25 +60,25 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-}
-.uac-nav-left {
+}}
+.uac-nav-left {{
   display: flex;
   align-items: center;
   gap: 14px;
-}
-.uac-nav-left img {
+}}
+.uac-nav-left img {{
   height: 52px;
   width: auto;
   border-radius: 6px;
   background: white;
   padding: 3px;
-}
-.uac-nav-links {
+}}
+.uac-nav-links {{
   display: flex;
   gap: 12px;
   align-items: center;
-}
-.uac-nav-links a {
+}}
+.uac-nav-links a {{
   color: #cbd5e1;
   text-decoration: none;
   font-weight: 600;
@@ -79,26 +86,26 @@ body {
   padding: 8px 14px;
   border-radius: 8px;
   transition: all 0.2s;
-}
-.uac-nav-links a:hover {
+}}
+.uac-nav-links a:hover {{
   background: rgba(255,255,255,0.12);
   color: white;
-}
-.uac-nav-links a.active {
+}}
+.uac-nav-links a.active {{
   background: var(--uac-cyan);
   color: var(--uac-dark);
   font-weight: 700;
-}
+}}
 
 /* HEADER CON FOTO REAL DE FONDO (FONDO.JPG) */
-header.page-header {
-  background: linear-gradient(135deg, rgba(10, 37, 64, 0.88) 0%, rgba(13, 60, 108, 0.82) 100%), url('fondo.jpg') center/cover no-repeat;
+header.page-header {{
+  background: linear-gradient(135deg, rgba(10, 37, 64, 0.88) 0%, rgba(13, 60, 108, 0.82) 100%), url('{img_prefix}fondo.jpg') center/cover no-repeat;
   color: white;
   padding: 50px 28px;
   text-align: center;
   border-bottom: 4px solid var(--uac-cyan);
-}
-.header-badge {
+}}
+.header-badge {{
   display: inline-block;
   background: rgba(0,180,216,0.25);
   border: 1px solid rgba(0,180,216,0.5);
@@ -110,30 +117,30 @@ header.page-header {
   letter-spacing: 1px;
   margin-bottom: 14px;
   backdrop-filter: blur(4px);
-}
-header.page-header h1 {
+}}
+header.page-header h1 {{
   font-size: 2.2rem;
   font-weight: 800;
   margin-bottom: 10px;
   color: #ffffff;
   text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-}
-header.page-header p {
+}}
+header.page-header p {{
   font-size: 1.05rem;
   color: #f1f5f9;
   max-width: 750px;
   margin: 0 auto 24px;
   text-shadow: 0 1px 4px rgba(0,0,0,0.4);
-}
+}}
 
 /* BOTONES DE MODO DE MODELO */
-.mode-selector {
+.mode-selector {{
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-top: 10px;
-}
-.mode-btn {
+}}
+.mode-btn {{
   background: rgba(10, 37, 64, 0.85);
   border: 1px solid rgba(255,255,255,0.25);
   color: #e2e8f0;
@@ -145,56 +152,56 @@ header.page-header p {
   cursor: pointer;
   transition: all 0.2s;
   backdrop-filter: blur(4px);
-}
-.mode-btn:hover {
+}}
+.mode-btn:hover {{
   background: rgba(255,255,255,0.2);
   color: white;
-}
-.mode-btn.active.lin {
+}}
+.mode-btn.active.lin {{
   background: var(--lin-color);
   border-color: var(--lin-color);
   color: white;
   box-shadow: 0 4px 12px rgba(37,99,235,0.35);
-}
-.mode-btn.active.poly {
+}}
+.mode-btn.active.poly {{
   background: var(--poly-color);
   border-color: var(--poly-color);
   color: white;
   box-shadow: 0 4px 12px rgba(124,58,237,0.35);
-}
-.mode-btn.active.both {
+}}
+.mode-btn.active.both {{
   background: linear-gradient(90deg, var(--lin-color), var(--poly-color));
   border-color: transparent;
   color: white;
   box-shadow: 0 4px 14px rgba(124,58,237,0.4);
-}
+}}
 
 /* LAYOUT GENERAL */
-.container {
+.container {{
   max-width: 1280px;
   margin: 36px auto;
   padding: 0 24px;
-}
-.main-grid {
+}}
+.main-grid {{
   display: grid;
   grid-template-columns: 1fr 440px;
   gap: 28px;
   align-items: start;
-}
-@media (max-width: 980px) {
-  .main-grid { grid-template-columns: 1fr; }
-}
+}}
+@media (max-width: 980px) {{
+  .main-grid {{ grid-template-columns: 1fr; }}
+}}
 
 /* CARDS */
-.card {
+.card {{
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 26px;
   box-shadow: 0 4px 16px rgba(15,23,42,0.04);
   margin-bottom: 24px;
-}
-.card-title {
+}}
+.card-title {{
   font-size: 16px;
   font-weight: 800;
   color: var(--uac-navy);
@@ -204,32 +211,32 @@ header.page-header p {
   gap: 10px;
   border-bottom: 2px solid #f1f5f9;
   padding-bottom: 10px;
-}
+}}
 
 /* FORMULARIO */
-.form-grid {
+.form-grid {{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 18px;
-}
-.field {
+}}
+.field {{
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-.field label {
+}}
+.field label {{
   font-size: 13px;
   font-weight: 700;
   color: var(--text-secondary);
   display: flex;
   justify-content: space-between;
-}
-.unit-tag {
+}}
+.unit-tag {{
   font-size: 12px;
   color: var(--text-muted);
   font-weight: 500;
-}
-.field input[type=number] {
+}}
+.field input[type=number] {{
   width: 100%;
   background: #f8fafc;
   border: 1.5px solid #cbd5e1;
@@ -240,28 +247,28 @@ header.page-header p {
   font-weight: 700;
   color: var(--text-primary);
   transition: border-color 0.2s;
-}
-.field input[type=number]:focus {
+}}
+.field input[type=number]:focus {{
   outline: none;
   border-color: var(--uac-blue);
   background: white;
-}
-input[type=range] {
+}}
+input[type=range] {{
   width: 100%;
   height: 6px;
   background: #e2e8f0;
   border-radius: 4px;
   cursor: pointer;
   accent-color: var(--uac-blue);
-}
-.field-hint {
+}}
+.field-hint {{
   font-size: 12px;
   color: var(--text-muted);
   font-weight: 500;
-}
+}}
 
 /* BOTÓN DE PREDICCIÓN */
-.predict-btn {
+.predict-btn {{
   width: 100%;
   margin-top: 24px;
   padding: 16px;
@@ -273,36 +280,36 @@ input[type=range] {
   color: white;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
-}
-.predict-btn.lin-btn {
+}}
+.predict-btn.lin-btn {{
   background: var(--lin-color);
   box-shadow: 0 4px 16px rgba(37,99,235,0.3);
-}
-.predict-btn.poly-btn {
+}}
+.predict-btn.poly-btn {{
   background: var(--poly-color);
   box-shadow: 0 4px 16px rgba(124,58,237,0.3);
-}
-.predict-btn.both-btn {
+}}
+.predict-btn.both-btn {{
   background: linear-gradient(90deg, var(--lin-color), var(--poly-color));
   box-shadow: 0 4px 16px rgba(124,58,237,0.35);
-}
-.predict-btn:hover { transform: translateY(-2px); }
-.predict-btn:active { transform: translateY(0); }
+}}
+.predict-btn:hover {{ transform: translateY(-2px); }}
+.predict-btn:active {{ transform: translateY(0); }}
 
 /* PANELES DE RESULTADOS */
-.results-container {
+.results-container {{
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
-}
-.results-container.both-mode {
+}}
+.results-container.both-mode {{
   grid-template-columns: 1fr 1fr;
-}
-@media (max-width: 600px) {
-  .results-container.both-mode { grid-template-columns: 1fr; }
-}
+}}
+@media (max-width: 600px) {{
+  .results-container.both-mode {{ grid-template-columns: 1fr; }}
+}}
 
-.result-card {
+.result-card {{
   border-radius: 16px;
   padding: 24px;
   text-align: center;
@@ -311,17 +318,17 @@ input[type=range] {
   align-items: center;
   justify-content: center;
   min-height: 240px;
-}
-.result-card.lin-res {
+}}
+.result-card.lin-res {{
   background: var(--lin-bg);
   border: 2px solid var(--lin-border);
-}
-.result-card.poly-res {
+}}
+.result-card.poly-res {{
   background: var(--poly-bg);
   border: 2px solid var(--poly-border);
-}
+}}
 
-.res-tag {
+.res-tag {{
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -329,39 +336,39 @@ input[type=range] {
   padding: 4px 12px;
   border-radius: 100px;
   margin-bottom: 12px;
-}
-.res-tag.lin { background: #dbeafe; color: #1e40af; }
-.res-tag.poly { background: #ede9fe; color: #5b21b6; }
+}}
+.res-tag.lin {{ background: #dbeafe; color: #1e40af; }}
+.res-tag.poly {{ background: #ede9fe; color: #5b21b6; }}
 
-.score-display {
+.score-display {{
   font-size: 3.2rem;
   font-weight: 800;
   line-height: 1;
   margin: 8px 0;
   font-family: 'JetBrains Mono', monospace;
-}
-.score-display.lin-score { color: var(--lin-color); }
-.score-display.poly-score { color: var(--poly-color); }
+}}
+.score-display.lin-score {{ color: var(--lin-color); }}
+.score-display.poly-score {{ color: var(--poly-color); }}
 
-.quality-label {
+.quality-label {{
   font-size: 1.15rem;
   font-weight: 700;
   margin-bottom: 8px;
-}
-.res-meta {
+}}
+.res-meta {{
   font-size: 13px;
   color: var(--text-muted);
   font-weight: 600;
-}
+}}
 
 /* TABLA COMPARATIVA */
-.cmp-table {
+.cmp-table {{
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
   font-size: 14px;
-}
-.cmp-table th {
+}}
+.cmp-table th {{
   text-align: left;
   padding: 10px 12px;
   background: #f1f5f9;
@@ -369,60 +376,60 @@ input[type=range] {
   font-weight: 700;
   font-size: 13px;
   border-bottom: 2px solid #cbd5e1;
-}
-.cmp-table td {
+}}
+.cmp-table td {{
   padding: 12px;
   border-bottom: 1px solid #e2e8f0;
   font-weight: 500;
-}
-.cmp-table .val-lin {
+}}
+.cmp-table .val-lin {{
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
   color: var(--lin-color);
-}
-.cmp-table .val-poly {
+}}
+.cmp-table .val-poly {{
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
   color: var(--poly-color);
-}
-.winner-pill {
+}}
+.winner-pill {{
   font-size: 12px;
   font-weight: 800;
   padding: 3px 10px;
   border-radius: 100px;
-}
-.winner-pill.lin { background: #dbeafe; color: #1e40af; }
-.winner-pill.poly { background: #ede9fe; color: #5b21b6; }
+}}
+.winner-pill.lin {{ background: #dbeafe; color: #1e40af; }}
+.winner-pill.poly {{ background: #ede9fe; color: #5b21b6; }}
 
 /* MÉTRICAS STATS GRID */
-.stats-grid {
+.stats-grid {{
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-}
-.stat-box {
+}}
+.stat-box {{
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 14px;
   text-align: center;
-}
-.stat-box .val {
+}}
+.stat-box .val {{
   font-size: 1.6rem;
   font-weight: 800;
   font-family: 'JetBrains Mono', monospace;
-}
-.stat-box .val.lin-v { color: var(--lin-color); }
-.stat-box .val.poly-v { color: var(--poly-color); }
-.stat-box .lbl {
+}}
+.stat-box .val.lin-v {{ color: var(--lin-color); }}
+.stat-box .val.poly-v {{ color: var(--poly-color); }}
+.stat-box .lbl {{
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
   margin-top: 2px;
-}
+}}
 
-.warning-box {
+.warning-box {{
   margin-top: 14px;
   padding: 14px 16px;
   background: #fff7ed;
@@ -431,10 +438,10 @@ input[type=range] {
   font-size: 13px;
   color: #9a3412;
   line-height: 1.6;
-}
+}}
 
 /* DESGLOSE FÓRMULA DE DESCOMPOSICIÓN */
-.formula-box {
+.formula-box {{
   background: #0f172a;
   color: #f8fafc;
   border-radius: 12px;
@@ -444,16 +451,16 @@ input[type=range] {
   line-height: 1.7;
   overflow-x: auto;
   margin-bottom: 16px;
-}
-.terms-list {
+}}
+.terms-list {{
   display: flex;
   flex-direction: column;
   gap: 6px;
   max-height: 360px;
   overflow-y: auto;
   padding-right: 6px;
-}
-.term-row {
+}}
+.term-row {{
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -462,80 +469,80 @@ input[type=range] {
   border-radius: 8px;
   border: 1px solid #e2e8f0;
   font-size: 13.5px;
-}
-.term-name {
+}}
+.term-name {{
   font-weight: 600;
   color: var(--text-secondary);
   max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.term-val {
+}}
+.term-val {{
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
   font-size: 14px;
-}
-.term-val.pos { color: var(--green); }
-.term-val.neg { color: var(--red); }
+}}
+.term-val.pos {{ color: var(--green); }}
+.term-val.neg {{ color: var(--red); }}
 
 /* BARRAS DE COEFICIENTES */
-.coef-list {
+.coef-list {{
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-.coef-item {
+}}
+.coef-item {{
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 13px;
-}
-.coef-name {
+}}
+.coef-name {{
   width: 140px;
   font-weight: 600;
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.coef-bar-track {
+}}
+.coef-bar-track {{
   flex: 1;
   height: 8px;
   background: #e2e8f0;
   border-radius: 4px;
   overflow: hidden;
-}
-.coef-bar-fill {
+}}
+.coef-bar-fill {{
   height: 100%;
   border-radius: 4px;
-}
-.coef-val {
+}}
+.coef-val {{
   width: 75px;
   text-align: right;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
   font-size: 13px;
-}
+}}
 
 /* DESCRIPCIÓN DE VARIABLES */
-.info-chips-grid {
+.info-chips-grid {{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 12px;
   margin-top: 20px;
-}
-.info-chip {
+}}
+.info-chip {{
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 14px;
-}
-.info-chip .icon { font-size: 22px; margin-bottom: 6px; }
-.info-chip .title { font-size: 13px; font-weight: 700; color: var(--uac-navy); margin-bottom: 4px; }
-.info-chip .desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+}}
+.info-chip .icon {{ font-size: 22px; margin-bottom: 6px; }}
+.info-chip .title {{ font-size: 13px; font-weight: 700; color: var(--uac-navy); margin-bottom: 4px; }}
+.info-chip .desc {{ font-size: 12px; color: var(--text-muted); line-height: 1.5; }}
 
-.hidden { display: none !important; }
+.hidden {{ display: none !important; }}
 </style>
 </head>
 <body>
@@ -543,8 +550,8 @@ input[type=range] {
 <!-- NAVBAR INSTITUCIONAL UAC -->
 <header class="uac-navbar">
   <div class="uac-nav-left">
-    <a href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:12px;">
-      <img src="logo-uac.jpg" alt="Universidad Andina del Cusco" />
+    <a href="{img_prefix}index.html" style="text-decoration:none; display:flex; align-items:center; gap:12px;">
+      <img src="{img_prefix}logo-uac.jpg" alt="Universidad Andina del Cusco" />
       <div style="display:flex; flex-direction:column; text-align:left; line-height:1.15;">
         <span style="font-size:15px; font-weight:800; color:#ffffff;">Universidad Andina del Cusco</span>
         <span style="font-size:12px; font-weight:700; color:#00b4d8;">Ingeniería de Sistemas — IA</span>
@@ -552,10 +559,10 @@ input[type=range] {
     </a>
   </div>
   <div class="uac-nav-links">
-    <a href="index.html">🏠 Portada Principal</a>
-    <a href="CASO_1/index.html">📌 Caso 1</a>
-    <a href="CASO_2/index.html" class="active">🍷 Caso 2 (Vinos)</a>
-    <a href="CASO_3/index.html">📈 Caso 3</a>
+    <a href="{img_prefix}index.html">🏠 Portada Principal</a>
+    <a href="{img_prefix}CASO_1/index.html">📌 Caso 1</a>
+    <a href="{img_prefix}CASO_2/index.html" class="active">🍷 Caso 2 (Vinos)</a>
+    <a href="{img_prefix}CASO_3/index.html">📈 Caso 3</a>
   </div>
 </header>
 
@@ -680,83 +687,83 @@ input[type=range] {
 </main>
 
 <script>
-const LIN = {
+const LIN = {{
   intercept: 5.656455142231951,
   features: ["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide", "total sulfur dioxide", "density", "pH", "sulphates", "alcohol"],
-  means: {"fixed acidity":8.258096280087534,"volatile acidity":0.5310175054704594,"citric acid":0.2657986870897156,"residual sugar":2.519091903719909,"chlorides":0.08647592997811804,"free sulfur dioxide":15.706783369803064,"total sulfur dioxide":45.838621444201316,"density":0.9966827242888401,"pH":3.314234135667395,"sulphates":0.6556455142231953,"alcohol":10.43918672501822},
-  stds: {"fixed acidity":1.6954260412031144,"volatile acidity":0.17894919917708096,"citric acid":0.19487488821079296,"residual sugar":1.3050102686115965,"chlorides":0.04741058577816551,"free sulfur dioxide":10.231880389516325,"total sulfur dioxide":31.911931715986025,"density":0.0019133479989592098,"pH":0.15281284549872468,"sulphates":0.16605497608869363,"alcohol":1.0741877134665558},
-  coef: {"fixed acidity":0.08704837017354405,"volatile acidity":-0.23912210345232315,"citric acid":-0.06608222229394528,"residual sugar":0.005378510722629178,"chlorides":-0.08564866217749845,"free sulfur dioxide":0.019243729876503263,"total sulfur dioxide":-0.0728567967560595,"density":-0.05865034648595574,"pH":-0.03808651485496864,"sulphates":0.16157815006661094,"alcohol":0.2863634785283069}
-};
+  means: {{"fixed acidity":8.258096280087534,"volatile acidity":0.5310175054704594,"citric acid":0.2657986870897156,"residual sugar":2.519091903719909,"chlorides":0.08647592997811804,"free sulfur dioxide":15.706783369803064,"total sulfur dioxide":45.838621444201316,"density":0.9966827242888401,"pH":3.314234135667395,"sulphates":0.6556455142231953,"alcohol":10.43918672501822}},
+  stds: {{"fixed acidity":1.6954260412031144,"volatile acidity":0.17894919917708096,"citric acid":0.19487488821079296,"residual sugar":1.3050102686115965,"chlorides":0.04741058577816551,"free sulfur dioxide":10.231880389516325,"total sulfur dioxide":31.911931715986025,"density":0.0019133479989592098,"pH":0.15281284549872468,"sulphates":0.16605497608869363,"alcohol":1.0741877134665558}},
+  coef: {{"fixed acidity":0.08704837017354405,"volatile acidity":-0.23912210345232315,"citric acid":-0.06608222229394528,"residual sugar":0.005378510722629178,"chlorides":-0.08564866217749845,"free sulfur dioxide":0.019243729876503263,"total sulfur dioxide":-0.0728567967560595,"density":-0.05865034648595574,"pH":-0.03808651485496864,"sulphates":0.16157815006661094,"alcohol":0.2863634785283069}}
+}};
 
-const POLY = {
+const POLY = {{
   intercept: 5.754802195873957,
   features: LIN.features,
   means: LIN.means,
   stds: LIN.stds,
-  coef: {"fixed acidity":0.09194370988710356,"volatile acidity":-0.19906239080512825,"citric acid":-0.07946466609196945,"residual sugar":0.05654242044961014,"chlorides":-0.001789732412472607,"free sulfur dioxide":0.10002287869939885,"total sulfur dioxide":-0.1441791415107374,"density":-0.10123266637956477,"pH":-0.04858308163331418,"sulphates":0.24648789996918172,"alcohol":0.2919886944013289,"fixed acidity^2":0.06477969336243167,"fixed acidity volatile acidity":-0.07061253642126337,"fixed acidity citric acid":-0.15734637758958492,"fixed acidity residual sugar":0.035693411906689496,"fixed acidity chlorides":-0.00743363843830018,"fixed acidity free sulfur dioxide":-0.17162668119096589,"fixed acidity total sulfur dioxide":0.150377795106346,"fixed acidity density":-0.1621098506139108,"fixed acidity pH":0.03111963243107217,"fixed acidity sulphates":0.10550161571335628,"fixed acidity alcohol":-0.041010777289298306,"volatile acidity^2":-0.011827575619583558,"volatile acidity citric acid":0.0667184443688086,"volatile acidity residual sugar":-0.09233927898915774,"volatile acidity chlorides":-0.01706884658879715,"volatile acidity free sulfur dioxide":-0.034249182604286416,"volatile acidity total sulfur dioxide":0.11761558238335201,"volatile acidity density":0.05900505937891856,"volatile acidity pH":-0.0665890706503992,"volatile acidity sulphates":-0.0827591846445867,"volatile acidity alcohol":0.06600208460527879,"citric acid^2":0.03123578977675244,"citric acid residual sugar":-0.12457822658872578,"citric acid chlorides":-0.11829514921982397,"citric acid free sulfur dioxide":0.09626741407035684,"citric acid total sulfur dioxide":-0.037697046925923156,"citric acid density":0.16373117520234542,"citric acid pH":-0.21030157727004814,"citric acid sulphates":-0.02998950440666387,"citric acid alcohol":0.1490335999120304,"residual sugar^2":-0.03252893402291615,"residual sugar chlorides":0.10492459286585787,"residual sugar free sulfur dioxide":-0.06953216636925325,"residual sugar total sulfur dioxide":0.1082404200890263,"residual sugar density":0.06698965011729259,"residual sugar pH":-0.057986437018469256,"residual sugar sulphates":-0.04296553210842922,"residual sugar alcohol":0.06994225521942257,"chlorides^2":0.015930482017619277,"chlorides free sulfur dioxide":0.013650635643071375,"chlorides total sulfur dioxide":-0.06671241455069525,"chlorides density":0.06222131007142648,"chlorides pH":0.003846465728573327,"chlorides sulphates":0.04298524182007413,"chlorides alcohol":0.03859854304051927,"free sulfur dioxide^2":-0.043208763109588516,"free sulfur dioxide total sulfur dioxide":-0.013672191317627189,"free sulfur dioxide density":0.1758006551437425,"free sulfur dioxide pH":-0.03168767203064658,"free sulfur dioxide sulphates":-0.13152325141209548,"free sulfur dioxide alcohol":0.16766263367019912,"total sulfur dioxide^2":0.011300513403073156,"total sulfur dioxide density":-0.25247078850245824,"total sulfur dioxide pH":0.07712296916814562,"total sulfur dioxide sulphates":0.12142086856478175,"total sulfur dioxide alcohol":-0.20440469926056748,"density^2":0.06017031065706921,"density pH":0.04870075640954182,"density sulphates":-0.112670074378653,"density alcohol":-0.042636426511268394,"pH^2":-0.0238785315638307,"pH sulphates":0.1036636002333373,"pH alcohol":0.04706145615173661,"sulphates^2":-0.027405652829982002,"sulphates alcohol":0.018844848726351116,"alcohol^2":-0.08935371392356031}
-};
+  coef: {{"fixed acidity":0.09194370988710356,"volatile acidity":-0.19906239080512825,"citric acid":-0.07946466609196945,"residual sugar":0.05654242044961014,"chlorides":-0.001789732412472607,"free sulfur dioxide":0.10002287869939885,"total sulfur dioxide":-0.1441791415107374,"density":-0.10123266637956477,"pH":-0.04858308163331418,"sulphates":0.24648789996918172,"alcohol":0.2919886944013289,"fixed acidity^2":0.06477969336243167,"fixed acidity volatile acidity":-0.07061253642126337,"fixed acidity citric acid":-0.15734637758958492,"fixed acidity residual sugar":0.035693411906689496,"fixed acidity chlorides":-0.00743363843830018,"fixed acidity free sulfur dioxide":-0.17162668119096589,"fixed acidity total sulfur dioxide":0.150377795106346,"fixed acidity density":-0.1621098506139108,"fixed acidity pH":0.03111963243107217,"fixed acidity sulphates":0.10550161571335628,"fixed acidity alcohol":-0.041010777289298306,"volatile acidity^2":-0.011827575619583558,"volatile acidity citric acid":0.0667184443688086,"volatile acidity residual sugar":-0.09233927898915774,"volatile acidity chlorides":-0.01706884658879715,"volatile acidity free sulfur dioxide":-0.034249182604286416,"volatile acidity total sulfur dioxide":0.11761558238335201,"volatile acidity density":0.05900505937891856,"volatile acidity pH":-0.0665890706503992,"volatile acidity sulphates":-0.0827591846445867,"volatile acidity alcohol":0.06600208460527879,"citric acid^2":0.03123578977675244,"citric acid residual sugar":-0.12457822658872578,"citric acid chlorides":-0.11829514921982397,"citric acid free sulfur dioxide":0.09626741407035684,"citric acid total sulfur dioxide":-0.037697046925923156,"citric acid density":0.16373117520234542,"citric acid pH":-0.21030157727004814,"citric acid sulphates":-0.02998950440666387,"citric acid alcohol":0.1490335999120304,"residual sugar^2":-0.03252893402291615,"residual sugar chlorides":0.10492459286585787,"residual sugar free sulfur dioxide":-0.06953216636925325,"residual sugar total sulfur dioxide":0.1082404200890263,"residual sugar density":0.06698965011729259,"residual sugar pH":-0.057986437018469256,"residual sugar sulphates":-0.04296553210842922,"residual sugar alcohol":0.06994225521942257,"chlorides^2":0.015930482017619277,"chlorides free sulfur dioxide":0.013650635643071375,"chlorides total sulfur dioxide":-0.06671241455069525,"chlorides density":0.06222131007142648,"chlorides pH":0.003846465728573327,"chlorides sulphates":0.04298524182007413,"chlorides alcohol":0.03859854304051927,"free sulfur dioxide^2":-0.043208763109588516,"free sulfur dioxide total sulfur dioxide":-0.013672191317627189,"free sulfur dioxide density":0.1758006551437425,"free sulfur dioxide pH":-0.03168767203064658,"free sulfur dioxide sulphates":-0.13152325141209548,"free sulfur dioxide alcohol":0.16766263367019912,"total sulfur dioxide^2":0.011300513403073156,"total sulfur dioxide density":-0.25247078850245824,"total sulfur dioxide pH":0.07712296916814562,"total sulfur dioxide sulphates":0.12142086856478175,"total sulfur dioxide alcohol":-0.20440469926056748,"density^2":0.06017031065706921,"density pH":0.04870075640954182,"density sulphates":-0.112670074378653,"density alcohol":-0.042636426511268394,"pH^2":-0.0238785315638307,"pH sulphates":0.1036636002333373,"pH alcohol":0.04706145615173661,"sulphates^2":-0.027405652829982002,"sulphates alcohol":0.018844848726351116,"alcohol^2":-0.08935371392356031}}
+}};
 
 const FIELDS = [
-  { k: "fixed acidity", l: "Acidez Fija", u: "g/L", mn: 4.6, mx: 15.9, st: 0.1, df: 7.9, ic: "🍋", d: "Ácido tartárico principal. Aporta frescura y estabilidad." },
-  { k: "volatile acidity", l: "Acidez Volátil", u: "g/L", mn: 0.12, mx: 1.58, st: 0.01, df: 0.52, ic: "💨", d: "Ácido acético. Excesos producen sabor avinagrado." },
-  { k: "citric acid", l: "Ácido Cítrico", u: "g/L", mn: 0, mx: 1.0, st: 0.01, df: 0.26, ic: "🍊", d: "Otorga frescura y sabor a frutas." },
-  { k: "residual sugar", l: "Azúcar Residual", u: "g/L", mn: 0.9, mx: 15.5, st: 0.1, df: 2.2, ic: "🍬", d: "Azúcar tras fermentar. Define la dulzura del vino." },
-  { k: "chlorides", l: "Cloruros (Sal)", u: "g/L", mn: 0.012, mx: 0.611, st: 0.001, df: 0.079, ic: "🧂", d: "Sal de NaCl. Niveles altos perjudican el gusto." },
-  { k: "free sulfur dioxide", l: "SO2 Libre", u: "mg/L", mn: 1, mx: 72, st: 1, df: 14, ic: "🛡️", d: "Dióxido de azufre libre. Evita microbios u oxidación." },
-  { k: "total sulfur dioxide", l: "SO2 Total", u: "mg/L", mn: 6, mx: 289, st: 1, df: 38, ic: "🧪", d: "SO2 total. Excesos producen olor desagradable." },
-  { k: "density", l: "Densidad", u: "g/mL", mn: 0.990, mx: 1.004, st: 0.0001, df: 0.9967, ic: "⚖️", d: "Relación peso/volumen vinculada a alcohol y azúcar." },
-  { k: "pH", l: "pH (Acidez Total)", u: "0-14", mn: 2.74, mx: 4.01, st: 0.01, df: 3.31, ic: "🔬", d: "Escala de acidez. Vinos típicos: pH 3.0 a 4.0." },
-  { k: "sulphates", l: "Sulfatos", u: "g/L", mn: 0.33, mx: 2.0, st: 0.01, df: 0.66, ic: "💎", d: "Aditivo de K2SO4. Favorece la conservación y sabor." },
-  { k: "alcohol", l: "Alcohol", u: "% vol", mn: 8.4, mx: 14.9, st: 0.1, df: 10.4, ic: "🥃", d: "Porcentaje de graduación alcohólica. Gran impacto en calidad." }
+  {{ k: "fixed acidity", l: "Acidez Fija", u: "g/L", mn: 4.6, mx: 15.9, st: 0.1, df: 7.9, ic: "🍋", d: "Ácido tartárico principal. Aporta frescura y estabilidad." }},
+  {{ k: "volatile acidity", l: "Acidez Volátil", u: "g/L", mn: 0.12, mx: 1.58, st: 0.01, df: 0.52, ic: "💨", d: "Ácido acético. Excesos producen sabor avinagrado." }},
+  {{ k: "citric acid", l: "Ácido Cítrico", u: "g/L", mn: 0, mx: 1.0, st: 0.01, df: 0.26, ic: "🍊", d: "Otorga frescura y sabor a frutas." }},
+  {{ k: "residual sugar", l: "Azúcar Residual", u: "g/L", mn: 0.9, mx: 15.5, st: 0.1, df: 2.2, ic: "🍬", d: "Azúcar tras fermentar. Define la dulzura del vino." }},
+  {{ k: "chlorides", l: "Cloruros (Sal)", u: "g/L", mn: 0.012, mx: 0.611, st: 0.001, df: 0.079, ic: "🧂", d: "Sal de NaCl. Niveles altos perjudican el gusto." }},
+  {{ k: "free sulfur dioxide", l: "SO2 Libre", u: "mg/L", mn: 1, mx: 72, st: 1, df: 14, ic: "🛡️", d: "Dióxido de azufre libre. Evita microbios u oxidación." }},
+  {{ k: "total sulfur dioxide", l: "SO2 Total", u: "mg/L", mn: 6, mx: 289, st: 1, df: 38, ic: "🧪", d: "SO2 total. Excesos producen olor desagradable." }},
+  {{ k: "density", l: "Densidad", u: "g/mL", mn: 0.990, mx: 1.004, st: 0.0001, df: 0.9967, ic: "⚖️", d: "Relación peso/volumen vinculada a alcohol y azúcar." }},
+  {{ k: "pH", l: "pH (Acidez Total)", u: "0-14", mn: 2.74, mx: 4.01, st: 0.01, df: 3.31, ic: "🔬", d: "Escala de acidez. Vinos típicos: pH 3.0 a 4.0." }},
+  {{ k: "sulphates", l: "Sulfatos", u: "g/L", mn: 0.33, mx: 2.0, st: 0.01, df: 0.66, ic: "💎", d: "Aditivo de K2SO4. Favorece la conservación y sabor." }},
+  {{ k: "alcohol", l: "Alcohol", u: "% vol", mn: 8.4, mx: 14.9, st: 0.1, df: 10.4, ic: "🥃", d: "Porcentaje de graduación alcohólica. Gran impacto en calidad." }}
 ];
 
 let mode = 'linear';
 
-function predLin(v) {
+function predLin(v) {{
   let y = LIN.intercept;
-  const T = [{ n: "Intercepto β0", c: LIN.intercept }];
-  LIN.features.forEach(f => {
+  const T = [{{ n: "Intercepto β0", c: LIN.intercept }}];
+  LIN.features.forEach(f => {{
     const xs = (v[f] - LIN.means[f]) / LIN.stds[f];
     const c = LIN.coef[f] * xs;
     y += c;
-    T.push({ n: f, xi: v[f], mu: LIN.means[f], sg: LIN.stds[f], xs, b: LIN.coef[f], c });
-  });
-  return { y, T };
-}
+    T.push({{ n: f, xi: v[f], mu: LIN.means[f], sg: LIN.stds[f], xs, b: LIN.coef[f], c }});
+  }});
+  return {{ y, T }};
+}}
 
-function predPoly(v) {
+function predPoly(v) {{
   const F = POLY.features;
   const Xsc = F.map(f => (v[f] - POLY.means[f]) / POLY.stds[f]);
   const EN = [], EV = [];
-  F.forEach((f, i) => { EN.push(f); EV.push(Xsc[i]); });
-  for (let i = 0; i < F.length; i++) {
-    for (let j = i; j < F.length; j++) {
+  F.forEach((f, i) => {{ EN.push(f); EV.push(Xsc[i]); }});
+  for (let i = 0; i < F.length; i++) {{
+    for (let j = i; j < F.length; j++) {{
       EN.push(i === j ? F[i] + "^2" : F[i] + " " + F[j]);
       EV.push(Xsc[i] * Xsc[j]);
-    }
-  }
+    }}
+  }}
   let y = POLY.intercept;
-  const T = [{ n: "Intercepto β0", c: POLY.intercept }];
-  EN.forEach((n, k) => {
+  const T = [{{ n: "Intercepto β0", c: POLY.intercept }}];
+  EN.forEach((n, k) => {{
     const b = POLY.coef[n] || 0;
     const c = b * EV[k];
     y += c;
-    T.push({ n, v: EV[k], b, c });
-  });
-  return { y, T };
-}
+    T.push({{ n, v: EV[k], b, c }});
+  }});
+  return {{ y, T }};
+}}
 
-function qlbl(s) {
+function qlbl(s) {{
   const r = Math.round(s);
-  if (r >= 8) return { t: "🏆 Excelente (8-10)", col: "#059669" };
-  if (r >= 7) return { t: "⭐ Muy Bueno (7)", col: "#0284c7" };
-  if (r >= 6) return { t: "✅ Bueno (6)", col: "#2563eb" };
-  if (r >= 5) return { t: "⚪ Regular (5)", col: "#d97706" };
-  if (r >= 4) return { t: "⚠️ Bajo (4)", col: "#ea580c" };
-  return { t: "❌ Deficiente (0-3)", col: "#dc2626" };
-}
+  if (r >= 8) return {{ t: "🏆 Excelente (8-10)", col: "#059669" }};
+  if (r >= 7) return {{ t: "⭐ Muy Bueno (7)", col: "#0284c7" }};
+  if (r >= 6) return {{ t: "✅ Bueno (6)", col: "#2563eb" }};
+  if (r >= 5) return {{ t: "⚪ Regular (5)", col: "#d97706" }};
+  if (r >= 4) return {{ t: "⚠️ Bajo (4)", col: "#ea580c" }};
+  return {{ t: "❌ Deficiente (0-3)", col: "#dc2626" }};
+}}
 
-function showRes(y, T, side) {
+function showRes(y, T, side) {{
   const cl = Math.min(10, Math.max(0, y));
   const lb = qlbl(y);
   const isL = side === 'lin';
@@ -774,10 +781,10 @@ function showRes(y, T, side) {
   document.getElementById(scId).textContent = cl.toFixed(2);
   document.getElementById(lbId).textContent = lb.t;
   document.getElementById(lbId).style.color = lb.col;
-  document.getElementById(mtId).textContent = `Predicción cruda: ${y.toFixed(4)} | Redondeado: ${Math.round(cl)} / 10`;
-}
+  document.getElementById(mtId).textContent = `Predicción cruda: ${{y.toFixed(4)}} | Redondeado: ${{Math.round(cl)}} / 10`;
+}}
 
-function buildCmp(ly, py) {
+function buildCmp(ly, py) {{
   document.getElementById("cmpCard").classList.remove("hidden");
   const b = document.getElementById("cmpBody");
   b.innerHTML = "";
@@ -787,28 +794,28 @@ function buildCmp(ly, py) {
   const diff = Math.abs(ly - py);
   
   const rows = [
-    { l: "Predicción Exacta", lv: ly.toFixed(4), pv: py.toFixed(4), w: null },
-    { l: "Calidad Redondeada", lv: Math.round(lc) + " / 10", pv: Math.round(pc) + " / 10", w: null },
-    { l: "Diferencia Absoluta", lv: "—", pv: "± " + diff.toFixed(4), w: null },
-    { l: "R² en Datos Nuevos (Test)", lv: "0.3171", pv: "0.2809", w: "lin" },
-    { l: "Error Promedio RMSE (Test)", lv: "0.6165 pts", pv: "0.6326 pts", w: "lin" },
-    { l: "N° de Parámetros del Modelo", lv: "12", pv: "78", w: null },
-    { l: "Riesgo de Sobreajuste", lv: "Bajo (Recomendado)", pv: "Alto (Overfitting)", w: "lin" },
+    {{ l: "Predicción Exacta", lv: ly.toFixed(4), pv: py.toFixed(4), w: null }},
+    {{ l: "Calidad Redondeada", lv: Math.round(lc) + " / 10", pv: Math.round(pc) + " / 10", w: null }},
+    {{ l: "Diferencia Absoluta", lv: "—", pv: "± " + diff.toFixed(4), w: null }},
+    {{ l: "R² en Datos Nuevos (Test)", lv: "0.3171", pv: "0.2809", w: "lin" }},
+    {{ l: "Error Promedio RMSE (Test)", lv: "0.6165 pts", pv: "0.6326 pts", w: "lin" }},
+    {{ l: "N° de Parámetros del Modelo", lv: "12", pv: "78", w: null }},
+    {{ l: "Riesgo de Sobreajuste", lv: "Bajo (Recomendado)", pv: "Alto (Overfitting)", w: "lin" }},
   ];
   
-  rows.forEach(r => {
+  rows.forEach(r => {{
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${r.l}</td>
-      <td class="val-lin">${r.lv}</td>
-      <td class="val-poly">${r.pv}</td>
-      <td>${r.w === "lin" ? '<span class="winner-pill lin">📈 Lineal</span>' : r.w === "poly" ? '<span class="winner-pill poly">📐 Poly</span>' : ''}</td>
+      <td>${{r.l}}</td>
+      <td class="val-lin">${{r.lv}}</td>
+      <td class="val-poly">${{r.pv}}</td>
+      <td>${{r.w === "lin" ? '<span class="winner-pill lin">📈 Lineal</span>' : r.w === "poly" ? '<span class="winner-pill poly">📐 Poly</span>' : ''}}</td>
     `;
     b.appendChild(tr);
-  });
-}
+  }});
+}}
 
-function showFormula(T, m) {
+function showFormula(T, m) {{
   const fc = document.getElementById("formulaCard");
   fc.classList.remove("hidden");
   
@@ -816,39 +823,35 @@ function showFormula(T, m) {
   const fbox = document.getElementById("formulaBox");
   const tl = document.getElementById("termsList");
   
-  if (m === 'linear') {
+  if (m === 'linear') {{
     fti.textContent = "🧮 Fórmula Regresión Lineal OLS";
-    fbox.textContent = "ŷ = β0 + Σ β_i * ((X_i - μ_i) / σ_i)
-
-ŷ = " + T.reduce((a, t) => a + t.c, 0).toFixed(6);
-  } else {
+    fbox.textContent = "ŷ = β0 + Σ β_i * ((X_i - μ_i) / σ_i)\n\nŷ = " + T.reduce((a, t) => a + t.c, 0).toFixed(6);
+  }} else {{
     fti.textContent = "🧮 Fórmula Regresión Polinómica (Grado 2)";
-    fbox.textContent = "Pipeline: StandardScaler -> PolynomialFeatures(77) -> LinearRegression
-
-ŷ = " + T.reduce((a, t) => a + t.c, 0).toFixed(6);
-  }
+    fbox.textContent = "Pipeline: StandardScaler -> PolynomialFeatures(77) -> LinearRegression\n\nŷ = " + T.reduce((a, t) => a + t.c, 0).toFixed(6);
+  }}
   
   tl.innerHTML = "";
   const topT = m === 'linear' ? T : [T[0], ...T.slice(1).sort((a, b) => Math.abs(b.c) - Math.abs(a.c)).slice(0, 18)];
   
-  topT.forEach((t, i) => {
+  topT.forEach((t, i) => {{
     const row = document.createElement("div");
     row.className = "term-row";
     const ip = t.c >= 0;
     
-    if (i === 0) {
+    if (i === 0) {{
       row.innerHTML = `
         <span class="term-name" style="color:var(--gold); font-weight:800;">Intercepto β0</span>
-        <span class="term-val pos">+ ${t.c.toFixed(6)}</span>
+        <span class="term-val pos">+ ${{t.c.toFixed(6)}}</span>
       `;
-    } else {
+    }} else {{
       row.innerHTML = `
-        <span class="term-name" title="${t.n}">${t.n}</span>
-        <span class="term-val ${ip ? 'pos' : 'neg'}">${ip ? '+' : ''}${t.c.toFixed(6)}</span>
+        <span class="term-name" title="${{t.n}}">${{t.n}}</span>
+        <span class="term-val ${{ip ? 'pos' : 'neg'}}">${{ip ? '+' : ''}}${{t.c.toFixed(6)}}</span>
       `;
-    }
+    }}
     tl.appendChild(row);
-  });
+  }});
   
   const tot = T.reduce((a, t) => a + t.c, 0);
   const sr = document.createElement("div");
@@ -856,12 +859,12 @@ function showFormula(T, m) {
   sr.style.background = "#e2e8f0";
   sr.innerHTML = `
     <span class="term-name" style="color:var(--uac-navy); font-weight:800;">SUMA TOTAL ŷ</span>
-    <span class="term-val" style="color:var(--uac-navy); font-weight:800;">${tot.toFixed(6)}</span>
+    <span class="term-val" style="color:var(--uac-navy); font-weight:800;">${{tot.toFixed(6)}}</span>
   `;
   tl.appendChild(sr);
-}
+}}
 
-function setMode(m) {
+function setMode(m) {{
   mode = m;
   ['Lin', 'Both', 'Poly'].forEach(x => document.getElementById("btnMode" + x).classList.remove('active'));
   document.getElementById("btnMode" + (m === 'linear' ? "Lin" : m === 'poly' ? "Poly" : "Both")).classList.add('active');
@@ -873,7 +876,7 @@ function setMode(m) {
   const cmpCard = document.getElementById("cmpCard");
   const coefTitle = document.getElementById("coefTitle");
   
-  if (m === 'linear') {
+  if (m === 'linear') {{
     pb.className = "predict-btn lin-btn";
     pb.textContent = "🔬 Calcular Calidad con Modelo Lineal";
     resultsContainer.className = "results-container";
@@ -882,7 +885,7 @@ function setMode(m) {
     cmpCard.classList.add("hidden");
     coefTitle.textContent = "📈 Coeficientes Beta — Modelo Lineal";
     buildCoefs('linear');
-  } else if (m === 'poly') {
+  }} else if (m === 'poly') {{
     pb.className = "predict-btn poly-btn";
     pb.textContent = "🔬 Calcular Calidad con Modelo Polinómico";
     resultsContainer.className = "results-container";
@@ -891,23 +894,23 @@ function setMode(m) {
     cmpCard.classList.add("hidden");
     coefTitle.textContent = "📐 Top Coeficientes — Modelo Polinómico";
     buildCoefs('poly');
-  } else {
+  }} else {{
     pb.className = "predict-btn both-btn";
     pb.textContent = "⚖️ Calcular y Comparar Ambos Modelos";
     resultsContainer.className = "results-container both-mode";
     resLinCard.classList.remove("hidden");
     resPolyCard.classList.remove("hidden");
     buildCoefs('both');
-  }
-}
+  }}
+}}
 
-function buildCoefs(m) {
+function buildCoefs(m) {{
   const l = document.getElementById("coefList");
   l.innerHTML = "";
   
-  if (m === 'linear' || m === 'both') {
+  if (m === 'linear' || m === 'both') {{
     const mx = Math.max(...LIN.features.map(f => Math.abs(LIN.coef[f])));
-    LIN.features.forEach(f => {
+    LIN.features.forEach(f => {{
       const c = LIN.coef[f];
       const p2 = Math.abs(c) / mx * 100;
       const fd = FIELDS.find(x => x.k === f);
@@ -915,98 +918,107 @@ function buildCoefs(m) {
       const row = document.createElement("div");
       row.className = "coef-item";
       row.innerHTML = `
-        <span class="coef-name" title="${f}">${fd ? fd.ic + " " + fd.l : f}</span>
+        <span class="coef-name" title="${{f}}">${{fd ? fd.ic + " " + fd.l : f}}</span>
         <div class="coef-bar-track">
-          <div class="coef-bar-fill" style="width:${p2}%; background:${c >= 0 ? 'var(--lin-color)' : '#93c5fd'};"></div>
+          <div class="coef-bar-fill" style="width:${{p2}}%; background:${{c >= 0 ? 'var(--lin-color)' : '#93c5fd'}};"></div>
         </div>
-        <span class="coef-val" style="color:${c >= 0 ? 'var(--green)' : 'var(--red)'}">${c >= 0 ? '+' : ''}${c.toFixed(4)}</span>
+        <span class="coef-val" style="color:${{c >= 0 ? 'var(--green)' : 'var(--red)'}}">${{c >= 0 ? '+' : ''}}${{c.toFixed(4)}}</span>
       `;
       l.appendChild(row);
-    });
-  } else {
+    }});
+  }} else {{
     const pc = Object.entries(POLY.coef).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, 15);
     const mx = Math.max(...pc.map(([, v]) => Math.abs(v)));
     
-    pc.forEach(([n, c]) => {
+    pc.forEach(([n, c]) => {{
       const p2 = Math.abs(c) / mx * 100;
       const row = document.createElement("div");
       row.className = "coef-item";
       row.innerHTML = `
-        <span class="coef-name" title="${n}">${n}</span>
+        <span class="coef-name" title="${{n}}">${{n}}</span>
         <div class="coef-bar-track">
-          <div class="coef-bar-fill" style="width:${p2}%; background:${c >= 0 ? 'var(--poly-color)' : '#c4b5fd'};"></div>
+          <div class="coef-bar-fill" style="width:${{p2}}%; background:${{c >= 0 ? 'var(--poly-color)' : '#c4b5fd'}};"></div>
         </div>
-        <span class="coef-val" style="color:${c >= 0 ? 'var(--green)' : 'var(--red)'}">${c >= 0 ? '+' : ''}${c.toFixed(4)}</span>
+        <span class="coef-val" style="color:${{c >= 0 ? 'var(--green)' : 'var(--red)'}}">${{c >= 0 ? '+' : ''}}${{c.toFixed(4)}}</span>
       `;
       l.appendChild(row);
-    });
-  }
-}
+    }});
+  }}
+}}
 
-function buildForm() {
+function buildForm() {{
   const g = document.getElementById("formGrid");
-  FIELDS.forEach(f => {
+  FIELDS.forEach(f => {{
     const id = f.k.replace(/ /g, "_");
     const d = document.createElement("div");
     d.className = "field";
     d.innerHTML = `
-      <label for="i_${id}">
-        ${f.l}
-        <span class="unit-tag">${f.u}</span>
+      <label for="i_${{id}}">
+        ${{f.l}}
+        <span class="unit-tag">${{f.u}}</span>
       </label>
-      <input type="number" id="i_${id}" name="${f.k}" min="${f.mn}" max="${f.mx}" step="${f.st}" value="${f.df}" required />
-      <input type="range" id="r_${id}" min="${f.mn}" max="${f.mx}" step="${f.st}" value="${f.df}" />
-      <span class="field-hint">Rango: ${f.mn} – ${f.mx}</span>
+      <input type="number" id="i_${{id}}" name="${{f.k}}" min="${{f.mn}}" max="${{f.mx}}" step="${{f.st}}" value="${{f.df}}" required />
+      <input type="range" id="r_${{id}}" min="${{f.mn}}" max="${{f.mx}}" step="${{f.st}}" value="${{f.df}}" />
+      <span class="field-hint">Rango: ${{f.mn}} – ${{f.mx}}</span>
     `;
     g.appendChild(d);
     
-    const inp = document.getElementById(`i_${id}`);
-    const rng = document.getElementById(`r_${id}`);
+    const inp = document.getElementById(`i_${{id}}`);
+    const rng = document.getElementById(`r_${{id}}`);
     inp.addEventListener("input", () => rng.value = inp.value);
     rng.addEventListener("input", () => inp.value = rng.value);
-  });
-}
+  }});
+}}
 
-function buildInfo() {
+function buildInfo() {{
   const g = document.getElementById("infoGrid");
-  FIELDS.forEach(f => {
+  FIELDS.forEach(f => {{
     const c = document.createElement("div");
     c.className = "info-chip";
     c.innerHTML = `
-      <div class="icon">${f.ic}</div>
-      <div class="title">${f.l}</div>
-      <div class="desc">${f.d}</div>
+      <div class="icon">${{f.ic}}</div>
+      <div class="title">${{f.l}}</div>
+      <div class="desc">${{f.d}}</div>
     `;
     g.appendChild(c);
-  });
-}
+  }});
+}}
 
-document.getElementById("wineForm").addEventListener("submit", e => {
+document.getElementById("wineForm").addEventListener("submit", e => {{
   e.preventDefault();
-  const v = {};
-  FIELDS.forEach(f => { v[f.k] = parseFloat(document.getElementById(`i_${f.k.replace(/ /g, "_")}`).value); });
+  const v = {{}};
+  FIELDS.forEach(f => {{ v[f.k] = parseFloat(document.getElementById(`i_${{f.k.replace(/ /g, "_")}}`).value); }});
   
-  if (mode === 'linear') {
-    const { y, T } = predLin(v);
+  if (mode === 'linear') {{
+    const {{ y, T }} = predLin(v);
     showRes(y, T, 'lin');
     showFormula(T, 'linear');
-  } else if (mode === 'poly') {
-    const { y, T } = predPoly(v);
+  }} else if (mode === 'poly') {{
+    const {{ y, T }} = predPoly(v);
     showRes(y, T, 'poly');
     showFormula(T, 'poly');
-  } else {
-    const { y: ly, T: lT } = predLin(v);
-    const { y: py, T: pT } = predPoly(v);
+  }} else {{
+    const {{ y: ly, T: lT }} = predLin(v);
+    const {{ y: py, T: pT }} = predPoly(v);
     showRes(ly, lT, 'lin');
     showRes(py, pT, 'poly');
     buildCmp(ly, py);
     showFormula(lT, 'linear');
-  }
-});
+  }}
+}});
 
 buildForm();
 buildInfo();
 setMode('linear');
 </script>
 </body>
-</html>
+</html>"""
+    return html
+
+with open(r"c:\Users\Usuario\Desktop\OPENCODE\CASO_2\index.html", "w", encoding="utf-8") as f:
+    f.write(get_wine_html(is_root_caso=True))
+
+with open(r"c:\Users\Usuario\Desktop\OPENCODE\CASO_2\wine_predictor_v2.html", "w", encoding="utf-8") as f:
+    f.write(get_wine_html(is_root_caso=True))
+
+print("CASO_2/index.html y wine_predictor_v2.html actualizados con logo-uac.jpg y fondo.jpg")

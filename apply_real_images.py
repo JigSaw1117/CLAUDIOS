@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+"""
+Aplica las imágenes reales descargadas por el usuario (logo-uac.jpg y fondo.jpg) en todas las interfaces HTML.
+"""
+
+# HTML DE LA PORTADA PRINCIPAL (index.html)
+root_index_code = r"""<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -398,3 +403,9 @@
 
 </body>
 </html>
+"""
+
+with open(r"c:\Users\Usuario\Desktop\OPENCODE\index.html", "w", encoding="utf-8") as f:
+    f.write(root_index_code)
+
+print("index.html de la raíz actualizado con logo-uac.jpg y fondo.jpg")
