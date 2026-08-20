@@ -1,0 +1,21 @@
+# Despliegue estatico: no hay proceso de compilacion, se publica la raiz tal cual.
+[build]
+  publish = "."
+  command = ""
+
+# Los modelos y las figuras no cambian entre despliegues: se cachean de forma
+# agresiva. El HTML no, para que cada visita reciba la ultima version.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*/model.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*/figuras/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

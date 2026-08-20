@@ -87,6 +87,19 @@
 </style>
 </head>
 <body>
+<!-- Modo embebido: la aplicacion de pagina unica (index.html) muestra esta pagina
+     dentro de un marco, asi que se ocultan su cabecera y su pie para no duplicar
+     la navegacion. La clase se aplica antes del render para evitar parpadeo. -->
+<script>
+  if (new URLSearchParams(location.search).has("embed")) {
+    document.documentElement.classList.add("embebido");
+  }
+</script>
+<style>
+  html.embebido > body > header:first-of-type,
+  html.embebido > body > footer { display: none !important; }
+</style>
+
 <header>
   <div class="logo">🦅 UAC — Caso 1 · Regresión Lineal Múltiple</div>
   <nav>
