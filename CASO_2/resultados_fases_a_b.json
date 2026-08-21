@@ -1,0 +1,124 @@
+{
+  "n_registros": 1143,
+  "nulos": 0,
+  "duplicados": 125,
+  "distribucion_objetivo": {
+    "3": 6,
+    "4": 33,
+    "5": 483,
+    "6": 462,
+    "7": 143,
+    "8": 16
+  },
+  "outliers": {
+    "fixed acidity": 44,
+    "volatile acidity": 14,
+    "citric acid": 1,
+    "residual sugar": 110,
+    "chlorides": 77,
+    "free sulfur dioxide": 18,
+    "total sulfur dioxide": 40,
+    "density": 36,
+    "pH": 20,
+    "sulphates": 43,
+    "alcohol": 12
+  },
+  "correlaciones_altas": [
+    [
+      "fixed acidity",
+      "citric acid",
+      0.6732
+    ],
+    [
+      "fixed acidity",
+      "density",
+      0.6815
+    ],
+    [
+      "fixed acidity",
+      "pH",
+      -0.6852
+    ],
+    [
+      "volatile acidity",
+      "citric acid",
+      -0.5442
+    ],
+    [
+      "citric acid",
+      "pH",
+      -0.5463
+    ],
+    [
+      "free sulfur dioxide",
+      "total sulfur dioxide",
+      0.6611
+    ]
+  ],
+  "correlacion_con_objetivo": {
+    "volatile acidity": -0.4074,
+    "total sulfur dioxide": -0.1833,
+    "density": -0.1752,
+    "chlorides": -0.1241,
+    "free sulfur dioxide": -0.0633,
+    "pH": -0.0525,
+    "residual sugar": 0.022,
+    "fixed acidity": 0.122,
+    "citric acid": 0.2408,
+    "sulphates": 0.2577,
+    "alcohol": 0.4849
+  },
+  "vif": {
+    "fixed acidity": 7.78,
+    "volatile acidity": 1.78,
+    "citric acid": 3.22,
+    "residual sugar": 1.74,
+    "chlorides": 1.54,
+    "free sulfur dioxide": 1.91,
+    "total sulfur dioxide": 2.1,
+    "density": 6.6,
+    "pH": 3.39,
+    "sulphates": 1.44,
+    "alcohol": 3.18
+  },
+  "n_train": 914,
+  "n_test": 229,
+  "coeficientes_lineal": {
+    "fixed acidity": 0.087,
+    "volatile acidity": -0.2391,
+    "citric acid": -0.0661,
+    "residual sugar": 0.0054,
+    "chlorides": -0.0856,
+    "free sulfur dioxide": 0.0192,
+    "total sulfur dioxide": -0.0729,
+    "density": -0.0587,
+    "pH": -0.0381,
+    "sulphates": 0.1616,
+    "alcohol": 0.2864
+  },
+  "fase_b": {
+    "lineal": {
+      "nombre": "Lineal multiple (OLS)",
+      "n_terminos": 11,
+      "r2_train": 0.3822,
+      "r2_test": 0.3171,
+      "r2_cv": 0.3462,
+      "r2_cv_std": 0.0427,
+      "rmse_test": 0.6165,
+      "mae_test": 0.4773,
+      "brecha": 0.036
+    },
+    "polinomica": {
+      "nombre": "Polinomica grado 2 (OLS)",
+      "n_terminos": 77,
+      "r2_train": 0.4591,
+      "r2_test": 0.2809,
+      "r2_cv": 0.2316,
+      "r2_cv_std": 0.1469,
+      "rmse_test": 0.6326,
+      "mae_test": 0.4869,
+      "brecha": 0.2275
+    },
+    "delta_r2_test": -0.0362
+  }
+}

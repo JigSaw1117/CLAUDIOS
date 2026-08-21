@@ -1,0 +1,34 @@
+# Taller 1 — Modelado Predictivo Multisectorial
+# Universidad Andina del Cusco — Inteligencia Artificial (2026-II)
+#
+# Instalación:  pip install -r requirements.txt
+#
+# El aplicativo web NO necesita estas dependencias: es HTML + JavaScript estático
+# y los modelos viajan ya entrenados en archivos .json / .js. Esta lista es para
+# reproducir el entrenamiento y ejecutar los cuadernos.
+
+# --- Núcleo: manipulación de datos y modelado ------------------------------
+numpy==2.5.1
+pandas==3.0.5
+scikit-learn==1.9.0
+scipy==1.18.0
+
+# --- Gráficos de las Fases A y B -------------------------------------------
+matplotlib==3.11.1
+seaborn==0.13.2
+
+# --- Serialización del modelo del Caso 1 (modelo_casas.pkl) ----------------
+joblib==1.5.3
+
+# --- Cuadernos Jupyter (.ipynb) --------------------------------------------
+nbformat==5.11.1
+nbclient==0.11.0
+ipykernel==7.3.0
+jupyterlab>=4.0            # para abrir los cuadernos; alternativa: notebook>=7.0
+
+# --- Generación de los informes en Word ------------------------------------
+python-docx==1.2.0
+
+# --- Interfaz de escritorio del Caso 1 (interfaz.py) -----------------------
+# tkinter viene incluido con Python en Windows y macOS.
+# En Linux puede requerir:  sudo apt install python3-tk
