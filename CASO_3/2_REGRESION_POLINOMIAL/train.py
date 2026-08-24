@@ -119,6 +119,17 @@ sns.heatmap(corr, annot=True, fmt=".2f", cmap="RdBu_r", center=0,
 ax.set_title("Fase A - Matriz de correlacion de Pearson", fontsize=12)
 fig.tight_layout(); fig.savefig(f"{FIGDIR}/a_correlacion.png", dpi=120); plt.close(fig)
 
+# =============================================================================
+# PARTICION DE LOS DATOS:  75 % ENTRENAMIENTO  /  25 % PRUEBA
+# =============================================================================
+#   test_size=0.25   -> 25 % apartado para prueba   ->  111 pacientes
+#   el 75 % restante -> entrenamiento               ->  331 pacientes
+#                       (implicito; equivale a train_size=0.75)
+#
+# La relacion entre parametros y muestras es la clave de este caso:
+#   grado 1 ->  10 terminos / 331 muestras = holgado
+#   grado 2 ->  65 terminos / 331 muestras = ajustado
+#   grado 3 -> 285 terminos / 331 muestras = practicamente 1 a 1 -> colapsa
 titulo("FASE A.3 - PARTICION 75/25 Y ESTANDARIZACION")
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=RANDOM_STATE)
@@ -155,6 +166,23 @@ def evaluar(nombre, pipe):
     return m, pipe
 
 
+# =============================================================================
+# ENTRENAMIENTO Y EVALUACION
+# =============================================================================
+# evaluar() encadena las tres operaciones:
+#   pipe.fit(X_train, y_train) -> ENTRENA, solo con el 75 %
+#   pipe.predict(X_test)       -> EVALUA, con el 25 % nunca visto
+#   cross_val_score(...)       -> 5 particiones internas del 75 %
+#
+# FUNCION OBJETIVO -- OLS o Ridge segun la variante:
+#     OLS:    J(b) = min SUM (y_j - y_est_j)^2
+#     Ridge:  J(b) = min SUM (y_j - y_est_j)^2 + alpha * SUM b_i^2
+#
+# ECUACION DEL MODELO (grado 2, el que se exporta):
+#     y_est = b0 + SUM b_i*z_i + SUM b_ii*z_i^2 + SUM b_ij*z_i*z_j
+#             [10 lineales]      [10 cuadraticos]  [45 cruzados] = 65
+#
+# El numero de terminos sigue  C(n+d, d) - 1  con n = 10 variables.
 titulo("FASE B.1 - TERMINOS GENERADOS POR GRADO")
 print(f"{'Grado':>6}  {'Terminos':>9}  {'Muestras':>9}  {'Ratio n/p':>10}")
 for grado in (1, 2, 3):

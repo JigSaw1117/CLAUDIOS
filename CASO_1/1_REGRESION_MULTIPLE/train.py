@@ -96,6 +96,14 @@ axes[1].set_title(f"Target en log (asimetria = {np.log(df['median_house_value'])
 fig.suptitle("Fase A - La transformacion logaritmica simetriza el target", fontsize=12)
 fig.tight_layout(); fig.savefig(f"{FIGDIR}/a_target.png", dpi=120); plt.close(fig)
 
+# =============================================================================
+# PARTICION DE LOS DATOS:  75 % ENTRENAMIENTO  /  25 % PRUEBA
+# =============================================================================
+#   test_size=0.25   -> 25 % apartado para prueba   ->  4 919 filas
+#   el 75 % restante -> entrenamiento               -> 14 756 filas
+#                       (implicito; equivale a train_size=0.75)
+#   stratify         -> reparte las 5 franjas de ingreso en la misma
+#                       proporcion en ambos conjuntos
 titulo("FASE A.3 - PARTICION 75/25 ESTRATIFICADA")
 # Estratificar por categoria de ingreso evita que el 25% de prueba quede sesgado
 # justamente en el descriptor mas correlacionado con el precio.
@@ -227,6 +235,22 @@ def evaluar(nombre, modelo, Xa=None, Xb=None):
     return m, modelo
 
 
+# =============================================================================
+# ENTRENAMIENTO Y EVALUACION
+# =============================================================================
+# La funcion evaluar() de arriba hace las tres cosas en orden:
+#   modelo.fit(X_train, y_train)   -> ENTRENA, solo con el 75 %
+#   modelo.predict(X_test)         -> EVALUA, con el 25 % nunca visto
+#   cross_val_score(...)           -> valida en 5 particiones del 75 %
+#
+# FUNCION OBJETIVO de este caso -- Ridge (L2) sobre el logaritmo del precio:
+#
+#     J(b) = min  SUM ( ln(y_j) - y_est_j )^2  +  alpha * SUM b_i^2
+#             b
+#
+# ECUACION DEL MODELO:
+#     ln(y_est) = b0 + SUM b_i * z_i        con z_i = (x_i - mu_i)/sigma_i
+#     y_est     = exp( ln(y_est) )          se deshace el logaritmo
 titulo("FASE B.1 - MODELO BASE: SOLO LOS 8 DESCRIPTORES ORIGINALES")
 base_cols = [DESCRIPTORES.index(c) for c in NUMERICAS_ORIG] + \
             [i for i, c in enumerate(DESCRIPTORES) if c.startswith("ocean_")]

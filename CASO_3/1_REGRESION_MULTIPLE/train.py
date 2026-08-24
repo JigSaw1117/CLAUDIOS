@@ -172,6 +172,15 @@ ax.set_ylabel("VIF"); ax.set_title("Fase A.4 - Factor de Inflacion de la Varianz
 ax.legend()
 fig.tight_layout(); fig.savefig(f"{FIGDIR}/a4_vif.png", dpi=120); plt.close(fig)
 
+# =============================================================================
+# PARTICION DE LOS DATOS:  75 % ENTRENAMIENTO  /  25 % PRUEBA
+# =============================================================================
+#   test_size=0.25   -> 25 % apartado para prueba   ->  111 pacientes
+#   el 75 % restante -> entrenamiento               ->  331 pacientes
+#                       (implicito; equivale a train_size=0.75)
+#
+# Aviso: con solo 111 muestras de prueba el R2 de test es ruidoso, por eso
+# toda comparacion de este caso se hace sobre la validacion cruzada 5-fold.
 titulo("FASE A.5 - PARTICION 75/25 Y ESTANDARIZACION")
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=RANDOM_STATE)
@@ -212,6 +221,23 @@ def evaluar(nombre, pipe, cols=None):
     return m, pipe
 
 
+# =============================================================================
+# ENTRENAMIENTO Y EVALUACION
+# =============================================================================
+# evaluar() encadena las tres operaciones:
+#   pipe.fit(Xa, y_train)      -> ENTRENA, solo con el 75 %
+#   pipe.predict(Xb)           -> EVALUA, con el 25 % nunca visto
+#   cross_val_score(...)       -> 5 particiones internas del 75 %
+#
+# FUNCION OBJETIVO -- OLS para el modelo final (sin regularizacion):
+#     J(b) = min SUM (y_j - y_est_j)^2      ->   b = (X^T X)^-1 X^T y
+#
+# Las variantes Ridge y Lasso anaden un termino de penalizacion:
+#     Ridge:  ... + alpha * SUM b_i^2       (encoge los coeficientes)
+#     Lasso:  ... + alpha * SUM |b_i|       (ademas puede anularlos)
+#
+# ECUACION DEL MODELO:
+#     y_est = b0 + SUM b_i * z_i            con z_i = (x_i - mu_i)/sigma_i
 titulo("FASE B.1 - VARIANTES DE REGRESION LINEAL MULTIPLE")
 print("Todas con StandardScaler dentro del Pipeline:\n")
 

@@ -433,29 +433,64 @@ const FIELDS=[
 
 let mode='linear';
 
+/* ---------------------------------------------------------------------------
+   REGRESION LINEAL MULTIPLE — ecuacion ejecutada en el navegador
+
+       y_est = b0 + SUM b_i * z_i        con  z_i = (x_i - mu_i) / sigma_i
+
+   Los b_i, mu_i y sigma_i vienen de wine_model_linear.json, exportado por
+   train_wine_model.py. Aqui no se entrena nada: solo se aplica la formula.
+   T[] acumula el desglose termino a termino para mostrarlo en pantalla.
+--------------------------------------------------------------------------- */
 function predLin(v){
+  // b0: el intercepto es el punto de partida de la suma
   let y=LIN.intercept;
   const T=[{n:"B0 Intercepto",c:LIN.intercept}];
   LIN.features.forEach(f=>{
+    // z_i = (x_i - mu_i) / sigma_i    -> estandarizacion
     const xs=(v[f]-LIN.means[f])/LIN.stds[f];
+    // b_i * z_i                        -> aporte de esta variable, se acumula
     const c=LIN.coef[f]*xs; y+=c;
     T.push({n:f,xi:v[f],mu:LIN.means[f],sg:LIN.stds[f],xs,b:LIN.coef[f],c});
   });
   return{y,T};
 }
 
+/* ---------------------------------------------------------------------------
+   REGRESION POLINOMICA GRADO 2 — ecuacion ejecutada en el navegador
+
+       y_est = b0 + SUM b_i*z_i + SUM b_ii*z_i^2 + SUM b_ij*z_i*z_j
+                    [11 lineales]  [11 cuadraticos] [55 cruzados]  = 77 terminos
+
+   OJO al orden: se estandariza PRIMERO y se expande DESPUES, igual que el
+   Pipeline de Python. Los terminos son productos de variables ya estandarizadas
+   (z_i * z_j), no productos estandarizados a posteriori.
+
+   Los coeficientes de wine_model_poly.json estan indexados POR NOMBRE, con el
+   mismo formato que genera PolynomialFeatures de scikit-learn: "alcohol^2",
+   "fixed acidity volatile acidity", etc. Por eso aqui se reconstruyen esos
+   nombres (EN) en paralelo a sus valores (EV).
+--------------------------------------------------------------------------- */
 function predPoly(v){
   const F=POLY.features;
+  // z_i = (x_i - mu_i) / sigma_i    -> las 11 variables estandarizadas
   const Xsc=F.map(f=>(v[f]-POLY.means[f])/POLY.stds[f]);
+  // EN = nombre de cada termino, EV = su valor numerico
   const EN=[],EV=[];
+  // 1) los 11 terminos lineales: z_i
   F.forEach((f,i)=>{EN.push(f);EV.push(Xsc[i]);});
+  // 2) cuadraticos y cruzados: j empieza en i, de modo que i==j da z_i^2
+  //    y j>i da cada par z_i*z_j una sola vez -> 11 + 55 = 66 terminos
   for(let i=0;i<F.length;i++)
     for(let j=i;j<F.length;j++){
       EN.push(i===j?F[i]+"^2":F[i]+" "+F[j]);
       EV.push(Xsc[i]*Xsc[j]);
     }
+  // b0: punto de partida de la suma
   let y=POLY.intercept;
   const T=[{n:"B0 Intercepto",c:POLY.intercept}];
+  // Producto punto: SUM b_termino * valor_termino. Si un nombre no existe en
+  // el JSON su coeficiente se toma como 0, de modo que la suma no se rompe.
   EN.forEach((n,k)=>{const b=POLY.coef[n]||0;const c=b*EV[k];y+=c;T.push({n,v:EV[k],b,c});});
   return{y,T};
 }

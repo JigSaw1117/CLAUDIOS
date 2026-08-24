@@ -245,6 +245,24 @@ const LABELS = {
 const estado = {};
 VARS.forEach(v => estado[v] = M.medianas[v]);
 
+/* ---------------------------------------------------------------------------
+   ECUACION DEL MODELO — Polinomial grado 2 con Ridge
+
+       y_est = b0 + SUM b_i*z_i + SUM b_ii*z_i^2 + SUM b_ij*z_i*z_j
+                    [10 lineales]  [10 cuadraticos] [45 cruzados]  = 65 terminos
+
+   Los 65 terminos no se identifican por nombre sino por una MATRIZ DE
+   EXPONENTES (M.powers, de 65 x 10), la misma que exporta
+   PolynomialFeatures.powers_ en Python. Cada fila indica a que potencia va
+   cada variable en ese termino:
+
+       [1,0,0,0,0,0,0,0,0,0]  ->  z_1          (age)
+       [2,0,0,0,0,0,0,0,0,0]  ->  z_1^2        (age al cuadrado)
+       [1,0,1,0,0,0,0,0,0,0]  ->  z_1 * z_3    (age por bmi)
+
+   El termino m vale entonces:   t_m = PRODUCTO de z_i ^ powers[m][i]
+--------------------------------------------------------------------------- */
+
 /** Expande el vector base según los exponentes exportados por PolynomialFeatures. */
 function expandir(x) {
   return M.powers.map(p => {
@@ -269,16 +287,20 @@ function nombreTermino(p) {
 
 function predecir() {
   const x = VARS.map(v => estado[v]);
+  // Los 65 terminos, en el mismo orden en que scikit-learn los genero.
   const t = expandir(x);
   let suma = 0;
   const filas = [];
   for (let i = 0; i < t.length; i++) {
+    // OJO: aqui se estandariza el TERMINO ya expandido, porque el Pipeline de
+    // Python es PolynomialFeatures -> StandardScaler -> Ridge, en ese orden.
     const z = (t[i] - M.mu[i]) / M.sigma[i];
-    const c = M.coef[i] * z;
+    const c = M.coef[i] * z;                   // b_i * z_i
     suma += c;
     filas.push({ nombre: nombreTermino(M.powers[i]), p: M.powers[i], t: t[i],
                  mu: M.mu[i], sigma: M.sigma[i], z, beta: M.coef[i], aporte: c });
   }
+  // y_est = b0 + SUM b_i * z_i   sobre los 65 terminos
   return { pred: M.intercept + suma, suma, filas };
 }
 

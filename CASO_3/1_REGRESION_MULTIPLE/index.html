@@ -232,17 +232,27 @@ const LABELS = {
 const estado = {};
 VARS.forEach(v => estado[v] = M.medianas[v]);
 
+/* ---------------------------------------------------------------------------
+   ECUACION DEL MODELO — Regresion Lineal Multiple (OLS, 10 variables)
+
+       y_est = b0 + SUM b_i * z_i        con  z_i = (x_i - mu_i) / sigma_i
+
+   Es el caso mas directo de los tres: sin derivados, sin expansion polinomica
+   y sin transformar el objetivo. Los b_i, mu_i y sigma_i vienen de model.js,
+   exportado por train.py tras entrenar con el 75 % de los datos.
+--------------------------------------------------------------------------- */
 function predecir() {
   let suma = 0;
   const filas = [];
   for (let i = 0; i < VARS.length; i++) {
     const x = estado[VARS[i]];
-    const z = (x - M.mu[i]) / M.sigma[i];      // estandarización
-    const c = M.coef[i] * z;                    // aporte a la predicción
+    const z = (x - M.mu[i]) / M.sigma[i];      // z_i = (x_i - mu_i) / sigma_i
+    const c = M.coef[i] * z;                    // b_i * z_i
     suma += c;
     filas.push({ nombre: VARS[i], x, mu: M.mu[i], sigma: M.sigma[i],
                  z, beta: M.coef[i], aporte: c });
   }
+  // y_est = b0 + SUM b_i * z_i
   return { pred: M.intercept + suma, suma, filas };
 }
 

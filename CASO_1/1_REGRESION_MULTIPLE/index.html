@@ -260,18 +260,29 @@ function construir() {
   });
 }
 
+/* ---------------------------------------------------------------------------
+   ECUACION DEL MODELO — Ridge sobre el LOGARITMO del precio
+
+       ln(y_est) = b0 + SUM b_i * z_i     con  z_i = (x_i - mu_i) / sigma_i
+       y_est     = e^( ln(y_est) )        se deshace el logaritmo al final
+
+   Por eso los aportes se muestran en PORCENTAJE y no en dolares: en escala
+   logaritmica cada b_i*z_i es un cambio multiplicativo, e^(b_i*z_i) - 1.
+--------------------------------------------------------------------------- */
 function predecir() {
+  // Los 21 descriptores: 8 originales + 9 derivados + 4 dummies
   const x = construir();
   let suma = 0;
   const filas = [];
   for (let i = 0; i < x.length; i++) {
-    const z = (x[i] - M.mu[i]) / M.sigma[i];
-    const c = M.coef[i] * z;
+    const z = (x[i] - M.mu[i]) / M.sigma[i];   // z_i = (x_i - mu_i)/sigma_i
+    const c = M.coef[i] * z;                   // b_i * z_i
     suma += c;
     filas.push({ nombre: M.descriptores[i], x: x[i], mu: M.mu[i], sigma: M.sigma[i],
                  z, beta: M.coef[i], aporte: c });
   }
-  const logY = M.intercept + suma;
+  const logY = M.intercept + suma;           // ln(y_est) = b0 + SUM b_i*z_i
+  // Math.exp deshace el logaritmo y devuelve el precio en dolares.
   return { pred: Math.exp(logY), logY, suma, filas };
 }
 
