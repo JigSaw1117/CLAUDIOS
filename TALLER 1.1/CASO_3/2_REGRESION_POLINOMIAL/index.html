@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso 3 — Regresión Polinomial | UAC</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --uac-navy:#0d3c6c; --uac-dark:#0a2540; --uac-amber:#f77f00; --uac-bg:#f4f8fb;
+    --txt:#2b2d42; --muted:#5c6b73; --line:#dbe6f0; --ok:#1d9e6f; --bad:#d62828;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--uac-bg);color:var(--txt);
+       min-height:100vh;display:flex;flex-direction:column}
+  header{background:var(--uac-dark);color:#fff;padding:15px 30px;display:flex;
+         justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .logo{font-weight:800;font-size:1.1rem;color:#e0f7f5;display:flex;align-items:center;gap:10px}
+  nav a{color:#b8d4e8;text-decoration:none;font-weight:600;margin-left:18px;
+        font-size:.88rem;transition:color .2s}
+  nav a:hover,nav a.active{color:#00b4d8}
+  .container{max-width:1150px;margin:32px auto;padding:0 20px;flex:1;width:100%}
+  .hero{background:linear-gradient(135deg,#5a189a,#7b2cbf);color:#fff;
+        border-radius:16px;padding:28px 30px;margin-bottom:22px}
+  .hero h1{font-size:1.65rem;margin-bottom:6px}
+  .hero p{color:#e6d9f7;font-size:.95rem}
+  .card{background:#fff;border-radius:14px;padding:24px;margin-bottom:20px;
+        box-shadow:0 6px 20px rgba(13,60,108,.07);border-top:4px solid var(--uac-amber)}
+  .card h2{color:var(--uac-navy);font-size:1.05rem;margin-bottom:16px;
+           padding-bottom:8px;border-bottom:2px solid var(--line)}
+  .card h3{color:var(--uac-navy);font-size:.92rem;margin:18px 0 8px}
+  .grid{display:grid;grid-template-columns:1.05fr 1fr;gap:20px;align-items:start}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+  @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
+  .m{background:#fff;border-radius:12px;padding:14px 16px;text-align:center;
+     box-shadow:0 4px 14px rgba(13,60,108,.06);border-left:4px solid #7b2cbf}
+  .m b{display:block;font-size:1.5rem;color:var(--uac-navy);font-weight:800}
+  .m span{font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.03em}
+  .var{margin-bottom:14px}
+  .var .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .var .nm{font-size:.85rem;font-weight:600}
+  .var .nm code{background:#eef4fa;color:var(--uac-navy);padding:1px 6px;
+                border-radius:4px;font-size:.72rem;margin-right:7px;font-weight:700}
+  .var .un{font-size:.72rem;color:var(--muted)}
+  .var .io{display:flex;gap:10px;align-items:center;margin-top:5px}
+  input[type=range]{flex:1;accent-color:#7b2cbf}
+  input[type=number],select{width:92px;padding:6px 8px;background:#fff;
+    border:1.5px solid var(--line);border-radius:6px;color:var(--txt);
+    font-family:inherit;font-size:.85rem;font-weight:600}
+  select{width:100%}
+  input:focus,select:focus{outline:none;border-color:#7b2cbf}
+  .rango{font-size:.7rem;color:var(--muted);margin-top:2px}
+  .out{font-size:2.6rem;font-weight:800;color:#5a189a;margin:4px 0}
+  .escala{height:11px;background:#e8eef5;border-radius:99px;margin:12px 0 6px;
+          position:relative;overflow:hidden}
+  .escala i{position:absolute;top:0;bottom:0;left:0;border-radius:99px;
+            background:linear-gradient(90deg,var(--ok),var(--uac-amber),var(--bad))}
+  .escala-lbl{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted)}
+  .nota{color:var(--muted);font-size:.8rem;margin-top:10px;line-height:1.55}
+  table{width:100%;border-collapse:collapse;font-size:.82rem}
+  th{background:var(--uac-navy);color:#fff;text-align:right;padding:8px 10px;
+     font-weight:600;font-size:.75rem}
+  th:first-child,td:first-child{text-align:left}
+  td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right;
+     font-variant-numeric:tabular-nums}
+  tbody tr:nth-child(even){background:#f7fafd}
+  td:first-child{font-family:ui-monospace,Consolas,monospace;font-size:.78rem;
+                 color:var(--uac-navy);font-weight:600}
+  .pos{color:var(--bad);font-weight:600} .neg{color:var(--ok);font-weight:600}
+  .scroll{overflow-x:auto} .scroll table{min-width:600px}
+  .formula{background:#f7fafd;border-left:4px solid #7b2cbf;border-radius:8px;
+    padding:14px 16px;margin-bottom:12px;font-family:ui-monospace,Consolas,monospace;
+    font-size:.95rem;overflow-x:auto;white-space:nowrap;color:var(--uac-dark)}
+  .formula .n{color:var(--uac-amber);font-weight:700}
+  .paso{background:#f7fafd;border:1px solid var(--line);border-radius:8px;
+        padding:11px 14px;margin-bottom:10px}
+  .paso .lbl{font-size:.78rem;color:#5a189a;font-weight:700;margin-bottom:5px}
+  .paso .calc{font-family:ui-monospace,Consolas,monospace;font-size:.78rem;
+              overflow-x:auto;white-space:nowrap;color:#334}
+  .big{font-size:1.05rem;font-weight:800;color:#5a189a}
+  .aviso{background:#fff3e0;border-left:4px solid var(--uac-amber);border-radius:8px;
+         padding:12px 14px;font-size:.8rem;color:#7a4a00;margin-top:14px;line-height:1.6}
+  .alerta{background:#fdeaea;border-left:4px solid var(--bad);border-radius:8px;
+          padding:12px 14px;font-size:.8rem;color:#8b1a1a;margin-top:12px;line-height:1.6}
+  .fila-mala{background:#fdeaea !important}
+  footer{background:var(--uac-dark);color:#b8d4e8;text-align:center;padding:22px;
+         font-size:.82rem;margin-top:auto}
+  .fig{width:100%;border-radius:10px;border:1px solid var(--line);margin-top:8px}
+</style>
+</head>
+<body>
+<!-- Modo embebido: la aplicacion de pagina unica (index.html) muestra esta pagina
+     dentro de un marco, asi que se ocultan su cabecera y su pie para no duplicar
+     la navegacion. La clase se aplica antes del render para evitar parpadeo. -->
+<script>
+  if (new URLSearchParams(location.search).has("embed")) {
+    document.documentElement.classList.add("embebido");
+  }
+</script>
+<style>
+  html.embebido > body > header:first-of-type,
+  html.embebido > body > footer { display: none !important; }
+</style>
+
+<header>
+  <div class="logo">🦅 UAC — Caso 3 · Regresión Polinomial</div>
+  <nav>
+    <a href="../../index.html">🏠 Portada</a>
+    <a href="../../CASO_1/index.html">📌 Caso 1</a>
+    <a href="../../CASO_2/index.html">🍷 Caso 2</a>
+    <a href="../index.html">📈 Caso 3</a>
+    <a href="../1_REGRESION_MULTIPLE/index.html">📐 Múltiple</a>
+    <a href="./index.html" class="active">📊 Polinomial</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="hero">
+    <h1>Regresión Polinomial sobre la progresión de la diabetes</h1>
+    <p>Grado 2 con regularización Ridge · 65 términos · dataset
+       <code>load_diabetes</code> de Scikit-learn · partición 75 / 25</p>
+  </div>
+
+  <div class="metrics" id="metrics"></div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Variables basales del paciente</h2>
+      <div id="inputs"></div>
+      <p class="nota">A partir de estas 10 variables el modelo construye
+         <b>65 términos</b>: las 10 originales, sus 10 cuadrados y los 45 productos
+         cruzados.</p>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Progresión estimada a un año</h2>
+        <div class="out" id="out">—</div>
+        <div class="escala"><i id="bar"></i></div>
+        <div class="escala-lbl"><span id="tmin"></span><span id="tmax"></span></div>
+        <p class="nota" id="interp"></p>
+        <div class="aviso">
+          <b>Aviso.</b> Aplicativo académico de regresión, no una herramienta de
+          diagnóstico. El objetivo es una escala relativa de progresión, no una unidad
+          clínica.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Términos que más pesan</h2>
+        <table id="contrib"></table>
+        <p class="nota">En el modelo polinomial el efecto de una variable se reparte
+           entre su término lineal, su cuadrado y sus productos cruzados: por eso
+           <b>los coeficientes ya no son interpretables individualmente</b>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Función objetivo</h2>
+    <div class="formula">ŷ = β₀ + Σ βᵢxᵢ + Σ βᵢᵢxᵢ² + Σ βᵢⱼxᵢxⱼ</div>
+    <div class="formula" id="fnum"></div>
+    <p class="nota" id="fdesc"></p>
+  </div>
+
+  <div class="card">
+    <h2>Cálculo paso a paso</h2>
+    <div id="pasos"></div>
+    <h3>Detalle por término <span id="nterm" style="color:var(--muted);font-weight:500"></span></h3>
+    <div class="scroll"><table id="full">
+      <thead><tr><th>Término</th><th>tᵢ</th><th>μᵢ</th><th>σᵢ</th>
+                 <th>zᵢ</th><th>βᵢ</th><th>βᵢ · zᵢ</th></tr></thead>
+      <tbody></tbody></table></div>
+    <p class="nota" id="trunc"></p>
+  </div>
+
+  <div class="card">
+    <h2>Fase B — El sobreajuste, cuantificado</h2>
+    <div class="scroll"><table id="curva">
+      <thead><tr><th>Grado</th><th>Términos</th><th>Ratio n/p</th><th>R² entren.</th>
+                 <th>R² prueba</th><th>R² CV 5-fold</th><th>Brecha</th></tr></thead>
+      <tbody></tbody></table></div>
+    <div class="alerta">
+      <b>El resultado más instructivo del trabajo.</b> El polinomio de grado 3 sin
+      regularizar alcanza el <b>mejor R² de entrenamiento de todo el estudio (0.8960)</b>
+      y es, con enorme diferencia, <b>el peor modelo de todos</b> fuera de la muestra:
+      R² de prueba <b>−8.09</b> y de validación cruzada <b>−171.12</b>. Un R² negativo
+      significa que predice <b>peor que responder siempre la media</b>. Es el argumento
+      central contra evaluar un modelo por su ajuste en entrenamiento.
+    </div>
+    <img class="fig" src="figuras/b_curva_validacion.png"
+         alt="Curva de validación por grado del polinomio">
+    <p class="nota">Con Ridge el sobreajuste desaparece en los tres grados, pero el
+       resultado <b>converge al del modelo lineal</b> (R² de CV ≈ 0.460): la penalización
+       no extrae información de los términos polinomiales, los neutraliza. El α elegido
+       por validación cruzada crece con el grado (1.58 → 25.12 → 199.53).</p>
+  </div>
+
+  <div class="card">
+    <h2>Conclusión: la expansión polinomial no aporta mejora</h2>
+    <div class="scroll"><table id="vs">
+      <thead><tr><th>Criterio</th><th>Lineal Múltiple</th><th>Polinomial gr. 2 + Ridge</th></tr></thead>
+      <tbody>
+        <tr><td>Términos</td><td>10</td><td>65</td></tr>
+        <tr><td>R² validación cruzada</td><td>0.4606</td><td>0.4611</td></tr>
+        <tr><td>Desviación entre particiones</td><td>±0.085</td><td>±0.083</td></tr>
+        <tr><td>Brecha entrenamiento − CV</td><td>0.058</td><td>0.076</td></tr>
+        <tr><td>Coeficientes interpretables</td><td>Sí</td><td>No</td></tr>
+        <tr><td>Depende de hiperparámetro</td><td>No</td><td>Sí (α)</td></tr>
+      </tbody></table></div>
+    <p class="nota">La diferencia en validación cruzada es de <b>+0.0005</b>, frente a una
+       desviación entre particiones de <b>±0.083</b>: la ventaja aparente es
+       <b>166 veces menor que el ruido de la propia medición</b>. Los modelos son
+       estadísticamente indistinguibles y, por parsimonia, <b>se recomienda el lineal
+       múltiple</b>. Que la expansión no aporte nada significa que la relación es
+       <b>esencialmente lineal</b> en el rango observado — coherente con el diagnóstico
+       de residuos del Informe 1, obtenido por una vía independiente.</p>
+  </div>
+</div>
+
+<footer>
+  Universidad Andina del Cusco — Inteligencia Artificial (2026-II)<br>
+  Caso 3: Diabetes · Regresión Polinomial
+</footer>
+
+<script src="model.js"></script>
+<script>
+/* ---------------------------------------------------------------------------
+   Inferencia. Reproduce el Pipeline de scikit-learn:
+   PolynomialFeatures(powers) -> StandardScaler(mu, sigma) -> Ridge(coef, intercept)
+--------------------------------------------------------------------------- */
+const M = MODELO_POLINOMIAL;
+const VARS = M.variables;
+
+const LABELS = {
+  age:["Edad","años"], sex:["Sexo","categórica"],
+  bmi:["Índice de masa corporal","kg/m²"], bp:["Presión arterial media","mm Hg"],
+  s1:["Colesterol total (tc)","mg/dL"], s2:["Lipoproteínas LDL (ldl)","mg/dL"],
+  s3:["Lipoproteínas HDL (hdl)","mg/dL"], s4:["Razón colesterol total / HDL (tch)","ratio"],
+  s5:["Triglicéridos séricos, posiblemente en log (ltg)","log"],
+  s6:["Glucosa en sangre (glu)","mg/dL"],
+};
+
+const estado = {};
+VARS.forEach(v => estado[v] = M.medianas[v]);
+
+/* ---------------------------------------------------------------------------
+   ECUACION DEL MODELO — Polinomial grado 2 con Ridge
+
+       y_est = b0 + SUM b_i*z_i + SUM b_ii*z_i^2 + SUM b_ij*z_i*z_j
+                    [10 lineales]  [10 cuadraticos] [45 cruzados]  = 65 terminos
+
+   Los 65 terminos no se identifican por nombre sino por una MATRIZ DE
+   EXPONENTES (M.powers, de 65 x 10), la misma que exporta
+   PolynomialFeatures.powers_ en Python. Cada fila indica a que potencia va
+   cada variable en ese termino:
+
+       [1,0,0,0,0,0,0,0,0,0]  ->  z_1          (age)
+       [2,0,0,0,0,0,0,0,0,0]  ->  z_1^2        (age al cuadrado)
+       [1,0,1,0,0,0,0,0,0,0]  ->  z_1 * z_3    (age por bmi)
+
+   El termino m vale entonces:   t_m = PRODUCTO de z_i ^ powers[m][i]
+--------------------------------------------------------------------------- */
+
+/** Expande el vector base según los exponentes exportados por PolynomialFeatures. */
+function expandir(x) {
+  return M.powers.map(p => {
+    let t = 1;
+    for (let j = 0; j < p.length; j++) {
+      if (p[j] === 1) t *= x[j];
+      else if (p[j] > 1) t *= Math.pow(x[j], p[j]);
+    }
+    return t;
+  });
+}
+
+/** Nombre legible de un término a partir de sus exponentes. */
+function nombreTermino(p) {
+  const partes = [];
+  for (let j = 0; j < p.length; j++) {
+    if (p[j] === 1) partes.push(VARS[j]);
+    else if (p[j] > 1) partes.push(`${VARS[j]}^${p[j]}`);
+  }
+  return partes.length ? partes.join("·") : "1";
+}
+
+function predecir() {
+  const x = VARS.map(v => estado[v]);
+  // Los 65 terminos, en el mismo orden en que scikit-learn los genero.
+  const t = expandir(x);
+  let suma = 0;
+  const filas = [];
+  for (let i = 0; i < t.length; i++) {
+    // OJO: aqui se estandariza el TERMINO ya expandido, porque el Pipeline de
+    // Python es PolynomialFeatures -> StandardScaler -> Ridge, en ese orden.
+    const z = (t[i] - M.mu[i]) / M.sigma[i];
+    const c = M.coef[i] * z;                   // b_i * z_i
+    suma += c;
+    filas.push({ nombre: nombreTermino(M.powers[i]), p: M.powers[i], t: t[i],
+                 mu: M.mu[i], sigma: M.sigma[i], z, beta: M.coef[i], aporte: c });
+  }
+  // y_est = b0 + SUM b_i * z_i   sobre los 65 terminos
+  return { pred: M.intercept + suma, suma, filas };
+}
+
+/* ------------------------------------------------------------------ interfaz */
+const nf = (n, d = 4) => Number(n).toLocaleString("es-PE",
+  { minimumFractionDigits: d, maximumFractionDigits: d });
+
+function construirInputs() {
+  document.getElementById("inputs").innerHTML = VARS.map(v => {
+    const [lo, hi] = M.rangos[v];
+    const [nm, un] = LABELS[v];
+    if (v === "sex") {
+      return `<div class="var"><div class="top">
+          <span class="nm"><code>sex</code>${nm}</span></div>
+        <div class="io"><select id="i_sex">
+          <option value="0">Categoría 0</option><option value="1">Categoría 1</option>
+        </select></div>
+        <div class="rango">El dataset original no indica qué categoría corresponde a cada sexo.</div>
+        </div>`;
+    }
+    const paso = (hi - lo) < 5 ? 0.001 : (hi - lo) > 100 ? 1 : 0.1;
+    return `<div class="var">
+      <div class="top"><span class="nm"><code>${v}</code>${nm}</span>
+                       <span class="un">${un}</span></div>
+      <div class="io">
+        <input type="range" id="r_${v}" min="${lo}" max="${hi}" step="${paso}" value="${estado[v]}">
+        <input type="number" id="i_${v}" min="${lo}" max="${hi}" step="${paso}" value="${estado[v]}">
+      </div>
+      <div class="rango">Rango observado: ${lo} – ${hi}</div></div>`;
+  }).join("");
+
+  VARS.forEach(v => {
+    if (v === "sex") {
+      const s = document.getElementById("i_sex");
+      s.value = String(Math.round(estado.sex));
+      s.oninput = () => { estado.sex = parseFloat(s.value); actualizar(); };
+      return;
+    }
+    const r = document.getElementById(`r_${v}`), i = document.getElementById(`i_${v}`);
+    r.oninput = () => { estado[v] = parseFloat(r.value); i.value = r.value; actualizar(); };
+    i.oninput = () => {
+      const val = parseFloat(i.value);
+      if (!isNaN(val)) { estado[v] = val; r.value = val; actualizar(); }
+    };
+  });
+}
+
+function actualizar() {
+  const r = predecir();
+  document.getElementById("out").textContent = nf(r.pred, 1);
+
+  const pct = Math.max(0, Math.min(100,
+    100 * (r.pred - M.target.min) / (M.target.max - M.target.min)));
+  document.getElementById("bar").style.width = pct.toFixed(1) + "%";
+  document.getElementById("interp").innerHTML =
+    `La media del estudio es <b>${nf(M.target.media, 1)}</b>. Esta predicción está
+     <b>${r.pred >= M.target.media ? "por encima" : "por debajo"}</b> de la media
+     (${nf(Math.abs(r.pred - M.target.media), 1)} puntos).
+     Error típico del modelo: ±${nf(M.metricas.mae_test, 1)} puntos (MAE de prueba).`;
+
+  const orden = r.filas.slice().sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte));
+  document.getElementById("contrib").innerHTML =
+    `<thead><tr><th>Término</th><th>Aporte</th></tr></thead><tbody>` +
+    orden.slice(0, 10).map(f => `<tr><td>${f.nombre}</td>
+      <td class="${f.aporte >= 0 ? "pos" : "neg"}">${f.aporte >= 0 ? "+" : ""}${nf(f.aporte, 2)}</td></tr>`
+    ).join("") + `</tbody>`;
+
+  document.getElementById("fnum").innerHTML =
+    `ŷ = <span class="n">${nf(M.intercept, 4)}</span> + Σ βᵢ · zᵢ &nbsp; (${r.filas.length} términos)`;
+  document.getElementById("fdesc").innerHTML =
+    `<code>PolynomialFeatures(degree=2)</code> genera <b>${r.filas.length}</b> términos a
+     partir de las 10 variables. Al multiplicarse el número de parámetros por 6.5, se
+     ajusta con <b>Ridge (L2, α = ${nf(M.alpha, 2)})</b> elegido por validación cruzada;
+     sin esa penalización el modelo se sobreajusta y su R² de CV cae de 0.4606 a 0.2979.
+     La estandarización va <b>después</b> de la expansión, porque los términos cuadráticos
+     y cruzados tienen escalas muy distintas de las variables originales.`;
+
+  // Ejemplo de cada tipo de término (lineal, cuadrático, cruzado): con sex = 0 varios
+  // de los de mayor aporte valen cero y el ejemplo no se entendería.
+  const grado = f => f.p.reduce((a, b) => a + b, 0);
+  const lineal = r.filas.find(f => grado(f) === 1 && f.t !== 0);
+  const cuad = r.filas.find(f => f.p.some(e => e === 2) && f.t !== 0);
+  const cruz = r.filas.find(f => grado(f) === 2 && f.p.filter(e => e === 1).length === 2 && f.t !== 0);
+  const ej = [];
+  if (lineal) ej.push(`${lineal.nombre} = ${nf(lineal.t, 3)}`);
+  if (cuad) {
+    const i = cuad.p.findIndex(e => e === 2);
+    ej.push(`${cuad.nombre} = ${nf(estado[VARS[i]], 3)}² = ${nf(cuad.t, 3)}`);
+  }
+  if (cruz) {
+    const idx = cruz.p.map((e, i) => e === 1 ? i : -1).filter(i => i >= 0);
+    ej.push(`${cruz.nombre} = ${nf(estado[VARS[idx[0]]], 3)} × ${nf(estado[VARS[idx[1]]], 3)} = ${nf(cruz.t, 3)}`);
+  }
+
+  const top = orden.slice(0, 3);
+  document.getElementById("pasos").innerHTML = `
+    <div class="paso"><div class="lbl">Paso 1 · Construir los ${r.filas.length} términos</div>
+      <div class="calc">${ej.join("<br>")}</div></div>
+    <div class="paso"><div class="lbl">Paso 2 · Estandarizar: zᵢ = (tᵢ − μᵢ) / σᵢ</div>
+      <div class="calc">${top.map(f =>
+        `${f.nombre}: (${nf(f.t, 3)} − ${nf(f.mu, 3)}) / ${nf(f.sigma, 3)} = ${nf(f.z, 4)}`
+      ).join("<br>")}</div></div>
+    <div class="paso"><div class="lbl">Paso 3 · Multiplicar por su coeficiente y sumar</div>
+      <div class="calc">${top.map(f =>
+        `${f.nombre}: ${nf(f.beta, 4)} × ${nf(f.z, 4)} = ${nf(f.aporte, 4)}`
+      ).join("<br>")}<br>…<br><b>Σ βᵢ · zᵢ = ${nf(r.suma, 4)}</b></div></div>
+    <div class="paso"><div class="lbl">Paso 4 · Sumar el intercepto β₀</div>
+      <div class="calc">ŷ = ${nf(M.intercept, 4)} + (${nf(r.suma, 4)}) =
+        <span class="big">${nf(r.pred, 4)}</span></div></div>`;
+
+  const lim = 40;
+  const muestra = orden.slice(0, lim);
+  document.getElementById("nterm").textContent = `(${r.filas.length} términos en total)`;
+  document.querySelector("#full tbody").innerHTML = muestra.map(f => `
+    <tr><td>${f.nombre}</td><td>${nf(f.t, 3)}</td><td>${nf(f.mu, 3)}</td>
+        <td>${nf(f.sigma, 3)}</td><td>${nf(f.z, 3)}</td><td>${nf(f.beta, 4)}</td>
+        <td class="${f.aporte >= 0 ? "pos" : "neg"}">${nf(f.aporte, 4)}</td></tr>`).join("")
+    + `<tr><td colspan="6" style="text-align:right;color:var(--muted)">Σ βᵢ · zᵢ (los ${r.filas.length})</td>
+         <td><b>${nf(r.suma, 4)}</b></td></tr>
+       <tr><td colspan="6" style="text-align:right;color:var(--muted)">+ intercepto β₀</td>
+         <td><b>${nf(M.intercept, 4)}</b></td></tr>
+       <tr><td colspan="6" style="text-align:right;color:var(--muted)">= ŷ</td>
+         <td><b style="color:#5a189a">${nf(r.pred, 4)}</b></td></tr>`;
+  document.getElementById("trunc").textContent =
+    `Se muestran los ${lim} términos de mayor aporte de un total de ${r.filas.length}.`;
+}
+
+function init() {
+  document.getElementById("tmin").textContent = `mín. ${M.target.min}`;
+  document.getElementById("tmax").textContent = `máx. ${M.target.max}`;
+
+  const m = M.metricas;
+  document.getElementById("metrics").innerHTML = `
+    <div class="m"><b>${m.r2_test.toFixed(3)}</b><span>R² PRUEBA</span></div>
+    <div class="m"><b>${m.r2_cv.toFixed(3)}</b><span>R² VALIDACIÓN CRUZADA</span></div>
+    <div class="m"><b>${M.coef.length}</b><span>TÉRMINOS DEL MODELO</span></div>
+    <div class="m"><b>${M.alpha.toFixed(1)}</b><span>α RIDGE (POR CV)</span></div>`;
+
+  document.querySelector("#curva tbody").innerHTML = M.curva.flatMap(c => {
+    const brechaOls = c.ols_train - c.ols_cv;
+    const malo = c.ols_cv < 0;
+    return [
+      `<tr class="${malo ? "fila-mala" : ""}"><td>${c.grado} — sin regularizar</td>
+        <td>${c.n_terminos}</td><td>${(M.n_train / c.n_terminos).toFixed(2)}</td>
+        <td><b>${c.ols_train.toFixed(4)}</b></td>
+        <td class="${c.ols_test < 0 ? "pos" : ""}">${c.ols_test.toFixed(4)}</td>
+        <td class="${c.ols_cv < 0 ? "pos" : ""}">${c.ols_cv.toFixed(4)}</td>
+        <td class="${brechaOls > 1 ? "pos" : ""}">${brechaOls.toFixed(4)}</td></tr>`,
+      `<tr><td>${c.grado} — con Ridge (α = ${c.alpha.toFixed(2)})</td>
+        <td>${c.n_terminos}</td><td>${(M.n_train / c.n_terminos).toFixed(2)}</td>
+        <td>${c.ridge_train.toFixed(4)}</td><td>${c.ridge_test.toFixed(4)}</td>
+        <td class="neg">${c.ridge_cv.toFixed(4)}</td>
+        <td>${(c.ridge_train - c.ridge_cv).toFixed(4)}</td></tr>`,
+    ];
+  }).join("");
+
+  construirInputs();
+  actualizar();
+}
+init();
+</script>
+</body>
+</html>

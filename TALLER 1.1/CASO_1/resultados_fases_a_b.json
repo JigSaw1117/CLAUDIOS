@@ -1,0 +1,92 @@
+{
+  "n_registros": 20640,
+  "nulos_total_bedrooms": 207,
+  "duplicados": 0,
+  "outliers": {
+    "longitude": 0,
+    "latitude": 0,
+    "housing_median_age": 0,
+    "total_rooms": 1287,
+    "total_bedrooms": 1271,
+    "population": 1196,
+    "households": 1220,
+    "median_income": 681,
+    "median_house_value": 1071
+  },
+  "censurados": 965,
+  "correlaciones_altas": [
+    [
+      "longitude",
+      "latitude",
+      -0.9247
+    ],
+    [
+      "total_rooms",
+      "total_bedrooms",
+      0.9304
+    ],
+    [
+      "total_rooms",
+      "population",
+      0.8571
+    ],
+    [
+      "total_rooms",
+      "households",
+      0.9185
+    ],
+    [
+      "total_bedrooms",
+      "population",
+      0.8777
+    ],
+    [
+      "total_bedrooms",
+      "households",
+      0.9797
+    ],
+    [
+      "population",
+      "households",
+      0.9072
+    ]
+  ],
+  "vif": {
+    "longitude": 8.7,
+    "latitude": 8.83,
+    "housing_median_age": 1.26,
+    "total_rooms": 12.13,
+    "total_bedrooms": 26.88,
+    "population": 6.26,
+    "households": 28.28,
+    "median_income": 1.69
+  },
+  "n_train": 16512,
+  "n_test": 4128,
+  "fase_b": {
+    "lineal": {
+      "nombre": "Lineal multiple (OLS)",
+      "n_terminos": 13,
+      "r2_train": 0.6497,
+      "r2_test": 0.6254,
+      "r2_cv": 0.6477,
+      "r2_cv_std": 0.0132,
+      "rmse_test": 70059.19,
+      "mae_test": 50670.49,
+      "brecha": 0.002
+    },
+    "polinomica": {
+      "nombre": "Polinomica grado 2 (OLS)",
+      "n_terminos": 49,
+      "r2_train": 0.7053,
+      "r2_test": 0.657,
+      "r2_cv": 0.6262,
+      "r2_cv_std": 0.1333,
+      "rmse_test": 67043.55,
+      "mae_test": 46981.22,
+      "brecha": 0.0791
+    },
+    "delta_r2_test": 0.0316,
+    "delta_mae": -3689.27
+  }
+}

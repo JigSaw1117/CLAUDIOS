@@ -662,9 +662,23 @@
   </style>
 </head>
 <body>
+<!-- Modo embebido: la aplicacion de pagina unica (index.html) muestra esta pagina
+     dentro de un marco, asi que se ocultan su cabecera y su pie para no duplicar
+     la navegacion. La clase se aplica antes del render para evitar parpadeo. -->
+<script>
+  if (new URLSearchParams(location.search).has("embed")) {
+    document.documentElement.classList.add("embebido");
+  }
+</script>
+<style>
+  html.embebido > body > header:first-of-type,
+  html.embebido > body > footer,
+  html.embebido [data-chrome] { display: none !important; }
+</style>
+
 
 <!-- NAVBAR UAC INSTITUCIONAL -->
-<div style="width:100%; background:#0a2540; border-bottom:1px solid rgba(0,180,216,0.3); padding:10px 24px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 18px rgba(0,0,0,0.4); margin-bottom: 20px; position:sticky; top:0; z-index:1000;">
+<div data-chrome="nav" style="width:100%; background:#0a2540; border-bottom:1px solid rgba(0,180,216,0.3); padding:10px 24px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 18px rgba(0,0,0,0.4); margin-bottom: 20px; position:sticky; top:0; z-index:1000;">
   <a href="../index.html" style="display:flex; align-items:center; gap:12px; text-decoration:none;">
     <img src="logo-uac.jpg" alt="UAC" style="height:46px; width:auto; border-radius:6px; background:white; padding:3px;" />
     <div style="display:flex; flex-direction:column; text-align:left; line-height:1.15;">
@@ -675,6 +689,7 @@
   <div style="display:flex; gap:10px; align-items:center;">
     <a href="../index.html" style="color:#cbd5e1; text-decoration:none; font-weight:600; font-size:13.5px; padding:7px 14px; border-radius:8px; background:rgba(255,255,255,0.08); transition:all 0.2s;">🏠 Portada Principal</a>
     <a href="./index.html" style="color:#0a2540; text-decoration:none; font-weight:700; font-size:13.5px; padding:7px 14px; border-radius:8px; background:#00b4d8; transition:all 0.2s;">📌 Caso 1 (Casas)</a>
+    <a href="./1_REGRESION_MULTIPLE/index.html" style="color:#cbd5e1; text-decoration:none; font-weight:600; font-size:13.5px; padding:7px 14px; border-radius:8px; background:rgba(255,255,255,0.08); transition:all 0.2s;">📐 Reg. Múltiple</a>
     <a href="../CASO_2/index.html" style="color:#cbd5e1; text-decoration:none; font-weight:600; font-size:13.5px; padding:7px 14px; border-radius:8px; background:rgba(255,255,255,0.08); transition:all 0.2s;">🍷 Caso 2 (Vinos)</a>
     <a href="../CASO_3/index.html" style="color:#cbd5e1; text-decoration:none; font-weight:600; font-size:13.5px; padding:7px 14px; border-radius:8px; background:rgba(255,255,255,0.08); transition:all 0.2s;">📈 Caso 3</a>
   </div>
@@ -1005,7 +1020,7 @@
   </div>
 
   <!-- Footer -->
-  <footer>
+  <footer data-chrome="pie">
     <p>California Real Estate AI • Desplegable de forma estática en <strong>Netlify</strong> • Algoritmo polinómico con Scikit-Learn</p>
   </footer>
 
@@ -1019,46 +1034,7 @@
   var MODELO_URL = "./modelo.json";
 
   // Modelo embebido de respaldo (asegura funcionamiento tanto en Netlify como en local file://)
-  var MODELO_FALLBACK = {
-    "tipo_modelo": "Regresión Polinómica (Grado 2)",
-    "grado": 2,
-    "columnas_numericas": ["longitude", "latitude", "housing_median_age", "total_rooms", "total_bedrooms", "population", "households", "median_income"],
-    "escalado": {
-      "mean": [-119.58229, 35.643149, 28.608285, 2642.004784, 538.496851, 1426.453004, 499.986919, 3.880754],
-      "scale": [2.005593, 2.136601, 12.602118, 2174.580892, 418.994408, 1137.021948, 380.956428, 1.904236]
-    },
-    "powers": [
-      [1,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,0,1,0,0,0],[0,0,0,0,0,1,0,0],[0,0,0,0,0,0,1,0],[0,0,0,0,0,0,0,1],
-      [2,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0],[1,0,1,0,0,0,0,0],[1,0,0,1,0,0,0,0],[1,0,0,0,1,0,0,0],[1,0,0,0,0,1,0,0],[1,0,0,0,0,0,1,0],[1,0,0,0,0,0,0,1],
-      [0,2,0,0,0,0,0,0],[0,1,1,0,0,0,0,0],[0,1,0,1,0,0,0,0],[0,1,0,0,1,0,0,0],[0,1,0,0,0,1,0,0],[0,1,0,0,0,0,1,0],[0,1,0,0,0,0,0,1],
-      [0,0,2,0,0,0,0,0],[0,0,1,1,0,0,0,0],[0,0,1,0,1,0,0,0],[0,0,1,0,0,1,0,0],[0,0,1,0,0,0,1,0],[0,0,1,0,0,0,0,1],
-      [0,0,0,2,0,0,0,0],[0,0,0,1,1,0,0,0],[0,0,0,1,0,1,0,0],[0,0,0,1,0,0,1,0],[0,0,0,1,0,0,0,1],
-      [0,0,0,0,2,0,0,0],[0,0,0,0,1,1,0,0],[0,0,0,0,1,0,1,0],[0,0,0,0,1,0,0,1],
-      [0,0,0,0,0,2,0,0],[0,0,0,0,0,1,1,0],[0,0,0,0,0,1,0,1],
-      [0,0,0,0,0,0,2,0],[0,0,0,0,0,0,1,1],
-      [0,0,0,0,0,0,0,2]
-    ],
-    "categorias_oceano": ["<1H OCEAN", "INLAND", "ISLAND", "NEAR BAY", "NEAR OCEAN"],
-    "coeficientes": [
-      -91241.203683, -97334.08236269, 13014.61658883, -40304.17922186, 98936.72480511, -61192.75621751, 3668.84623228, 81811.13268586,
-      13493.5584924, 40408.54865342, -22133.81892045, 56774.54672122, -63168.01311771, 24980.43396823, -14411.87035332, -46710.21202724,
-      21733.00645008, -25273.16425348, 61657.34615384, -74527.04929049, 37364.58786551, -20070.52272995, -51348.1790172,
-      3795.38665498, -3438.08953731, 13965.88970951, -20276.52655596, 14732.59684523, 3117.19843685,
-      -11256.1406088, 19659.39637118, -13654.97811751, 21028.93859456, 40007.47577859,
-      -13974.28196091, 26963.27126462, -27765.26457278, -21864.51135872,
-      4045.8365824, -21581.66731034, -10094.15164511,
-      16715.65245628, -3110.20788027,
-      -8671.87713579,
-      -7894.0620995, -36713.44849512, 74025.32347787, -15954.8030531, -13463.00983015
-    ],
-    "intercepto": 221714.83590961,
-    "metricas": {
-      "r2": 0.657,
-      "rmse": 67043.55,
-      "mae": 46981.22
-    }
-  };
-
+  // El modelo NO se embebe: se consume desde modelo.json (ver cargarModelo()).
   // Modo actual: 'simple' (Vivienda Individual) o 'block' (Bloque Censal)
   var modoActual = "simple";
 
@@ -1166,7 +1142,7 @@
     }
   ];
 
-  var modelo = MODELO_FALLBACK;
+  var modelo = null;   // se rellena al recibir modelo.json
   var camposNumericos = [
     "longitude",
     "latitude",
@@ -1324,6 +1300,8 @@
   }
 
   function ejecutarCalculo() {
+    // Sin modelo no hay prediccion posible: se espera a que llegue modelo.json.
+    if (!modelo) return;
     try {
       var fila = obtenerFilaTraducida();
       actualizarBarraCoherencia(fila);
@@ -1498,9 +1476,15 @@
 
   function actualizarMetricasUI() {
     if (!modelo || !modelo.metricas) return;
-    document.getElementById("metric-r2").textContent = Number(modelo.metricas.r2).toFixed(4);
-    document.getElementById("metric-mae").textContent = formatearMoneda(modelo.metricas.mae);
-    document.getElementById("metric-rmse").textContent = formatearMoneda(modelo.metricas.rmse);
+    // No todas las metricas tienen hueco en la interfaz (p. ej. metric-rmse no
+    // existe): se escribe solo donde hay elemento, sin romper la carga.
+    function poner(id, valor) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = valor;
+    }
+    poner("metric-r2", Number(modelo.metricas.r2).toFixed(4));
+    poner("metric-mae", formatearMoneda(modelo.metricas.mae));
+    poner("metric-rmse", formatearMoneda(modelo.metricas.rmse));
   }
 
   function inicializarEventos() {
@@ -1546,9 +1530,18 @@
         ejecutarCalculo();
       })
       .catch(function(error) {
-        console.info("Uso de modelo embebido:", error.message);
-        document.getElementById("status-text").textContent = "Inferencia en navegador activa";
-        ejecutarCalculo();
+        console.error("No se pudo cargar modelo.json:", error.message);
+        document.getElementById("status-text").textContent =
+          "Modelo no disponible (" + error.message + ")";
+        var aviso = document.createElement("div");
+        aviso.style.cssText = "max-width:760px;margin:24px auto;padding:18px 22px;" +
+          "border-radius:12px;background:#3b1219;border:1px solid #7f1d2b;" +
+          "color:#fecaca;font-family:system-ui,sans-serif;line-height:1.6";
+        aviso.innerHTML = "<b>No se pudo cargar el modelo entrenado.</b><br>" +
+          "Esta pagina consume <code>modelo.json</code> desde un archivo externo, " +
+          "por lo que debe servirse por HTTP y no abrirse con doble clic " +
+          "mediante <code>file://</code>.";
+        document.body.prepend(aviso);
       });
   }
 

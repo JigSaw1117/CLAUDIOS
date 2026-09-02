@@ -192,6 +192,19 @@
     }
     .case-btn.sec-btn:hover { background: #e2e8f0; color: #0f172a; }
 
+    /* Cada caso ofrece sus dos metodologias, asi que los botones van en pareja. */
+    .case-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+    .case-acciones .case-btn { flex: 1 1 0; min-width: 132px; padding: 11px 12px; font-size: 14px; }
+    .metodos { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+    .metodo {
+      font-size: 11.5px; font-weight: 800; letter-spacing: .03em;
+      padding: 4px 10px; border-radius: 100px;
+      background: #e0edf9; color: #0d3c6c; border: 1px solid #c3ddf3;
+    }
+    .metodo.poly { background: #ede4f8; color: #5a189a; border-color: #d9c7ee; }
+    .case-features li.sub { padding-left: 12px; border-bottom: 1px dashed #f1f5f9; }
+    .case-features li.sub span { color: #64748b; font-size: 0.85rem; }
+
     .team-card {
       background: var(--uac-light-cyan); border: 1px solid #b2f0e8;
       border-radius: var(--radius); padding: 32px; margin-bottom: 40px;
@@ -225,6 +238,19 @@
   </style>
 </head>
 <body>
+<!-- Modo embebido: la aplicacion de pagina unica (index.html) muestra esta pagina
+     dentro de un marco, asi que se ocultan su cabecera y su pie para no duplicar
+     la navegacion. La clase se aplica antes del render para evitar parpadeo. -->
+<script>
+  if (new URLSearchParams(location.search).has("embed")) {
+    document.documentElement.classList.add("embebido");
+  }
+</script>
+<style>
+  html.embebido > body > header:first-of-type,
+  html.embebido > body > footer { display: none !important; }
+</style>
+
 
   <div class="top-strip"></div>
 
@@ -283,7 +309,7 @@
     </div>
 
     <div class="cases-grid">
-      
+
       <!-- CASO 1 - CASAS CALIFORNIA -->
       <div class="case-card c1">
         <div class="case-header">
@@ -292,16 +318,26 @@
         </div>
         <div class="case-body">
           <div class="case-desc">
-            Predicción y tasación en tiempo real del valor de bienes raíces en California utilizando Regresión Polinómica (Grado 2).
+            Predicción del valor mediano de vivienda por distrito a partir del censo de
+            California de 1990, con las <strong>dos metodologías</strong>: Regresión
+            Lineal Múltiple y Regresión Polinómica de grado 2.
+          </div>
+          <div class="metodos">
+            <span class="metodo">Lineal Múltiple</span>
+            <span class="metodo poly">Polinómica gr. 2</span>
           </div>
           <ul class="case-features">
-            <li><span>Dataset:</span> <strong>housing.csv (California)</strong></li>
-            <li><span>Algoritmo:</span> <strong>Regresión Polinómica</strong></li>
-            <li><span>Despliegue:</span> <strong>Cliente JS + modelo.json</strong></li>
+            <li><span>Dataset:</span> <strong>housing.csv · 20 640 distritos</strong></li>
+            <li class="sub"><span>Múltiple (21 desc.):</span> <strong>R² = 0.6939 | RMSE = $56 285</strong></li>
+            <li class="sub"><span>Polinómica (gr. 2):</span> <strong>R² = 0.6570 | RMSE = $67 044</strong></li>
+            <li><span>Despliegue:</span> <strong>Cliente JS + model.js / modelo.json</strong></li>
           </ul>
           <div>
             <span class="status-badge completed">✅ 100% Completado</span>
-            <a href="CASO_1/index.html" class="case-btn active-btn" style="background:#0d3c6c;">🏡 Abrir Predictor de Casas ➡</a>
+            <div class="case-acciones">
+              <a href="CASO_1/1_REGRESION_MULTIPLE/index.html" class="case-btn active-btn" style="background:#0d3c6c;">📐 Múltiple ➡</a>
+              <a href="CASO_1/index.html" class="case-btn sec-btn">🏡 Polinómica ➡</a>
+            </div>
           </div>
         </div>
       </div>
@@ -314,17 +350,25 @@
         </div>
         <div class="case-body">
           <div class="case-desc">
-            Predicción de la calidad del vino (escala 0–10) evaluando 11 propiedades químico-físicas (acidez, azúcar residual, cloruros, alcohol, etc.).
+            Predicción de la calidad del vino (escala 0–10) evaluando 11 propiedades
+            químico-físicas. Ambas metodologías conviven en una misma pantalla, con
+            un selector para compararlas.
+          </div>
+          <div class="metodos">
+            <span class="metodo">Lineal Múltiple</span>
+            <span class="metodo poly">Polinómica gr. 2</span>
           </div>
           <ul class="case-features">
-            <li><span>Dataset:</span> <strong>WineQT.csv (1,143 filas)</strong></li>
-            <li><span>Modelo Lineal:</span> <strong>R² = 0.3171 | RMSE = 0.6165</strong></li>
-            <li><span>Modelo Poly:</span> <strong>R² = 0.2809 (Overfitting)</strong></li>
-            <li><span>Despliegue:</span> <strong>Cliente JS + 2 JSONs</strong></li>
+            <li><span>Dataset:</span> <strong>WineQT.csv · 1 143 filas</strong></li>
+            <li class="sub"><span>Múltiple (OLS):</span> <strong>R² = 0.3171 | RMSE = 0.6165</strong></li>
+            <li class="sub"><span>Polinómica (gr. 2):</span> <strong>R² = 0.2809 (sobreajuste)</strong></li>
+            <li><span>Despliegue:</span> <strong>Cliente JS + 2 JSON externos</strong></li>
           </ul>
           <div>
             <span class="status-badge completed">✅ 100% Completado</span>
-            <a href="CASO_2/index.html" class="case-btn active-btn">🍷 Abrir Predictor de Vino ➡</a>
+            <div class="case-acciones">
+              <a href="CASO_2/index.html" class="case-btn active-btn">🍷 Abrir Predictor de Vino ➡</a>
+            </div>
           </div>
         </div>
       </div>

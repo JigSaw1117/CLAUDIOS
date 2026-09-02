@@ -97,8 +97,14 @@ print(f"-> Total de registros cargados (N) : {len(df)}")
 print(f"-> Cantidad de predictores (p)      : {len(FEATURE_COLS)}")
 print(f"-> Rango de calidad del vino (Y)   : Min={y.min()}, Max={y.max()}, Media={y.mean():.4f}")
 
-# DIVISIÓN DEL DATASET: 80% Entrenamiento (Train) y 20% Prueba (Test)
-# random_state=42 asegura la reproducibilidad exacta en cada ejecución
+# =============================================================================
+# PARTICIÓN DE LOS DATOS:  80 % ENTRENAMIENTO  /  20 % PRUEBA
+# =============================================================================
+#   test_size=0.20   -> 20 % apartado para prueba   ->   229 muestras
+#   el 80 % restante -> entrenamiento               ->   914 muestras
+#                       NO se declara: train_test_split lo calcula como
+#                       complemento (equivale a train_size=0.80).
+#   random_state=42  -> fija el barajado y asegura reproducibilidad exacta
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.20, random_state=42
 )

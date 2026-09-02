@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller 1 — Inteligencia Artificial | Universidad Andina del Cusco</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦅</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --uac-navy:#0d3c6c; --uac-dark:#0a2540; --uac-amber:#f77f00;
+    --uac-cyan:#00b4d8; --uac-bg:#f4f8fb; --linea:rgba(255,255,255,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--uac-bg);
+       display:flex;flex-direction:column;overflow:hidden}
+
+  /* ---------------------------------------------------------- barra superior */
+  .barra{background:var(--uac-dark);color:#fff;flex-shrink:0;
+         box-shadow:0 2px 14px rgba(10,37,64,.28);z-index:10}
+  .barra .fila1{display:flex;align-items:center;justify-content:space-between;
+                gap:14px;padding:11px 22px;border-bottom:1px solid var(--linea)}
+  .marca{display:flex;align-items:center;gap:12px;min-width:0}
+  .marca img{height:38px;width:auto;border-radius:6px;background:#fff;padding:2px;
+             flex-shrink:0}
+  .marca .txt{min-width:0}
+  .marca .t1{font-weight:800;font-size:.95rem;letter-spacing:.01em;
+             white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .marca .t2{font-size:.72rem;color:#9fc0dd;white-space:nowrap;overflow:hidden;
+             text-overflow:ellipsis}
+  .acciones{display:flex;gap:8px;align-items:center;flex-shrink:0}
+  .icono{background:rgba(255,255,255,.09);border:1px solid var(--linea);color:#cfe4f5;
+         border-radius:8px;padding:7px 12px;font:600 .78rem/1 'Inter',sans-serif;
+         cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;
+         gap:6px;transition:.18s}
+  .icono:hover{background:rgba(255,255,255,.18);color:#fff}
+
+  /* ------------------------------------------------- botones de navegacion */
+  .tabs{display:flex;gap:7px;padding:9px 22px;overflow-x:auto;scrollbar-width:thin}
+  .tabs::-webkit-scrollbar{height:5px}
+  .tabs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:9px}
+  .tab{background:rgba(255,255,255,.07);border:1px solid var(--linea);color:#c3daed;
+       border-radius:9px;padding:9px 15px;font:600 .82rem/1.15 'Inter',sans-serif;
+       cursor:pointer;white-space:nowrap;transition:.18s;display:flex;
+       align-items:center;gap:7px;flex-shrink:0}
+  .tab:hover{background:rgba(255,255,255,.16);color:#fff;transform:translateY(-1px)}
+  .tab.on{background:var(--uac-cyan);border-color:var(--uac-cyan);color:#04263a;
+          font-weight:700;box-shadow:0 3px 12px rgba(0,180,216,.35)}
+  .tab .et{font-size:.66rem;font-weight:700;padding:2px 6px;border-radius:99px;
+           background:rgba(0,0,0,.18);letter-spacing:.03em}
+  .tab.on .et{background:rgba(255,255,255,.35)}
+  .sep{width:1px;background:var(--linea);margin:3px 5px;flex-shrink:0}
+
+  /* --------------------------------------------------------------- contenido */
+  .vista{flex:1;position:relative;background:var(--uac-bg);min-height:0}
+  iframe{width:100%;height:100%;border:0;display:block;background:var(--uac-bg)}
+  .cargando{position:absolute;inset:0;display:flex;align-items:center;
+            justify-content:center;flex-direction:column;gap:14px;
+            background:var(--uac-bg);color:var(--uac-navy);
+            font-weight:600;font-size:.9rem;transition:opacity .25s;z-index:5}
+  .cargando.oculto{opacity:0;pointer-events:none}
+  .spin{width:34px;height:34px;border:3px solid #cfe0ee;border-top-color:var(--uac-navy);
+        border-radius:50%;animation:giro .8s linear infinite}
+  @keyframes giro{to{transform:rotate(360deg)}}
+
+  @media(max-width:760px){
+    .barra .fila1{padding:9px 14px}
+    .tabs{padding:8px 14px}
+    .marca .t2{display:none}
+    .marca img{height:32px}
+    .tab{padding:8px 12px;font-size:.78rem}
+  }
+</style>
+</head>
+<body>
+
+<div class="barra">
+  <div class="fila1">
+    <div class="marca">
+      <img src="logo-uac.jpg" alt="Universidad Andina del Cusco"
+           onerror="this.style.display='none'">
+      <div class="txt">
+        <div class="t1">Taller 1 — Modelado Predictivo Multisectorial</div>
+        <div class="t2">Universidad Andina del Cusco · Inteligencia Artificial (2026-II)</div>
+      </div>
+    </div>
+    <div class="acciones">
+      <a class="icono" id="abrirNueva" href="portada.html" target="_blank"
+         rel="noopener" title="Abrir la vista actual en una pestaña nueva">
+        ⧉ <span class="solo-ancho">Nueva pestaña</span>
+      </a>
+    </div>
+  </div>
+
+  <nav class="tabs" id="tabs"></nav>
+</div>
+
+<div class="vista">
+  <div class="cargando" id="cargando">
+    <div class="spin"></div>
+    <div id="cargandoTxt">Cargando…</div>
+  </div>
+  <iframe id="marco" title="Contenido del caso seleccionado"></iframe>
+</div>
+
+<script>
+/* ---------------------------------------------------------------------------
+   Aplicacion de pagina unica. Cada caso se muestra dentro del mismo marco, de
+   modo que la navegacion nunca abandona esta pagina. A cada vista se le anade
+   ?embed=1 para que oculte su propia cabecera y no se duplique el menu.
+--------------------------------------------------------------------------- */
+const VISTAS = [
+  { id: "inicio",  ruta: "portada.html",
+    icono: "🏠", texto: "Inicio",       etiqueta: null },
+
+  { id: "c1m",     ruta: "CASO_1/1_REGRESION_MULTIPLE/index.html",
+    icono: "🏡", texto: "Caso 1 · Casas", etiqueta: "Múltiple" },
+  { id: "c1p",     ruta: "CASO_1/index.html",
+    icono: "🏡", texto: "Caso 1 · Casas", etiqueta: "Polinómica" },
+
+  { id: "c2",      ruta: "CASO_2/index.html",
+    icono: "🍷", texto: "Caso 2 · Vinos", etiqueta: "Múltiple + Poli." },
+
+  { id: "c3",      ruta: "CASO_3/index.html",
+    icono: "📈", texto: "Caso 3 · Diabetes", etiqueta: "Resumen" },
+  { id: "c3m",     ruta: "CASO_3/1_REGRESION_MULTIPLE/index.html",
+    icono: "📈", texto: "Caso 3 · Diabetes", etiqueta: "Múltiple" },
+  { id: "c3p",     ruta: "CASO_3/2_REGRESION_POLINOMIAL/index.html",
+    icono: "📈", texto: "Caso 3 · Diabetes", etiqueta: "Polinomial" },
+];
+
+// Separadores visuales entre grupos de casos.
+const SEPARAR_ANTES = new Set(["c1m", "c2", "c3"]);
+
+const marco = document.getElementById("marco");
+const cargando = document.getElementById("cargando");
+const cargandoTxt = document.getElementById("cargandoTxt");
+const abrirNueva = document.getElementById("abrirNueva");
+let actual = null;
+
+function conEmbed(ruta) {
+  return ruta + (ruta.includes("?") ? "&" : "?") + "embed=1";
+}
+
+function pintarBotones() {
+  const cont = document.getElementById("tabs");
+  cont.innerHTML = "";
+  for (const v of VISTAS) {
+    if (SEPARAR_ANTES.has(v.id)) {
+      const s = document.createElement("div");
+      s.className = "sep";
+      cont.appendChild(s);
+    }
+    const b = document.createElement("button");
+    b.className = "tab";
+    b.dataset.id = v.id;
+    b.innerHTML = `<span>${v.icono}</span><span>${v.texto}</span>` +
+                  (v.etiqueta ? `<span class="et">${v.etiqueta}</span>` : "");
+    b.onclick = () => mostrar(v.id);
+    cont.appendChild(b);
+  }
+}
+
+function mostrar(id, empujarHistorial = true) {
+  const v = VISTAS.find(x => x.id === id) || VISTAS[0];
+  if (actual === v.id) return;
+  actual = v.id;
+
+  document.querySelectorAll(".tab").forEach(b =>
+    b.classList.toggle("on", b.dataset.id === v.id));
+
+  cargandoTxt.textContent = `Cargando ${v.texto}…`;
+  cargando.classList.remove("oculto");
+  marco.src = conEmbed(v.ruta);
+  abrirNueva.href = v.ruta;
+
+  // El hash permite recargar o compartir el enlace de una vista concreta.
+  if (empujarHistorial) history.replaceState(null, "", "#" + v.id);
+  document.title = `${v.texto} — Taller 1 | UAC`;
+}
+
+marco.addEventListener("load", () => {
+  cargando.classList.add("oculto");
+  // Si dentro del marco se navega con un enlace propio de la pagina, se
+  // sincroniza el boton activo para que el menu no quede descolgado.
+  try {
+    const ruta = marco.contentWindow.location.pathname;
+    const v = VISTAS.find(x => ruta.endsWith(x.ruta.replace(/^\.\//, "")));
+    if (v && v.id !== actual) {
+      actual = v.id;
+      document.querySelectorAll(".tab").forEach(b =>
+        b.classList.toggle("on", b.dataset.id === v.id));
+      history.replaceState(null, "", "#" + v.id);
+      abrirNueva.href = v.ruta;
+      document.title = `${v.texto} — Taller 1 | UAC`;
+    }
+  } catch (e) {
+    /* Otro origen: no hay nada que sincronizar. */
+  }
+});
+
+window.addEventListener("hashchange", () => {
+  const id = location.hash.replace("#", "");
+  if (id && id !== actual) mostrar(id, false);
+});
+
+pintarBotones();
+mostrar(location.hash.replace("#", "") || "inicio", false);
+</script>
+</body>
+</html>

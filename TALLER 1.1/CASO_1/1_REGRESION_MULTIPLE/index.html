@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso 1 — Regresión Lineal Múltiple | UAC</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --uac-navy:#0d3c6c; --uac-dark:#0a2540; --uac-amber:#f77f00; --uac-bg:#f4f8fb;
+    --txt:#2b2d42; --muted:#5c6b73; --line:#dbe6f0; --ok:#1d9e6f; --bad:#d62828;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--uac-bg);color:var(--txt);
+       min-height:100vh;display:flex;flex-direction:column}
+  header{background:var(--uac-dark);color:#fff;padding:15px 30px;display:flex;
+         justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .logo{font-weight:800;font-size:1.1rem;color:#e0f7f5;display:flex;align-items:center;gap:10px}
+  nav a{color:#b8d4e8;text-decoration:none;font-weight:600;margin-left:18px;
+        font-size:.88rem;transition:color .2s}
+  nav a:hover,nav a.active{color:#00b4d8}
+  .container{max-width:1150px;margin:32px auto;padding:0 20px;flex:1;width:100%}
+  .hero{background:linear-gradient(135deg,var(--uac-navy),#0077b6);color:#fff;
+        border-radius:16px;padding:28px 30px;margin-bottom:22px}
+  .hero h1{font-size:1.65rem;margin-bottom:6px}
+  .hero p{color:#d5e8f7;font-size:.95rem}
+  .card{background:#fff;border-radius:14px;padding:24px;margin-bottom:20px;
+        box-shadow:0 6px 20px rgba(13,60,108,.07);border-top:4px solid var(--uac-amber)}
+  .card h2{color:var(--uac-navy);font-size:1.05rem;margin-bottom:16px;
+           padding-bottom:8px;border-bottom:2px solid var(--line)}
+  .card h3{color:var(--uac-navy);font-size:.92rem;margin:18px 0 8px}
+  .grid{display:grid;grid-template-columns:1.05fr 1fr;gap:20px;align-items:start}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+  @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
+  .m{background:#fff;border-radius:12px;padding:14px 16px;text-align:center;
+     box-shadow:0 4px 14px rgba(13,60,108,.06);border-left:4px solid var(--uac-navy)}
+  .m b{display:block;font-size:1.45rem;color:var(--uac-navy);font-weight:800}
+  .m span{font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.03em}
+  .var{margin-bottom:14px}
+  .var .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .var .nm{font-size:.85rem;font-weight:600}
+  .var .nm code{background:#eef4fa;color:var(--uac-navy);padding:1px 6px;
+                border-radius:4px;font-size:.72rem;margin-right:7px;font-weight:700}
+  .var .un{font-size:.72rem;color:var(--muted)}
+  .var .io{display:flex;gap:10px;align-items:center;margin-top:5px}
+  input[type=range]{flex:1;accent-color:var(--uac-amber)}
+  input[type=number],select{width:104px;padding:6px 8px;background:#fff;
+    border:1.5px solid var(--line);border-radius:6px;color:var(--txt);
+    font-family:inherit;font-size:.85rem;font-weight:600}
+  select{width:100%}
+  input:focus,select:focus{outline:none;border-color:var(--uac-navy)}
+  .rango{font-size:.7rem;color:var(--muted);margin-top:2px}
+  .out{font-size:2.6rem;font-weight:800;color:var(--ok);margin:4px 0}
+  .escala{height:11px;background:#e8eef5;border-radius:99px;margin:12px 0 6px;
+          position:relative;overflow:hidden}
+  .escala i{position:absolute;top:0;bottom:0;left:0;border-radius:99px;
+            background:linear-gradient(90deg,#7fd6b0,var(--uac-amber),var(--bad))}
+  .escala-lbl{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted)}
+  .nota{color:var(--muted);font-size:.8rem;margin-top:10px;line-height:1.55}
+  table{width:100%;border-collapse:collapse;font-size:.82rem}
+  th{background:var(--uac-navy);color:#fff;text-align:right;padding:8px 10px;
+     font-weight:600;font-size:.75rem}
+  th:first-child,td:first-child{text-align:left}
+  td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right;
+     font-variant-numeric:tabular-nums}
+  tbody tr:nth-child(even){background:#f7fafd}
+  td:first-child{font-family:ui-monospace,Consolas,monospace;font-size:.78rem;
+                 color:var(--uac-navy);font-weight:600}
+  .pos{color:var(--ok);font-weight:600} .neg{color:var(--bad);font-weight:600}
+  .scroll{overflow-x:auto} .scroll table{min-width:600px}
+  .formula{background:#f7fafd;border-left:4px solid var(--uac-navy);border-radius:8px;
+    padding:14px 16px;margin-bottom:12px;font-family:ui-monospace,Consolas,monospace;
+    font-size:.95rem;overflow-x:auto;white-space:nowrap;color:var(--uac-dark)}
+  .formula .n{color:var(--uac-amber);font-weight:700}
+  .paso{background:#f7fafd;border:1px solid var(--line);border-radius:8px;
+        padding:11px 14px;margin-bottom:10px}
+  .paso .lbl{font-size:.78rem;color:var(--uac-navy);font-weight:700;margin-bottom:5px}
+  .paso .calc{font-family:ui-monospace,Consolas,monospace;font-size:.78rem;
+              overflow-x:auto;white-space:nowrap;color:#334}
+  .big{font-size:1.05rem;font-weight:800;color:var(--ok)}
+  .aviso{background:#fff3e0;border-left:4px solid var(--uac-amber);border-radius:8px;
+         padding:12px 14px;font-size:.8rem;color:#7a4a00;margin-top:14px;line-height:1.6}
+  .fig{width:100%;border-radius:10px;border:1px solid var(--line);margin-top:8px}
+  footer{background:var(--uac-dark);color:#b8d4e8;text-align:center;padding:22px;
+         font-size:.82rem;margin-top:auto;line-height:1.7}
+</style>
+</head>
+<body>
+<!-- Modo embebido: la aplicacion de pagina unica (index.html) muestra esta pagina
+     dentro de un marco, asi que se ocultan su cabecera y su pie para no duplicar
+     la navegacion. La clase se aplica antes del render para evitar parpadeo. -->
+<script>
+  if (new URLSearchParams(location.search).has("embed")) {
+    document.documentElement.classList.add("embebido");
+  }
+</script>
+<style>
+  html.embebido > body > header:first-of-type,
+  html.embebido > body > footer { display: none !important; }
+</style>
+
+<header>
+  <div class="logo">🦅 UAC — Caso 1 · Regresión Lineal Múltiple</div>
+  <nav>
+    <a href="../../index.html">🏠 Portada</a>
+    <a href="../index.html">🏘️ Caso 1</a>
+    <a href="./index.html" class="active">📐 Múltiple</a>
+    <a href="../../CASO_2/index.html">🍷 Caso 2</a>
+    <a href="../../CASO_3/index.html">📈 Caso 3</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="hero">
+    <h1>Predicción del valor de vivienda — California Housing</h1>
+    <p>Regresión Lineal Múltiple · censo de California 1990 · 20 640 distritos ·
+       partición 75 / 25 estratificada por ingreso</p>
+  </div>
+
+  <div class="metrics" id="metrics"></div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Descriptores del distrito</h2>
+      <div id="inputs"></div>
+      <p class="nota">Los deslizadores están acotados al rango real observado.
+         La predicción se recalcula al mover cualquier valor.</p>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Valor mediano estimado</h2>
+        <div class="out" id="out">—</div>
+        <div class="escala"><i id="bar"></i></div>
+        <div class="escala-lbl"><span id="tmin"></span><span id="tmax"></span></div>
+        <p class="nota" id="interp"></p>
+        <div class="aviso">
+          <b>Aviso.</b> Aplicativo académico. Los datos provienen del censo de 1990,
+          por lo que los precios no reflejan el mercado actual.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Descriptores que más pesan</h2>
+        <table id="contrib"></table>
+        <p class="nota">Como el modelo predice el <b>logaritmo</b> del precio, cada
+           aporte βᵢ·zᵢ se traduce en un cambio <b>porcentual</b> (e<sup>βᵢzᵢ</sup> − 1),
+           no en una suma de dólares.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Función objetivo</h2>
+    <div class="formula">log(precio) = β₀ + Σ βᵢ · zᵢ &nbsp;&nbsp; con &nbsp; zᵢ = (xᵢ − μᵢ) / σᵢ</div>
+    <div class="formula" id="fnum"></div>
+    <p class="nota" id="fdesc"></p>
+  </div>
+
+  <div class="card">
+    <h2>Cálculo paso a paso</h2>
+    <div id="pasos"></div>
+    <h3>Detalle por descriptor</h3>
+    <div class="scroll"><table id="full">
+      <thead><tr><th>Descriptor</th><th>xᵢ</th><th>μᵢ</th><th>σᵢ</th>
+                 <th>zᵢ</th><th>βᵢ</th><th>βᵢ · zᵢ</th></tr></thead>
+      <tbody></tbody></table></div>
+  </div>
+
+  <div class="card">
+    <h2>Fase B — Comparativa: el efecto de la ingeniería de descriptores</h2>
+    <div class="scroll"><table id="comp">
+      <thead><tr><th>Modelo</th><th>Términos</th><th>R² entren.</th><th>R² prueba</th>
+                 <th>R² CV 5-fold</th><th>Brecha</th><th>RMSE</th><th>MAE</th></tr></thead>
+      <tbody></tbody></table></div>
+    <p class="nota">Partiendo de los 8 descriptores originales (R² = 0.660), los términos
+       derivados —razones por hogar, logaritmos y distancias a San Francisco y Los
+       Ángeles— suben el R² de prueba a <b>0.694</b> <b>sin abrir brecha</b> entre
+       entrenamiento y validación. No es sobreajuste: es reducción del sesgo. Todos son
+       transformaciones de los <i>datos</i>, no del modelo, por lo que la función sigue
+       siendo lineal en los parámetros.</p>
+    <img class="fig" src="figuras/b_curva_aprendizaje.png"
+         alt="Curva de aprendizaje del modelo final">
+    <p class="nota">La curva de aprendizaje confirma el diagnóstico: entrenamiento y
+       validación convergen con una brecha menor a 0.01 desde unas 2 700 muestras.</p>
+  </div>
+
+  <div class="card">
+    <h2>Fase A — Preprocesamiento aplicado</h2>
+    <div class="scroll"><table id="fasea">
+      <thead><tr><th>Aspecto</th><th>Tratamiento</th></tr></thead>
+      <tbody></tbody></table></div>
+    <p class="nota">El descarte del target censurado es la decisión de mayor impacto:
+       el censo registró todos los distritos por encima de $500 000 con ese mismo valor
+       tope, lo que no es un dato real sino un artefacto administrativo que sesga
+       sistemáticamente el ajuste en el extremo superior.</p>
+  </div>
+</div>
+
+<footer>
+  Universidad Andina del Cusco — Inteligencia Artificial (2026-II)<br>
+  Caso 1: California Housing Prices · Regresión Lineal Múltiple
+</footer>
+
+<script src="model.js"></script>
+<script>
+/* ---------------------------------------------------------------------------
+   Inferencia. Replica exactamente construir() de train.py:
+   derivados -> dummies -> estandarizacion -> producto punto -> exp()
+--------------------------------------------------------------------------- */
+const M = MODELO_MULTIPLE;
+const SF = [37.7749, -122.4194];
+const LA = [34.0522, -118.2437];
+
+const ENTRADAS = ["longitude", "latitude", "housing_median_age", "total_rooms",
+                  "total_bedrooms", "population", "households", "median_income"];
+
+const LABELS = {
+  longitude:["Longitud","grados"], latitude:["Latitud","grados"],
+  housing_median_age:["Antigüedad mediana","años"],
+  total_rooms:["Total de habitaciones","del distrito"],
+  total_bedrooms:["Total de dormitorios","del distrito"],
+  population:["Población","habitantes"], households:["Hogares","unidades"],
+  median_income:["Ingreso mediano","decenas de miles USD"],
+};
+
+const estado = {};
+ENTRADAS.forEach(v => estado[v] = M.medianas[v]);
+estado.ocean_proximity = "<1H OCEAN";
+
+/** Construye los 21 descriptores a partir de las 8 entradas. */
+function construir() {
+  const d = Object.assign({}, estado);
+  const bedrooms = isNaN(d.total_bedrooms) ? M.bedrooms_median : d.total_bedrooms;
+
+  const derivados = {
+    longitude: d.longitude, latitude: d.latitude,
+    housing_median_age: d.housing_median_age, total_rooms: d.total_rooms,
+    total_bedrooms: bedrooms, population: d.population, households: d.households,
+    median_income: d.median_income,
+    rooms_per_household: d.total_rooms / d.households,
+    bedrooms_per_room: bedrooms / d.total_rooms,
+    population_per_household: d.population / d.households,
+    income_sq: d.median_income ** 2,
+    log_population: Math.log1p(d.population),
+    log_households: Math.log1p(d.households),
+    log_total_rooms: Math.log1p(d.total_rooms),
+    dist_sf: Math.hypot(d.latitude - SF[0], (d.longitude - SF[1]) * 0.79),
+    dist_la: Math.hypot(d.latitude - LA[0], (d.longitude - LA[1]) * 0.83),
+  };
+
+  // El orden debe coincidir con M.descriptores (numéricos y luego las dummies).
+  return M.descriptores.map(nombre => {
+    if (nombre in derivados) return derivados[nombre];
+    if (nombre.startsWith("ocean_")) {
+      return d.ocean_proximity === nombre.slice(6) ? 1 : 0;  // base = M.categoria_base
+    }
+    throw new Error("Descriptor desconocido: " + nombre);
+  });
+}
+
+/* ---------------------------------------------------------------------------
+   ECUACION DEL MODELO — Ridge sobre el LOGARITMO del precio
+
+       ln(y_est) = b0 + SUM b_i * z_i     con  z_i = (x_i - mu_i) / sigma_i
+       y_est     = e^( ln(y_est) )        se deshace el logaritmo al final
+
+   Por eso los aportes se muestran en PORCENTAJE y no en dolares: en escala
+   logaritmica cada b_i*z_i es un cambio multiplicativo, e^(b_i*z_i) - 1.
+--------------------------------------------------------------------------- */
+function predecir() {
+  // Los 21 descriptores: 8 originales + 9 derivados + 4 dummies
+  const x = construir();
+  let suma = 0;
+  const filas = [];
+  for (let i = 0; i < x.length; i++) {
+    const z = (x[i] - M.mu[i]) / M.sigma[i];   // z_i = (x_i - mu_i)/sigma_i
+    const c = M.coef[i] * z;                   // b_i * z_i
+    suma += c;
+    filas.push({ nombre: M.descriptores[i], x: x[i], mu: M.mu[i], sigma: M.sigma[i],
+                 z, beta: M.coef[i], aporte: c });
+  }
+  const logY = M.intercept + suma;           // ln(y_est) = b0 + SUM b_i*z_i
+  // Math.exp deshace el logaritmo y devuelve el precio en dolares.
+  return { pred: Math.exp(logY), logY, suma, filas };
+}
+
+/* ------------------------------------------------------------------ interfaz */
+const usd = n => "$" + Math.round(n).toLocaleString("en-US");
+const nf = (n, d = 4) => Number(n).toLocaleString("es-PE",
+  { minimumFractionDigits: d, maximumFractionDigits: d });
+
+function construirInputs() {
+  const campos = ENTRADAS.map(v => {
+    const [lo, hi] = M.rangos[v];
+    const [nm, un] = LABELS[v];
+    const paso = (hi - lo) < 20 ? 0.01 : (hi - lo) > 1000 ? 10 : 1;
+    return `<div class="var">
+      <div class="top"><span class="nm"><code>${v}</code>${nm}</span>
+                       <span class="un">${un}</span></div>
+      <div class="io">
+        <input type="range" id="r_${v}" min="${lo}" max="${hi}" step="${paso}" value="${estado[v]}">
+        <input type="number" id="i_${v}" min="${lo}" max="${hi}" step="${paso}" value="${estado[v]}">
+      </div>
+      <div class="rango">Rango observado: ${lo} – ${hi}</div></div>`;
+  }).join("");
+
+  const sel = `<div class="var">
+      <div class="top"><span class="nm"><code>ocean_proximity</code>Proximidad al océano</span></div>
+      <div class="io"><select id="i_ocean">
+        ${M.categorias.map(c => `<option>${c}</option>`).join("")}
+      </select></div>
+      <div class="rango">Categoría base del modelo: ${M.categoria_base}</div></div>`;
+
+  document.getElementById("inputs").innerHTML = campos + sel;
+
+  ENTRADAS.forEach(v => {
+    const r = document.getElementById(`r_${v}`), i = document.getElementById(`i_${v}`);
+    r.oninput = () => { estado[v] = parseFloat(r.value); i.value = r.value; actualizar(); };
+    i.oninput = () => {
+      const val = parseFloat(i.value);
+      if (!isNaN(val)) { estado[v] = val; r.value = val; actualizar(); }
+    };
+  });
+  const s = document.getElementById("i_ocean");
+  s.value = estado.ocean_proximity;
+  s.oninput = () => { estado.ocean_proximity = s.value; actualizar(); };
+}
+
+function actualizar() {
+  const r = predecir();
+  document.getElementById("out").textContent = usd(r.pred);
+
+  const pct = Math.max(0, Math.min(100,
+    100 * (r.pred - M.target.min) / (M.target.max - M.target.min)));
+  document.getElementById("bar").style.width = pct.toFixed(1) + "%";
+  const mae = M.metricas.mae_test;
+  document.getElementById("interp").innerHTML =
+    `Rango típico: <b>${usd(Math.max(0, r.pred - mae))} – ${usd(r.pred + mae)}</b>
+     (± MAE de prueba). La media del conjunto es ${usd(M.target.media)}.`;
+
+  const orden = r.filas.slice().sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte));
+  document.getElementById("contrib").innerHTML =
+    `<thead><tr><th>Descriptor</th><th>Efecto</th></tr></thead><tbody>` +
+    orden.slice(0, 10).map(f => {
+      const p = (Math.exp(f.aporte) - 1) * 100;
+      const nombre = f.nombre.startsWith("ocean_") && f.x === 0
+        ? `${f.nombre} (ausente)` : f.nombre;
+      return `<tr><td>${nombre}</td>
+        <td class="${p >= 0 ? "pos" : "neg"}">${p >= 0 ? "+" : ""}${p.toFixed(1)}%</td></tr>`;
+    }).join("") + `</tbody>`;
+
+  document.getElementById("fnum").innerHTML =
+    `log(precio) = <span class="n">${nf(M.intercept, 6)}</span> + Σ βᵢ · zᵢ`;
+  document.getElementById("fdesc").innerHTML =
+    `<b>β₀ = ${nf(M.intercept, 6)}</b> es el intercepto y βᵢ el coeficiente de cada uno de
+     los <b>${M.descriptores.length}</b> descriptores. μᵢ y σᵢ se calcularon
+     <b>solo con el 75 % de entrenamiento</b>; estandarizar pone a todos los descriptores
+     en la misma escala para que sus coeficientes sean comparables. El modelo se ajusta
+     minimizando <code>Σ (log(y) − ŷ)² + α · Σ βᵢ²</code> (Ridge), donde α penaliza los
+     coeficientes grandes y estabiliza los descriptores geográficos, que son colineales
+     entre sí.`;
+
+  const top = orden.slice(0, 3);
+  document.getElementById("pasos").innerHTML = `
+    <div class="paso"><div class="lbl">Paso 1 · Construir los ${M.descriptores.length} descriptores</div>
+      <div class="calc">rooms_per_household = ${nf(r.filas.find(f=>f.nombre==="rooms_per_household").x, 3)} ·
+        dist_la = ${nf(r.filas.find(f=>f.nombre==="dist_la").x, 3)} ·
+        income_sq = ${nf(r.filas.find(f=>f.nombre==="income_sq").x, 3)}</div></div>
+    <div class="paso"><div class="lbl">Paso 2 · Estandarizar: zᵢ = (xᵢ − μᵢ) / σᵢ</div>
+      <div class="calc">${top.map(f =>
+        `${f.nombre}: (${nf(f.x, 3)} − ${nf(f.mu, 3)}) / ${nf(f.sigma, 3)} = ${nf(f.z, 4)}`
+      ).join("<br>")}</div></div>
+    <div class="paso"><div class="lbl">Paso 3 · Multiplicar por su coeficiente y sumar</div>
+      <div class="calc">${top.map(f =>
+        `${f.nombre}: ${nf(f.beta, 4)} × ${nf(f.z, 4)} = ${nf(f.aporte, 4)}`
+      ).join("<br>")}<br>…<br><b>Σ βᵢ · zᵢ = ${nf(r.suma, 6)}</b></div></div>
+    <div class="paso"><div class="lbl">Paso 4 · Sumar el intercepto β₀</div>
+      <div class="calc">log(precio) = ${nf(M.intercept, 6)} + (${nf(r.suma, 6)}) =
+        <b>${nf(r.logY, 6)}</b></div></div>
+    <div class="paso"><div class="lbl">Paso 5 · Deshacer el logaritmo</div>
+      <div class="calc">precio = e<sup>${nf(r.logY, 6)}</sup> =
+        <span class="big">${usd(r.pred)}</span></div></div>`;
+
+  document.querySelector("#full tbody").innerHTML = r.filas.map(f => `
+    <tr><td>${f.nombre}</td><td>${nf(f.x, 3)}</td><td>${nf(f.mu, 3)}</td>
+        <td>${nf(f.sigma, 3)}</td><td>${nf(f.z, 3)}</td><td>${nf(f.beta, 4)}</td>
+        <td class="${f.aporte >= 0 ? "pos" : "neg"}">${nf(f.aporte, 4)}</td></tr>`).join("")
+    + `<tr><td colspan="6" style="text-align:right;color:var(--muted)">Σ βᵢ · zᵢ</td>
+         <td><b>${nf(r.suma, 4)}</b></td></tr>
+       <tr><td colspan="6" style="text-align:right;color:var(--muted)">+ intercepto β₀</td>
+         <td><b>${nf(M.intercept, 4)}</b></td></tr>
+       <tr><td colspan="6" style="text-align:right;color:var(--muted)">= log(precio)</td>
+         <td><b style="color:var(--ok)">${nf(r.logY, 4)}</b></td></tr>`;
+}
+
+function init() {
+  document.getElementById("tmin").textContent = usd(M.target.min);
+  document.getElementById("tmax").textContent = usd(M.target.max);
+
+  const m = M.metricas;
+  document.getElementById("metrics").innerHTML = `
+    <div class="m"><b>${m.r2_test.toFixed(3)}</b><span>R² PRUEBA</span></div>
+    <div class="m"><b>${m.r2_cv.toFixed(3)}</b><span>R² VALIDACIÓN CRUZADA</span></div>
+    <div class="m"><b>${usd(m.rmse_test)}</b><span>RMSE PRUEBA</span></div>
+    <div class="m"><b>${M.n_train.toLocaleString()} / ${M.n_test.toLocaleString()}</b>
+        <span>ENTRENAMIENTO / PRUEBA</span></div>`;
+
+  document.querySelector("#comp tbody").innerHTML = M.comparativa.map(m => `
+    <tr><td style="font-family:inherit">${m.nombre}</td><td>${m.n_terminos}</td>
+        <td>${m.r2_train.toFixed(4)}</td><td>${m.r2_test.toFixed(4)}</td>
+        <td>${m.r2_cv.toFixed(4)}</td><td>${m.brecha.toFixed(4)}</td>
+        <td>${usd(m.rmse_test)}</td><td>${usd(m.mae_test)}</td></tr>`).join("");
+
+  document.querySelector("#fasea tbody").innerHTML = [
+    ["Valores nulos", `${M.nulos_imputados} en <code>total_bedrooms</code>, imputados con
+      la mediana <b>del set de entrenamiento</b> (evita fuga de información)`],
+    ["Target censurado", `${M.censurados_descartados.toLocaleString()} registros con
+      <code>median_house_value = 500001</code> <b>descartados</b>: es un tope
+      administrativo del censo, no un valor real`],
+    ["Outliers", "Conservados: son distritos grandes o ricos reales, no errores de medición"],
+    ["Variable categórica", `<code>ocean_proximity</code> codificada con dummies;
+      se omite la categoría base <b>${M.categoria_base}</b> para evitar colinealidad perfecta`],
+    ["Transformación del target", "Logaritmo: la asimetría pasa de 0.810 a −0.295"],
+    ["Estandarización", "Media 0 y desviación 1, calculadas solo con entrenamiento"],
+    ["Partición", `${M.n_train.toLocaleString()} / ${M.n_test.toLocaleString()} (75 / 25),
+      estratificada por categoría de ingreso`],
+  ].map(([a, b]) => `<tr><td style="font-family:inherit">${a}</td>
+      <td style="text-align:left">${b}</td></tr>`).join("");
+
+  construirInputs();
+  actualizar();
+}
+init();
+</script>
+</body>
+</html>
