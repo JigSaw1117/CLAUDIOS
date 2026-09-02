@@ -1,4 +1,6 @@
-// Generado por train_model.py / este cuaderno - NO editar a mano.
+// Generado por train_model.py - NO editar a mano.
+// Parametros reales del pipeline (imputer + scaler + regresion logistica)
+// ajustado sobre el set de entrenamiento. Ver train_model.py, Fase V.
 const MODELO_POTABILIDAD = {
   "caso": "Taller 1.2 - Potabilidad del Agua | Regresion Logistica",
   "features": [
