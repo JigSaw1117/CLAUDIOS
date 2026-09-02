@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Potabilidad del Agua — Aplicativo | Universidad Andina del Cusco</title>
+<meta name="description" content="Clasificador de potabilidad del agua con Regresion Logistica. El JavaScript consume el modelo entrenado (modelo_potabilidad.js) sin coeficientes hardcodeados." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --uac-navy: #0d3c6c;
+    --uac-dark: #0a2540;
+    --uac-cyan: #00b4d8;
+    --uac-blue: #0077b6;
+    --text-primary: #0f172a;
+    --text-muted: #475569;
+    --card-bg: #ffffff;
+    --radius: 16px;
+    --potable: #2a9d8f;
+    --no-potable: #e63946;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f8fafc;
+    color: var(--text-primary);
+    line-height: 1.6;
+  }
+  .top-strip {
+    height: 5px;
+    background: linear-gradient(90deg, #00b4d8 0%, #48cae4 25%, #ffd166 50%, #f77f00 75%, #d62828 100%);
+  }
+  header.nav {
+    background: var(--uac-dark);
+    color: white;
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  header.nav img { height: 44px; border-radius: 8px; }
+  header.nav .brand { font-weight: 700; font-size: 0.95rem; }
+  header.nav .brand small { display: block; font-weight: 500; color: #a8c7e0; font-size: 0.75rem; }
+  header.nav a.back {
+    margin-left: auto; color: #cbd5e1; text-decoration: none; font-size: 0.85rem;
+    border: 1px solid #33517a; padding: 6px 12px; border-radius: 8px;
+  }
+  header.nav a.back:hover { background: #12325a; }
+
+  .hero {
+    background: linear-gradient(180deg, var(--uac-dark), #123a63 70%);
+    background-image: linear-gradient(180deg, rgba(10,37,64,0.92), rgba(10,37,64,0.96)), url('fondo.jpg');
+    background-size: cover; background-position: center;
+    color: white; text-align: center; padding: 40px 20px 32px;
+  }
+  .hero h1 { font-size: 1.8rem; margin-bottom: 8px; }
+  .hero p { color: #cbd5e1; max-width: 640px; margin: 0 auto; }
+
+  main { max-width: 920px; margin: -20px auto 60px; padding: 0 20px; }
+
+  .card {
+    background: var(--card-bg); border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+    padding: 28px; margin-bottom: 24px;
+  }
+  .card h2 { font-size: 1.15rem; color: var(--uac-navy); margin-bottom: 14px; }
+
+  #form-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .field label {
+    display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: var(--text-primary);
+  }
+  .field .hint { font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 6px; }
+  .field input {
+    width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 10px;
+    font-size: 0.95rem; font-family: inherit;
+  }
+  .field input:focus { outline: none; border-color: var(--uac-blue); }
+
+  .actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+  button {
+    font-family: inherit; font-weight: 700; border: none; border-radius: 10px;
+    padding: 13px 22px; cursor: pointer; font-size: 0.95rem;
+  }
+  #btn-predecir { background: var(--uac-blue); color: white; flex: 1; min-width: 200px; }
+  #btn-predecir:hover { background: var(--uac-navy); }
+  #btn-mediana { background: #eef2f7; color: var(--text-primary); }
+
+  #resultado { display: none; }
+  #resultado.show { display: block; }
+  .resultado-badge {
+    padding: 16px 20px; border-radius: 12px; font-weight: 700; font-size: 1.05rem;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .resultado-badge.potable { background: #e6f7f4; color: var(--potable); border: 1.5px solid var(--potable); }
+  .resultado-badge.no-potable { background: #fdecee; color: var(--no-potable); border: 1.5px solid var(--no-potable); }
+  .barra { height: 10px; border-radius: 999px; background: #e2e8f0; overflow: hidden; margin-bottom: 6px; }
+  .barra > div { height: 100%; background: linear-gradient(90deg, var(--no-potable), var(--potable)); }
+  .prob-label { font-size: 0.85rem; color: var(--text-muted); }
+
+  details { margin-top: 14px; }
+  details summary { cursor: pointer; font-size: 0.85rem; color: var(--uac-blue); font-weight: 600; }
+  table.detalle { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.82rem; }
+  table.detalle th, table.detalle td { padding: 6px 8px; border-bottom: 1px solid #eef2f7; text-align: right; }
+  table.detalle th:first-child, table.detalle td:first-child { text-align: left; }
+  table.detalle thead { background: #f8fafc; }
+  .badge-imputado { background: #fff3cd; color: #8a6512; border-radius: 6px; padding: 1px 6px; font-size: 0.7rem; margin-left: 6px; }
+
+  .modelo-info { font-size: 0.82rem; color: var(--text-muted); }
+  .modelo-info code { background: #f1f5f9; padding: 1px 5px; border-radius: 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+  footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+  <div class="top-strip"></div>
+  <header class="nav">
+    <img src="logo-uac.jpg" alt="UAC" />
+    <div class="brand">Universidad Andina del Cusco<small>Taller 1.2 — Regresión Logística</small></div>
+    <a class="back" href="../index.html">← Volver a la portada</a>
+  </header>
+
+  <section class="hero">
+    <h1>💧 Predicción de Potabilidad del Agua</h1>
+    <p>El formulario y la clasificación se generan a partir del modelo entrenado en <code>modelo_potabilidad.js</code> — el JavaScript no tiene coeficientes escritos a mano, los lee del archivo exportado por <code>train_model.py</code>.</p>
+  </section>
+
+  <main>
+    <div class="card">
+      <h2>Parámetros de la muestra</h2>
+      <form id="form-prediccion">
+        <div id="form-grid"><!-- generado dinamicamente desde el modelo --></div>
+        <div class="actions">
+          <button type="submit" id="btn-predecir">Predecir potabilidad</button>
+          <button type="button" id="btn-mediana">Rellenar con medianas</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card" id="resultado">
+      <h2>Resultado</h2>
+      <div id="badge-resultado" class="resultado-badge"></div>
+      <div class="barra"><div id="barra-fill" style="width:0%"></div></div>
+      <div class="prob-label" id="prob-label"></div>
+      <details>
+        <summary>Ver cómo se calculó (detalle del pipeline)</summary>
+        <table class="detalle">
+          <thead>
+            <tr><th>Variable</th><th>Valor usado</th><th>Estandarizado</th><th>Coeficiente</th><th>Contribución</th></tr>
+          </thead>
+          <tbody id="tabla-detalle"></tbody>
+        </table>
+      </details>
+    </div>
+
+    <div class="card modelo-info">
+      <h2>Sobre el modelo</h2>
+      <p id="info-modelo"></p>
+    </div>
+  </main>
+
+  <footer>Taller 1.2 — Clasificación Binaria con Regresión Logística · Universidad Andina del Cusco (2026-II)</footer>
+
+  <script src="modelo_potabilidad.js"></script>
+  <script src="predictor.js"></script>
+  <script>
+    const modelo = MODELO_POTABILIDAD;
+    const grid = document.getElementById("form-grid");
+
+    // El formulario se construye a partir de modelo.features: si el modelo
+    // se reentrena con otras variables, esta pagina no necesita tocarse.
+    for (const feature of modelo.features) {
+      const [min, max] = modelo.rangos_observados[feature];
+      const mediana = modelo.imputacion_mediana_train[feature];
+      const wrapper = document.createElement("div");
+      wrapper.className = "field";
+      wrapper.innerHTML = `
+        <label for="campo-${feature}">${feature}</label>
+        <span class="hint">${modelo.descripcion[feature] || ""} · rango observado: [${min.toFixed(1)}, ${max.toFixed(1)}]</span>
+        <input type="number" step="any" id="campo-${feature}" name="${feature}"
+               placeholder="ej. ${mediana.toFixed(2)} (mediana)" />
+      `;
+      grid.appendChild(wrapper);
+    }
+
+    document.getElementById("btn-mediana").addEventListener("click", () => {
+      for (const feature of modelo.features) {
+        document.getElementById(`campo-${feature}`).value = modelo.imputacion_mediana_train[feature].toFixed(3);
+      }
+    });
+
+    document.getElementById("form-prediccion").addEventListener("submit", (ev) => {
+      ev.preventDefault();
+
+      const valoresCrudos = {};
+      for (const feature of modelo.features) {
+        const raw = document.getElementById(`campo-${feature}`).value;
+        valoresCrudos[feature] = raw === "" ? null : Number(raw);
+      }
+
+      const resultado = predecir(valoresCrudos, modelo);
+
+      const contenedor = document.getElementById("resultado");
+      contenedor.classList.add("show");
+
+      const badge = document.getElementById("badge-resultado");
+      const esPotable = resultado.clase === 1;
+      badge.className = "resultado-badge " + (esPotable ? "potable" : "no-potable");
+      badge.innerHTML = (esPotable ? "✅ " : "⛔ ") + resultado.etiqueta +
+        ` — probabilidad de ser potable: ${(resultado.probabilidad * 100).toFixed(1)}%`;
+
+      document.getElementById("barra-fill").style.width = (resultado.probabilidad * 100).toFixed(1) + "%";
+      document.getElementById("prob-label").textContent =
+        `P(potable) = ${(resultado.probabilidad * 100).toFixed(1)}%  ·  umbral de decisión = ${modelo.regresion_logistica.umbral_decision}`;
+
+      const tbody = document.getElementById("tabla-detalle");
+      tbody.innerHTML = "";
+      const filas = [...resultado.detalle].sort((a, b) => Math.abs(b.contribucion) - Math.abs(a.contribucion));
+      for (const fila of filas) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${fila.feature}</td>
+          <td>${fila.valor.toFixed(3)}${fila.imputado ? '<span class="badge-imputado">imputado</span>' : ""}</td>
+          <td>${fila.xEstandarizado.toFixed(3)}</td>
+          <td>${fila.coeficiente.toFixed(4)}</td>
+          <td>${fila.contribucion.toFixed(4)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      contenedor.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    const m = modelo.metricas_test;
+    document.getElementById("info-modelo").innerHTML =
+      `${modelo.caso}. Evaluado sobre el conjunto de prueba: ` +
+      `<code>Accuracy=${(m.accuracy * 100).toFixed(1)}%</code> ` +
+      `<code>Precision=${(m.precision * 100).toFixed(1)}%</code> ` +
+      `<code>Recall=${(m.recall * 100).toFixed(1)}%</code> ` +
+      `<code>F1=${(m.f1_score * 100).toFixed(1)}%</code> ` +
+      `<code>AUC-ROC=${m.auc_roc.toFixed(3)}</code>.`;
+  </script>
+</body>
+</html>

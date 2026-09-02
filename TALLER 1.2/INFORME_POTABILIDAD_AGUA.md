@@ -16,7 +16,7 @@
 
 ## 1. Resumen Ejecutivo
 
-Este informe documenta el desarrollo de un clasificador binario de **potabilidad del agua** (potable / no potable) a partir de 9 parámetros fisicoquímicos, usando **Regresión Logística**. Se trabajó sobre el dataset público *Water Potability* (3276 muestras), aplicando imputación de valores faltantes, estandarización y una división estratificada 80/20 en entrenamiento y prueba. El modelo final, entrenado con `class_weight="balanced"` para compensar el desbalance de clases (61% no potable / 39% potable), obtiene en el conjunto de prueba una exactitud de **52.4%**, precisión de **41.5%**, sensibilidad de **53.1%**, F1-score de **46.6%** y un área bajo la curva ROC (AUC) de **0.547**. Estos resultados —apenas superiores al azar— indican que las 9 variables disponibles tienen una relación muy débil, y probablemente no lineal, con la potabilidad real del agua. El modelo se empaquetó como un pipeline `scikit-learn` serializado con `joblib` y se expuso mediante una aplicación web interactiva construida con **Streamlit**, lista para desplegarse en Streamlit Community Cloud.
+Este informe documenta el desarrollo de un clasificador binario de **potabilidad del agua** (potable / no potable) a partir de 9 parámetros fisicoquímicos, usando **Regresión Logística**. Se trabajó sobre el dataset público *Water Potability* (3276 muestras), aplicando imputación de valores faltantes, estandarización y una división estratificada 80/20 en entrenamiento y prueba. El modelo final, entrenado con `class_weight="balanced"` para compensar el desbalance de clases (61% no potable / 39% potable), obtiene en el conjunto de prueba una exactitud de **52.4%**, precisión de **41.5%**, sensibilidad de **53.1%**, F1-score de **46.6%** y un área bajo la curva ROC (AUC) de **0.547**. Estos resultados —apenas superiores al azar— indican que las 9 variables disponibles tienen una relación muy débil, y probablemente no lineal, con la potabilidad real del agua. El modelo entrenado (parámetros de imputación, escalado, coeficientes e intercepto) se exportó a un archivo de datos consumido por una página estática (HTML + JavaScript) que hace la clasificación **en el navegador**, sin coeficientes escritos a mano en el cliente ni backend de por medio; adicionalmente se construyó una versión equivalente en **Streamlit**, lista para desplegarse.
 
 ## 2. Definición del Problema
 
@@ -154,37 +154,48 @@ En este modelo, `FP (192) > FN (120)`: el ajuste por `class_weight="balanced"` m
 
 ### 6.1 Arquitectura
 
+El aplicativo principal es una página estática (HTML + JavaScript puro) que clasifica **en el navegador**, sin backend ni servidor de por medio. El punto clave de diseño es que el JavaScript **no tiene la fórmula ni los coeficientes escritos a mano**: los lee de un archivo generado automáticamente por el entrenamiento.
+
 ```
-Usuario (navegador)
-      │  completa 9 parámetros fisicoquímicos
+train_model.py (Python / scikit-learn)
+      │  ajusta Imputer -> StandardScaler -> LogisticRegression
+      │  sobre el 80% de entrenamiento
       ▼
- app.py (Streamlit)
-      │  pipeline.predict_proba(X)
-      ▼
- modelo_potabilidad.pkl
-  (Imputer → StandardScaler → LogisticRegression, serializado con joblib)
+app_web/modelo_potabilidad.js
+  (features, medianas de imputación, media/desviación del escalado,
+   coeficientes, intercepto y umbral -- todo como datos, generado por
+   el entrenamiento, cero valores hardcodeados en el cliente)
       │
       ▼
- Resultado: clase (Potable / No potable) + probabilidad
+app_web/predictor.js  (motor de inferencia genérico)
+  predecir(valoresCrudos, modelo):
+    impute -> estandariza -> z = intercepto + Σ(coef·x) -> sigmoide(z)
+      │
+      ▼
+app_web/index.html
+  construye el formulario dinámicamente a partir de modelo.features
+  y muestra clase (Potable / No potable) + probabilidad + el detalle
+  de cómo se calculó cada contribución
 ```
 
-El modelo se entrena y evalúa en `train_model.py`, que exporta `modelo_potabilidad.pkl` (pipeline completo, autocontenido) y `resultados_metricas.json` (métricas y metadatos que la app también consume para mostrar su propio desempeño). La aplicación `app.py` es un frontend Streamlit sin estado de servidor adicional: cada predicción se calcula en el momento a partir del pipeline cargado en memoria.
+`predictor.js` es **independiente del dataset**: no menciona `ph`, `Solids` ni ningún nombre de variable; simplemente recorre `modelo.features` y aplica la misma transformación que usó `train_model.py`. Si el modelo se reentrena — con otras variables, otro dataset o mejores hiperparámetros — solo cambia `modelo_potabilidad.js`; ni `predictor.js` ni `index.html` necesitan tocarse.
+
+Como alternativa server-side, también se construyó una versión en **Streamlit** (`app.py`) que carga el mismo pipeline serializado (`modelo_potabilidad.pkl`, vía joblib) y ofrece la misma predicción desde Python; ambas implementaciones se verificaron numéricamente equivalentes (mismo caso de prueba, misma probabilidad de salida).
 
 ### 6.2 Manual de uso
 
-1. Abrir la URL pública de la aplicación (ver sección 6.3).
-2. En la pestaña **"🔮 Predecir"**, completar los 9 campos con los parámetros fisicoquímicos de la muestra de agua (los campos vienen precargados con la mediana de cada variable como valor de referencia).
+1. Abrir `app_web/index.html` (o la URL pública una vez desplegada, ver sección 6.3).
+2. Completar los 9 campos con los parámetros fisicoquímicos de la muestra de agua, o presionar **"Rellenar con medianas"** para cargar valores de referencia del set de entrenamiento.
 3. Presionar **"Predecir potabilidad"**.
-4. La aplicación muestra la clase predicha (✅ Potable / ⛔ No potable) junto con la probabilidad estimada.
-5. En la pestaña **"📊 Métricas del modelo"** puede consultarse el desempeño del modelo sobre el conjunto de prueba (accuracy, precision, recall, F1, AUC, matriz de confusión y coeficientes).
+4. La página muestra la clase predicha (✅ Potable / ⛔ No potable), la probabilidad estimada y, en **"Ver cómo se calculó"**, el detalle de la contribución de cada variable a la predicción (transparencia sobre el cálculo, no es una caja negra).
 
-La aplicación fue verificada localmente (`streamlit run app.py`) con casos reales del dataset, incluyendo una muestra potable (predicha correctamente como Potable, 53.0% de probabilidad) y con los valores por defecto (mediana de cada variable, predicha como No potable, 49.8% de probabilidad).
+La aplicación fue verificada sirviéndola con un servidor estático local: con los valores por defecto (mediana de cada variable) predice **No potable, 49.8%**, y con una muestra real potable del dataset predice **Potable, 53.0%** — ambos resultados idénticos a los que entrega la versión Streamlit sobre los mismos datos, confirmando que el motor de inferencia en JavaScript reproduce exactamente el pipeline entrenado en Python.
 
 ### 6.3 Despliegue
 
 **URL pública:** `[pendiente de despliegue]`
 
-La aplicación está lista para desplegarse en **Streamlit Community Cloud**, conectada al repositorio de GitHub (`requirements.txt` y `app.py` en `TALLER 1.2/`). El despliegue queda pendiente de que el equipo conecte su cuenta de GitHub en [share.streamlit.io](https://share.streamlit.io); una vez publicada, esta sección debe actualizarse con la URL final y capturas de pantalla de la versión en producción.
+Al ser un sitio 100% estático (sin backend), el aplicativo puede publicarse en cualquier hosting gratuito sin necesidad de configurar un servidor: **GitHub Pages** (sirviendo la carpeta `TALLER 1.2/` o `TALLER 1.2/app_web/` del repositorio) o **Netlify**, conectando el repositorio `JigSaw1117/CLAUDIOS`. El despliegue queda pendiente de que el equipo active alguna de estas opciones desde su propia cuenta; una vez publicada, esta sección debe actualizarse con la URL final y capturas de pantalla de la versión en producción.
 
 ## 7. Conclusiones y Recomendaciones
 
@@ -200,4 +211,4 @@ La aplicación está lista para desplegarse en **Streamlit Community Cloud**, co
 
 - **Repositorio de código:** [github.com/JigSaw1117/CLAUDIOS](https://github.com/JigSaw1117/CLAUDIOS) — carpeta `TALLER 1.2/`.
 - **Dataset original:** [Water Potability — Kaggle](https://www.kaggle.com/datasets/adityakadiwal/water-potability).
-- **Archivos del proyecto:** `train_model.py` (entrenamiento), `app.py` (aplicativo Streamlit), `modelo_potabilidad.pkl` (modelo serializado), `resultados_metricas.json` (métricas completas), `figuras/` (gráficos del EDA y la evaluación).
+- **Archivos del proyecto:** `train_model.py` (entrenamiento), `app_web/` (aplicativo estático: `index.html`, `predictor.js`, `modelo_potabilidad.js/.json`), `app.py` (aplicativo alternativo en Streamlit), `modelo_potabilidad.pkl` (pipeline serializado), `resultados_metricas.json` (métricas completas), `figuras/` (gráficos del EDA y la evaluación).

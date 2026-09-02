@@ -136,17 +136,6 @@
         "0": 400,
         "1": 256
       }
-    },
-    "outliers_iqr": {
-      "ph": 46,
-      "Hardness": 83,
-      "Solids": 47,
-      "Chloramines": 61,
-      "Sulfate": 41,
-      "Conductivity": 11,
-      "Organic_carbon": 25,
-      "Trihalomethanes": 33,
-      "Turbidity": 19
     }
   },
   "fase_iii": {
@@ -233,6 +222,7 @@
       "Trihalomethanes": 66.62248509808484,
       "Turbidity": 3.955027562993039
     },
-    "archivo_modelo": "modelo_potabilidad.pkl"
+    "archivo_modelo": "modelo_potabilidad.pkl",
+    "archivo_modelo_web": "app_web/modelo_potabilidad.json"
   }
 }

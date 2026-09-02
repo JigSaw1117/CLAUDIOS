@@ -308,18 +308,18 @@
     <!-- CAJA DE ESTADO Y REDIRECCIÓN AL ENTRENABLE -->
     <div class="deploy-box">
       <div class="status-badge">
-        ✅ MODELO ENTRENADO — APP LISTA, PENDIENTE DE DESPLIEGUE EN STREAMLIT CLOUD
+        ✅ MODELO ENTRENADO — APLICATIVO WEB FUNCIONAL (PENDIENTE SOLO DE HOSTING PÚBLICO)
       </div>
       <h3 style="font-size:1.6rem; font-weight:800; margin-bottom:12px; color:white;">
         Potabilidad del Agua — Clasificador Binario (Regresión Logística)
       </h3>
       <p style="color:#cbd5e1; max-width:700px; margin:0 auto 24px; font-size:1.02rem;">
-        El modelo (<code>train_model.py</code>) y el aplicativo interactivo (<code>app.py</code>, Streamlit) ya están entrenados y verificados localmente. En cuanto el equipo conecte el repositorio en Streamlit Community Cloud, este botón se actualizará con la URL pública de la app.
+        El modelo se entrena en <code>train_model.py</code> y se exporta a <code>app_web/modelo_potabilidad.js</code>; el aplicativo (<code>app_web/index.html</code> + <code>predictor.js</code>) construye el formulario y clasifica en el navegador leyendo ese archivo — sin coeficientes escritos a mano en el JavaScript. También existe una versión en Streamlit (<code>app.py</code>) como alternativa.
       </p>
 
       <!-- BOTÓN DE REDIRECCIÓN AL APLICATIVO -->
-      <a href="https://github.com/JigSaw1117/CLAUDIOS/tree/main/TALLER%201.2" class="action-btn" id="btnRedireccion" target="_blank" rel="noopener">
-        📂 Ver código del aplicativo en GitHub ➡
+      <a href="app_web/index.html" class="action-btn" id="btnRedireccion">
+        🚀 Abrir Aplicativo del Taller 1.2 (Clasificador Binario) ➡
       </a>
     </div>
 

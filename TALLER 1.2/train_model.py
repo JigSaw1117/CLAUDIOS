@@ -59,6 +59,18 @@ df = pd.read_csv("water_potability.csv")
 FEATURES = [c for c in df.columns if c != "Potability"]
 TARGET = "Potability"
 
+DESCRIPCION = {
+    "ph": "pH del agua (0-14, ideal 6.5-8.5)",
+    "Hardness": "Dureza - capacidad de precipitar jabon (mg/L)",
+    "Solids": "Solidos disueltos totales (ppm)",
+    "Chloramines": "Cloraminas - desinfectante residual (ppm)",
+    "Sulfate": "Sulfatos disueltos (mg/L)",
+    "Conductivity": "Conductividad electrica (uS/cm)",
+    "Organic_carbon": "Carbono organico total (ppm)",
+    "Trihalomethanes": "Trihalometanos - subproducto de cloracion (ug/L)",
+    "Turbidity": "Turbidez - material en suspension (NTU)",
+}
+
 n_muestras, n_variables = df.shape
 n_duplicados = int(df.duplicated().sum())
 nulos_por_col = df[FEATURES].isna().sum().to_dict()
@@ -281,12 +293,60 @@ titulo("FASE V - EXPORTACION DEL MODELO Y RESULTADOS")
 joblib.dump(pipeline, "modelo_potabilidad.pkl")
 print("Modelo guardado en modelo_potabilidad.pkl")
 
+# --- Exportacion del modelo entrenado para consumo en el navegador ----------
+# El aplicativo web (app_web/) NO reimplementa la formula con los coeficientes
+# escritos a mano: carga este artefacto (parametros realmente ajustados con
+# el pipeline sobre el set de entrenamiento) y un motor de inferencia
+# generico (app_web/predictor.js) hace imputacion -> estandarizacion ->
+# combinacion lineal -> sigmoide a partir de estos datos, sea cual sea el
+# dataset o los coeficientes con los que se reentrene.
+imputer_ajustado = pipeline.named_steps["preprocesador"].named_transformers_["num"].named_steps["imputer"]
+scaler_ajustado = pipeline.named_steps["preprocesador"].named_transformers_["num"].named_steps["scaler"]
+
 rangos = {c: [float(df[c].min()), float(df[c].max())] for c in FEATURES}
 medianas = {c: float(df[c].median()) for c in FEATURES}
+
+modelo_exportado = {
+    "caso": "Taller 1.2 - Potabilidad del Agua | Regresion Logistica",
+    "features": FEATURES,
+    "descripcion": DESCRIPCION,
+    "rangos_observados": rangos,
+    "imputacion_mediana_train": {c: float(v) for c, v in zip(FEATURES, imputer_ajustado.statistics_)},
+    "escalado_train": {
+        "media": {c: float(v) for c, v in zip(FEATURES, scaler_ajustado.mean_)},
+        "desviacion": {c: float(v) for c, v in zip(FEATURES, scaler_ajustado.scale_)},
+    },
+    "regresion_logistica": {
+        "intercepto": intercept,
+        "coeficientes": {c: float(v) for c, v in zip(FEATURES, coefs)},
+        "umbral_decision": 0.5,
+        "clases": {"0": "No potable", "1": "Potable"},
+    },
+    "metricas_test": resultados["fase_iv"],
+}
+
+os.makedirs("app_web", exist_ok=True)
+with open("app_web/modelo_potabilidad.json", "w", encoding="utf-8") as f:
+    json.dump(modelo_exportado, f, indent=2, ensure_ascii=False)
+
+# Tambien como .js (misma info, asignada a una variable global) para que la
+# pagina funcione abriendo el archivo directamente (file://), sin chocar con
+# las restricciones CORS que un fetch() de un .json local si tendria.
+with open("app_web/modelo_potabilidad.js", "w", encoding="utf-8") as f:
+    f.write("// Generado por train_model.py - NO editar a mano.\n")
+    f.write("// Parametros reales del pipeline (imputer + scaler + regresion logistica)\n")
+    f.write("// ajustado sobre el set de entrenamiento. Ver train_model.py, Fase V.\n")
+    f.write("const MODELO_POTABILIDAD = ")
+    json.dump(modelo_exportado, f, indent=2, ensure_ascii=False)
+    f.write(";\n")
+
+print("Modelo exportado para el navegador en app_web/modelo_potabilidad.{json,js}")
+
 resultados["fase_v"] = {
     "rangos_observados": rangos,
     "medianas": medianas,
     "archivo_modelo": "modelo_potabilidad.pkl",
+    "archivo_modelo_web": "app_web/modelo_potabilidad.json",
 }
 
 with open("resultados_metricas.json", "w", encoding="utf-8") as f:
