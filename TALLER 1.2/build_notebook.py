@@ -242,7 +242,7 @@ md("""
 **Hallazgo clave:** ninguna variable individual tiene una relación lineal
 fuerte con `Potability` — la correlación máxima en valor absoluto es apenas
 0.034 (`Solids`). Esto anticipa que un modelo **lineal** como la regresión
-logística tendrá una capacidad predictiva limitada con estas variables
+logística tendrá una capacidad de clasificación limitada con estas variables
 (se confirma en la sección 5).
 """)
 
@@ -368,7 +368,7 @@ md("""
 
 Los coeficientes están en la escala **estandarizada** de las variables, por lo
 que son directamente comparables entre sí (una magnitud mayor implica más
-influencia en la predicción, independientemente de las unidades originales).
+influencia en la clasificación, independientemente de las unidades originales).
 """)
 
 code("""
@@ -394,7 +394,7 @@ plt.show()
 md("""
 La magnitud de todos los coeficientes es muy pequeña (< 0.06), consistente con
 las correlaciones casi nulas observadas en el EDA (sección 2.3): ninguna
-variable domina la predicción, y el modelo en conjunto captura muy poca señal.
+variable domina la clasificación, y el modelo en conjunto captura muy poca señal.
 """)
 
 # =============================================================================
@@ -460,7 +460,7 @@ md("""
 ### 5.1 Interpretación operativa de los errores
 
 La curva ROC está muy cerca de la diagonal de azar (AUC ≈ 0.547), confirmando
-que el modelo apenas mejora una predicción aleatoria. En el contexto de
+que el modelo apenas mejora una clasificación aleatoria. En el contexto de
 potabilidad del agua, los dos tipos de error tienen **costos muy distintos**:
 
 - **Falsos Negativos (FN):** agua realmente potable clasificada como no
@@ -492,7 +492,7 @@ El modelo se exporta en dos formatos, para dos aplicativos distintos:
 2. **`app_web/modelo_potabilidad.json` / `.js`**: los mismos parámetros ya
    ajustados (medianas de imputación, media/desviación del escalado,
    coeficientes e intercepto), como datos planos consumidos por
-   `app_web/predictor.js` — un motor de inferencia genérico en JavaScript que
+   `app_web/clasificador.js` — un motor de inferencia genérico en JavaScript que
    hace imputación → estandarización → sigmoide **sin tener ningún
    coeficiente escrito a mano**. Si el modelo se reentrena, solo cambia este
    archivo de datos; el código JavaScript no se toca.
@@ -541,14 +541,14 @@ print(json.dumps(modelo_exportado["regresion_logistica"], indent=2))
 """)
 
 md("""
-### 6.1 Motor de inferencia en el navegador (`app_web/predictor.js`)
+### 6.1 Motor de inferencia en el navegador (`app_web/clasificador.js`)
 
 Fragmento del motor de inferencia genérico que consume el archivo anterior
 (no reimplementa la fórmula con números hardcodeados; recorre
 `modelo.features` y usa los coeficientes que carga):
 
 ```js
-function predecir(valoresCrudos, modelo) {
+function clasificar(valoresCrudos, modelo) {
   const { features, imputacion_mediana_train, escalado_train, regresion_logistica } = modelo;
   const { intercepto, coeficientes, umbral_decision, clases } = regresion_logistica;
 
@@ -588,7 +588,7 @@ md("""
   individual supera |r| = 0.034 de correlación con el target.
 - El ajuste por `class_weight="balanced"` fue necesario para obtener un
   clasificador que efectivamente distinga ambas clases (sin él, el modelo
-  predecía siempre "no potable", sección 4.2), pero desplazó el error hacia
+  clasificaba siempre como "no potable", sección 4.2), pero desplazó el error hacia
   más falsos positivos, el tipo de error más costoso en este dominio
   (sección 5.1).
 - **Recomendaciones para trabajo futuro:**
@@ -601,7 +601,7 @@ md("""
      positivos, dado el costo asimétrico de los errores en salud pública.
   4. De ser posible, ampliar el dataset con variables adicionales
      (indicadores bacteriológicos, metales pesados) que suelen tener mayor
-     poder predictivo sobre la potabilidad real.
+     poder de clasificación sobre la potabilidad real.
 
 **Repositorio:** [github.com/JigSaw1117/CLAUDIOS](https://github.com/JigSaw1117/CLAUDIOS) — carpeta `TALLER 1.2/`.
 **Dataset:** [Water Potability — Kaggle](https://www.kaggle.com/datasets/adityakadiwal/water-potability).

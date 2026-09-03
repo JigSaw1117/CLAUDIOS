@@ -297,7 +297,7 @@ print("Modelo guardado en modelo_potabilidad.pkl")
 # El aplicativo web (app_web/) NO reimplementa la formula con los coeficientes
 # escritos a mano: carga este artefacto (parametros realmente ajustados con
 # el pipeline sobre el set de entrenamiento) y un motor de inferencia
-# generico (app_web/predictor.js) hace imputacion -> estandarizacion ->
+# generico (app_web/clasificador.js) hace imputacion -> estandarizacion ->
 # combinacion lineal -> sigmoide a partir de estos datos, sea cual sea el
 # dataset o los coeficientes con los que se reentrene.
 imputer_ajustado = pipeline.named_steps["preprocesador"].named_transformers_["num"].named_steps["imputer"]

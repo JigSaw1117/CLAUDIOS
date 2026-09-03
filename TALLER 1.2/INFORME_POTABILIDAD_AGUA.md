@@ -58,7 +58,7 @@ El análisis de outliers (método IQR, 1.5×RIC) detecta valores atípicos en to
 
 ### 3.3 Correlación con la variable objetivo
 
-La matriz de correlación muestra que **ninguna variable individual tiene una relación lineal fuerte con `Potability`**: la correlación máxima en valor absoluto es apenas 0.034 (`Solids`). Esto anticipa que un modelo lineal como la regresión logística tendrá una capacidad predictiva limitada con estas variables.
+La matriz de correlación muestra que **ninguna variable individual tiene una relación lineal fuerte con `Potability`**: la correlación máxima en valor absoluto es apenas 0.034 (`Solids`). Esto anticipa que un modelo lineal como la regresión logística tendrá una capacidad de clasificación limitada con estas variables.
 
 ![Matriz de correlación](figuras/a_correlacion.png)
 
@@ -114,7 +114,7 @@ Los coeficientes están en la escala estandarizada de las variables, por lo que 
 
 ![Coeficientes del modelo](figuras/b_coeficientes.png)
 
-La magnitud de todos los coeficientes es muy pequeña (< 0.06), consistente con las correlaciones casi nulas observadas en el EDA: ninguna variable domina la predicción, y el modelo en conjunto captura muy poca señal.
+La magnitud de todos los coeficientes es muy pequeña (< 0.06), consistente con las correlaciones casi nulas observadas en el EDA: ninguna variable domina la clasificación, y el modelo en conjunto captura muy poca señal.
 
 ## 5. Resultados y Discusión de Métricas
 
@@ -143,7 +143,7 @@ Todas las métricas se calcularon sobre el **conjunto de prueba** (656 muestras,
 
 ### 5.3 Interpretación operativa de los errores
 
-La curva ROC está muy cerca de la diagonal de azar (AUC = 0.547), confirmando que el modelo apenas mejora una predicción aleatoria. En el contexto de potabilidad del agua, los dos tipos de error tienen **costos muy distintos**:
+La curva ROC está muy cerca de la diagonal de azar (AUC = 0.547), confirmando que el modelo apenas mejora una clasificación aleatoria. En el contexto de potabilidad del agua, los dos tipos de error tienen **costos muy distintos**:
 
 - **Falsos Negativos (FN = 120):** agua realmente potable clasificada como no potable. El costo es principalmente **operativo**: se descarta o se reanaliza innecesariamente una fuente de agua segura.
 - **Falsos Positivos (FP = 192):** agua realmente no potable clasificada como potable. El costo es de **salud pública**, mucho más grave: se podría distribuir o consumir agua contaminada creyendo que es segura.
@@ -167,8 +167,8 @@ app_web/modelo_potabilidad.js
    el entrenamiento, cero valores hardcodeados en el cliente)
       │
       ▼
-app_web/predictor.js  (motor de inferencia genérico)
-  predecir(valoresCrudos, modelo):
+app_web/clasificador.js  (motor de inferencia genérico)
+  clasificar(valoresCrudos, modelo):
     impute -> estandariza -> z = intercepto + Σ(coef·x) -> sigmoide(z)
       │
       ▼
@@ -178,16 +178,16 @@ app_web/index.html
   de cómo se calculó cada contribución
 ```
 
-`predictor.js` es **independiente del dataset**: no menciona `ph`, `Solids` ni ningún nombre de variable; simplemente recorre `modelo.features` y aplica la misma transformación que usó `train_model.py`. Si el modelo se reentrena — con otras variables, otro dataset o mejores hiperparámetros — solo cambia `modelo_potabilidad.js`; ni `predictor.js` ni `index.html` necesitan tocarse.
+`clasificador.js` es **independiente del dataset**: no menciona `ph`, `Solids` ni ningún nombre de variable; simplemente recorre `modelo.features` y aplica la misma transformación que usó `train_model.py`. Si el modelo se reentrena — con otras variables, otro dataset o mejores hiperparámetros — solo cambia `modelo_potabilidad.js`; ni `clasificador.js` ni `index.html` necesitan tocarse.
 
-Como alternativa server-side, también se construyó una versión en **Streamlit** (`app.py`) que carga el mismo pipeline serializado (`modelo_potabilidad.pkl`, vía joblib) y ofrece la misma predicción desde Python; ambas implementaciones se verificaron numéricamente equivalentes (mismo caso de prueba, misma probabilidad de salida).
+Como alternativa server-side, también se construyó una versión en **Streamlit** (`app.py`) que carga el mismo pipeline serializado (`modelo_potabilidad.pkl`, vía joblib) y ofrece la misma clasificación desde Python; ambas implementaciones se verificaron numéricamente equivalentes (mismo caso de prueba, misma probabilidad de salida).
 
 ### 6.2 Manual de uso
 
 1. Abrir `app_web/index.html` (o la URL pública una vez desplegada, ver sección 6.3).
-2. Completar los 9 campos con los parámetros fisicoquímicos de la muestra de agua, o presionar **"Rellenar con medianas"** para cargar valores de referencia del set de entrenamiento.
-3. Presionar **"Predecir potabilidad"**.
-4. La página muestra la clase predicha (✅ Potable / ⛔ No potable), la probabilidad estimada y, en **"Ver cómo se calculó"**, el detalle de la contribución de cada variable a la predicción (transparencia sobre el cálculo, no es una caja negra).
+2. Completar los 9 campos con los parámetros fisicoquímicos de la muestra de agua, o presionar **"Cargar medianas"** para cargar valores de referencia del set de entrenamiento.
+3. Presionar **"Clasificar Potabilidad"**.
+4. La página muestra la clase predicha (✅ Potable / ⛔ No potable), la probabilidad estimada y, en **"Ver cómo se calculó"**, el detalle de la contribución de cada variable a la clasificación (transparencia sobre el cálculo, no es una caja negra).
 
 La aplicación fue verificada sirviéndola con un servidor estático local: con los valores por defecto (mediana de cada variable) predice **No potable, 49.8%**, y con una muestra real potable del dataset predice **Potable, 53.0%** — ambos resultados idénticos a los que entrega la versión Streamlit sobre los mismos datos, confirmando que el motor de inferencia en JavaScript reproduce exactamente el pipeline entrenado en Python.
 
@@ -200,15 +200,15 @@ Al ser un sitio 100% estático (sin backend), el aplicativo puede publicarse en 
 ## 7. Conclusiones y Recomendaciones
 
 - El modelo de regresión logística alcanza un desempeño apenas superior al azar (AUC = 0.547, Accuracy = 52.4%), lo que indica que las 9 variables fisicoquímicas disponibles en este dataset tienen una relación débil —y probablemente no lineal— con la potabilidad real medida en laboratorio. Esta limitación ya era visible en el EDA: ninguna variable individual supera |r| = 0.034 de correlación con el target.
-- El ajuste por `class_weight="balanced"` fue necesario para obtener un clasificador que efectivamente distinga ambas clases (sin él, el modelo predecía siempre "no potable"), pero desplazó el error hacia más falsos positivos, el tipo de error más costoso en este dominio.
+- El ajuste por `class_weight="balanced"` fue necesario para obtener un clasificador que efectivamente distinga ambas clases (sin él, el modelo clasificaba siempre como "no potable"), pero desplazó el error hacia más falsos positivos, el tipo de error más costoso en este dominio.
 - **Recomendaciones para trabajo futuro:**
   1. Evaluar modelos no lineales (Random Forest, Gradient Boosting, SVM con kernel RBF) que puedan capturar interacciones entre variables no accesibles a un modelo lineal.
   2. Incorporar ingeniería de atributos (razones e interacciones entre variables, p. ej. pH × Cloraminas).
   3. Ajustar el umbral de decisión de forma explícita para minimizar falsos positivos, dado el costo asimétrico de los errores en salud pública.
-  4. De ser posible, ampliar el dataset con variables adicionales (indicadores bacteriológicos, metales pesados) que suelen tener mayor poder predictivo sobre la potabilidad real.
+  4. De ser posible, ampliar el dataset con variables adicionales (indicadores bacteriológicos, metales pesados) que suelen tener mayor poder de clasificación sobre la potabilidad real.
 
 ## 8. Anexos
 
 - **Repositorio de código:** [github.com/JigSaw1117/CLAUDIOS](https://github.com/JigSaw1117/CLAUDIOS) — carpeta `TALLER 1.2/`.
 - **Dataset original:** [Water Potability — Kaggle](https://www.kaggle.com/datasets/adityakadiwal/water-potability).
-- **Archivos del proyecto:** `train_model.py` (entrenamiento), `app_web/` (aplicativo estático: `index.html`, `predictor.js`, `modelo_potabilidad.js/.json`), `app.py` (aplicativo alternativo en Streamlit), `modelo_potabilidad.pkl` (pipeline serializado), `resultados_metricas.json` (métricas completas), `figuras/` (gráficos del EDA y la evaluación).
+- **Archivos del proyecto:** `train_model.py` (entrenamiento), `app_web/` (aplicativo estático: `index.html`, `clasificador.js`, `modelo_potabilidad.js/.json`), `app.py` (aplicativo alternativo en Streamlit), `modelo_potabilidad.pkl` (pipeline serializado), `resultados_metricas.json` (métricas completas), `figuras/` (gráficos del EDA y la evaluación).

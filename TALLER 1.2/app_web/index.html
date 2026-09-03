@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Predicción de Potabilidad del Agua — Taller 1.2 | UAC</title>
+<title>Clasificación de Potabilidad del Agua — Taller 1.2 | UAC</title>
 <meta name="description" content="Clasificador binario de potabilidad del agua con Regresión Logística. Universidad Andina del Cusco, Taller 1.2." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
@@ -183,7 +183,7 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-badge">UNIVERSIDAD ANDINA DEL CUSCO — TALLER 1.2</div>
-  <h1>💧 Predicción de Potabilidad del Agua</h1>
+  <h1>💧 Clasificación de Potabilidad del Agua</h1>
   <p class="hero-sub">Regresión Logística Binaria &nbsp;·&nbsp; 3 276 muestras &nbsp;·&nbsp; 9 variables fisicoquímicas &nbsp;·&nbsp; Partición 80 / 20 estratificada</p>
 </section>
 
@@ -221,7 +221,7 @@
   </div>
 </div>
 
-<!-- PREDICTOR + RESULTADO -->
+<!-- CLASIFICADOR + RESULTADO -->
 <section class="page">
   <div class="two-col">
 
@@ -233,7 +233,7 @@
           <!-- generado por JS -->
         </div>
         <div class="btn-row">
-          <button class="btn-primary" id="btn-predecir">🔬 Predecir Potabilidad</button>
+          <button class="btn-primary" id="btn-clasificar">🔬 Clasificar Potabilidad</button>
           <button class="btn-secondary" id="btn-medianas">Cargar medianas</button>
         </div>
       </div>
@@ -416,7 +416,7 @@
 </footer>
 
 <script src="modelo_potabilidad.js"></script>
-<script src="predictor.js"></script>
+<script src="clasificador.js"></script>
 <script>
 const M = MODELO_POTABILIDAD;
 
@@ -471,7 +471,7 @@ FEATURES.forEach(f => {
 
   slider.addEventListener('input', () => {
     valEl.textContent = parseFloat(slider.value).toFixed(2);
-    autoPredict();
+    autoClasificar();
   });
 });
 
@@ -481,7 +481,7 @@ document.getElementById('btn-medianas').addEventListener('click', () => {
     sliderMap[f].value = MEDIANAS[f];
     document.getElementById(`val-${f}`).textContent = MEDIANAS[f].toFixed(2);
   });
-  autoPredict();
+  autoClasificar();
 });
 
 /* ── Función sigmoide ───────────────────────────────────────────── */
@@ -536,7 +536,7 @@ function sigmoid(z){ return 1 / (1 + Math.exp(-z)); }
   });
 })();
 
-/* ── Gráfica sigmoide del predictor (con punto dinámico) ─────────── */
+/* ── Gráfica sigmoide del clasificador (con punto dinámico) ─────────── */
 let sigmoidChart = null;
 
 function buildSigmoidLabels(){
@@ -646,16 +646,16 @@ function initSigmoidChart(z, prob){
   });
 })();
 
-/* ── Predicción y actualización de UI ──────────────────────────────── */
+/* ── Clasificación y actualización de UI ──────────────────────────────── */
 /* El calculo NO se reimplementa aqui: se delega por completo a
-   predecir() (predictor.js), el mismo motor de inferencia generico que
+   clasificar() (clasificador.js), el mismo motor de inferencia generico que
    usa la version simple de la app. Esta pantalla solo lee su resultado
    para dibujar sliders, la sigmoide y la tabla paso a paso. */
-function autoPredict(){
+function autoClasificar(){
   const valoresCrudos = {};
   FEATURES.forEach(f => { valoresCrudos[f] = parseFloat(sliderMap[f].value); });
 
-  const resultado = predecir(valoresCrudos, M);
+  const resultado = clasificar(valoresCrudos, M);
   const { clase, probabilidad: prob, z: Z, detalle } = resultado;
   const pasos = detalle.map(d => ({
     f: d.feature, xi: d.valor, mu: MEDIAS[d.feature], sig: DESVIACIONES[d.feature],
@@ -721,10 +721,10 @@ function autoPredict(){
   `;
 }
 
-/* Botón predecir manual */
-document.getElementById('btn-predecir').addEventListener('click', autoPredict);
+/* Botón clasificar manual */
+document.getElementById('btn-clasificar').addEventListener('click', autoClasificar);
 
-/* Inicializar con medianas y predecir una vez */
+/* Inicializar con medianas y clasificar una vez */
 document.getElementById('btn-medianas').click();
 
 </script>

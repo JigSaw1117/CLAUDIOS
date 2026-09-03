@@ -14,7 +14,7 @@
  * @param {Object} modelo         MODELO_POTABILIDAD (ver modelo_potabilidad.js)
  * @returns {{ clase: number, etiqueta: string, probabilidad: number, detalle: Array }}
  */
-function predecir(valoresCrudos, modelo) {
+function clasificar(valoresCrudos, modelo) {
   const { features, imputacion_mediana_train, escalado_train, regresion_logistica } = modelo;
   const { intercepto, coeficientes, umbral_decision, clases } = regresion_logistica;
 
@@ -55,5 +55,5 @@ function predecir(valoresCrudos, modelo) {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { predecir };
+  module.exports = { clasificar };
 }

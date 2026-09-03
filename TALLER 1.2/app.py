@@ -53,22 +53,22 @@ RANGOS = resultados["fase_v"]["rangos_observados"]
 MEDIANAS = resultados["fase_v"]["medianas"]
 FEATURES = list(RANGOS.keys())
 
-st.title("💧 Predicción de Potabilidad del Agua")
+st.title("💧 Clasificación de Potabilidad del Agua")
 st.caption(
     "Taller 1.2 · Regresión Logística · Universidad Andina del Cusco — "
     "Inteligencia Artificial (2026-II)"
 )
 
-tab_predecir, tab_metricas = st.tabs(["🔮 Predecir", "📊 Métricas del modelo"])
+tab_clasificar, tab_metricas = st.tabs(["🔮 Clasificar", "📊 Métricas del modelo"])
 
-with tab_predecir:
+with tab_clasificar:
     st.markdown(
         "Ingresa los parámetros fisicoquímicos de una muestra de agua para "
         "estimar si es **potable** o **no potable**, según el modelo entrenado "
         "sobre el dataset [Water Potability](https://www.kaggle.com/datasets/adityakadiwal/water-potability)."
     )
 
-    with st.form("form_prediccion"):
+    with st.form("form_clasificacion"):
         col1, col2 = st.columns(2)
         entradas = {}
         for i, feat in enumerate(FEATURES):
@@ -81,22 +81,22 @@ with tab_predecir:
                 help=f"{DESCRIPCION.get(feat, feat)} · rango observado en datos: [{lo:.1f}, {hi:.1f}]",
                 format="%.3f",
             )
-        enviado = st.form_submit_button("Predecir potabilidad", type="primary", use_container_width=True)
+        enviado = st.form_submit_button("Clasificar potabilidad", type="primary", use_container_width=True)
 
     if enviado:
         X_nuevo = pd.DataFrame([entradas])[FEATURES]
-        pred = modelo.predict(X_nuevo)[0]
+        clase = modelo.predict(X_nuevo)[0]
         proba = modelo.predict_proba(X_nuevo)[0]
         prob_potable = proba[1]
 
-        if pred == 1:
+        if clase == 1:
             st.success(f"✅ **Potable** — probabilidad estimada: {prob_potable:.1%}")
         else:
             st.error(f"⛔ **No potable** — probabilidad de ser potable: {prob_potable:.1%}")
 
         st.progress(float(prob_potable), text=f"P(potable) = {prob_potable:.1%}")
         st.caption(
-            "La predicción usa un umbral de 0.5 sobre la probabilidad de la clase "
+            "La clasificación usa un umbral de 0.5 sobre la probabilidad de la clase "
             "'Potable' que entrega la regresión logística."
         )
 
