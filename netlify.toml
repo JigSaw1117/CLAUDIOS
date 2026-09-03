@@ -1,0 +1,29 @@
+# Despliegue estatico: no hay proceso de compilacion, se publica la raiz tal
+# cual (portada -> TALLER 1.2/ -> TALLER 1.2/app_web/, el clasificador).
+[build]
+  publish = "."
+  command = ""
+
+# El HTML nunca se cachea, para que cada visita reciba la ultima version de
+# la portada, el taller y la app. El modelo entrenado y el motor de
+# inferencia si se cachean de forma agresiva: solo cambian cuando se
+# reentrena y se vuelve a desplegar.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/TALLER 1.2/app_web/modelo_potabilidad.*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/TALLER 1.2/app_web/clasificador.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/TALLER 1.2/figuras/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
