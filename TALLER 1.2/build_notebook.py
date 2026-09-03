@@ -333,9 +333,24 @@ md("""
 |---|---|---|
 | `solver` | `lbfgs` | Solver por defecto de scikit-learn, eficiente para este tamaño de dataset |
 | `penalty` | `l2` | Regularización estándar para evitar sobreajuste |
-| `class_weight` | `balanced` | El desbalance 61%/39% hace que el modelo sin ajustar prediga siempre la clase mayoritaria (Precision/Recall/F1 = 0 para "Potable" — se muestra abajo). Balancear los pesos corrige el umbral de decisión efectivo |
+| `class_weight` | `balanced` | El desbalance 61%/39% hace que el modelo sin ajustar clasifique siempre en la clase mayoritaria (Precision/Recall/F1 = 0 para "Potable" — se muestra abajo). Balancear los pesos corrige el umbral de decisión efectivo |
 | `max_iter` | 1000 | Asegura convergencia del optimizador |
 | `random_state` | 42 | Reproducibilidad |
+
+> **Nota sobre terminología:** de aquí en adelante vas a ver `.predict()`,
+> `.predict_proba()`, `y_pred` y "variables predictoras" en el código. Esa
+> es la **API propia de scikit-learn** y **terminología estadística
+> estándar** — no son nombres que hayamos elegido nosotros, y no se pueden
+> renombrar sin romper el código (`.predict()` es un método real del
+> objeto `Pipeline`; "variable predictora" es como se llama, en cualquier
+> modelo supervisado, a una variable de entrada). Lo mismo aplica al eje
+> "Predicción"/"Predicho" de la matriz de confusión: es la convención
+> universal para ese gráfico, se use el modelo que se use.
+>
+> Todo el código y la app que sí escribimos nosotros — la función
+> `clasificar()`, el archivo `clasificador.js`, los botones "Clasificar
+> Potabilidad" — usa consistentemente **clasificar / clasificación**, como
+> corresponde a un problema de clasificación binaria.
 """)
 
 code("""

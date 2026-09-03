@@ -190,7 +190,7 @@ resultados["fase_ii"]["split"] = {
 titulo("FASE III - ENTRENAMIENTO DEL MODELO")
 
 # class_weight="balanced" porque el desbalance 61%/39% (ver Fase II) hace que
-# una regresion logistica sin ajustar prediga siempre la clase mayoritaria
+# una regresion logistica sin ajustar clasifique siempre en la clase mayoritaria
 # (Precision/Recall/F1 = 0 para la clase minoritaria, un clasificador inutil
 # aunque su Accuracy parezca decente). Balanceando los pesos, el umbral 0.5
 # efectivo se corrige y el modelo si logra detectar agua potable.

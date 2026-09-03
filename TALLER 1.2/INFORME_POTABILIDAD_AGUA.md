@@ -90,7 +90,7 @@ z = β0 + β1·x1 + β2·x2 + ... + β9·x9
 |---|---|---|
 | `solver` | `lbfgs` | Solver por defecto de scikit-learn, eficiente para datasets de este tamaño |
 | `penalty` | `l2` | Regularización estándar para evitar sobreajuste |
-| `class_weight` | `balanced` | El desbalance 61%/39% hacía que el modelo sin ajustar predijera siempre la clase mayoritaria (Precision/Recall/F1 = 0 para "Potable"); balancear los pesos corrige el umbral de decisión efectivo |
+| `class_weight` | `balanced` | El desbalance 61%/39% hacía que el modelo sin ajustar clasificara siempre en la clase mayoritaria (Precision/Recall/F1 = 0 para "Potable"); balancear los pesos corrige el umbral de decisión efectivo |
 | `max_iter` | 1000 | Asegura convergencia del optimizador |
 | `random_state` | 42 | Reproducibilidad |
 
