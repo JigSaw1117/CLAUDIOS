@@ -187,9 +187,9 @@ Como alternativa server-side, también se construyó una versión en **Streamlit
 1. Abrir `app_web/index.html` (o la URL pública una vez desplegada, ver sección 6.3).
 2. Completar los 9 campos con los parámetros fisicoquímicos de la muestra de agua, o presionar **"Cargar medianas"** para cargar valores de referencia del set de entrenamiento.
 3. Presionar **"Clasificar Potabilidad"**.
-4. La página muestra la clase predicha (✅ Potable / ⛔ No potable), la probabilidad estimada y, en **"Ver cómo se calculó"**, el detalle de la contribución de cada variable a la clasificación (transparencia sobre el cálculo, no es una caja negra).
+4. La página muestra la clase asignada (✅ Potable / ⛔ No potable), la probabilidad estimada y, en **"Ver cómo se calculó"**, el detalle de la contribución de cada variable a la clasificación (transparencia sobre el cálculo, no es una caja negra).
 
-La aplicación fue verificada sirviéndola con un servidor estático local: con los valores por defecto (mediana de cada variable) predice **No potable, 49.8%**, y con una muestra real potable del dataset predice **Potable, 53.0%** — ambos resultados idénticos a los que entrega la versión Streamlit sobre los mismos datos, confirmando que el motor de inferencia en JavaScript reproduce exactamente el pipeline entrenado en Python.
+La aplicación fue verificada sirviéndola con un servidor estático local: con los valores por defecto (mediana de cada variable) clasifica como **No potable, 49.8%**, y con una muestra real potable del dataset clasifica como **Potable, 53.0%** — ambos resultados idénticos a los que entrega la versión Streamlit sobre los mismos datos, confirmando que el motor de inferencia en JavaScript reproduce exactamente el pipeline entrenado en Python.
 
 ### 6.3 Despliegue
 

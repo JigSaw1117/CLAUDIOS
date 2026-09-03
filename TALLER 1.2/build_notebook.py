@@ -347,7 +347,7 @@ pipeline_sin_balancear = Pipeline([
 pipeline_sin_balancear.fit(X_train, y_train)
 pred_sin_balancear = pipeline_sin_balancear.predict(X_test)
 
-print("Sin class_weight='balanced' -> el modelo predice siempre la misma clase:")
+print("Sin class_weight='balanced' -> el modelo clasifica siempre en la misma clase:")
 print(pd.Series(pred_sin_balancear).value_counts())
 print(f"Precision (clase Potable): {precision_score(y_test, pred_sin_balancear):.3f}")
 print(f"Recall    (clase Potable): {recall_score(y_test, pred_sin_balancear):.3f}")
