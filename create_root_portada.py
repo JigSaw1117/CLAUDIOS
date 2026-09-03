@@ -219,7 +219,7 @@ root_index_html = """<!DOCTYPE html>
         <div>
           <span class="card-tag" style="background:#e0f2fe; color:#0284c7;">Taller 1.2</span>
           <h2>Clasificación Binaria con Regresión Logística</h2>
-          <p>Modelo predictivo de la Potabilidad del Agua (Agua Potable vs No Potable) desplegado en el navegador con interfaz interactiva y evaluación de métricas ROC-AUC.</p>
+          <p>Modelo de clasificación de la Potabilidad del Agua (Agua Potable vs No Potable) desplegado en el navegador con interfaz interactiva y evaluación de métricas ROC-AUC.</p>
         </div>
         <a href="TALLER 1.2/index.html" class="btn-card" style="background: linear-gradient(90deg, #0077b6, #00b4d8);">🤖 Ingresar al Taller 1.2 ➡</a>
       </div>
