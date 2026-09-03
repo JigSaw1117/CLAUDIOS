@@ -184,7 +184,7 @@
 <section class="hero">
   <div class="hero-badge">UNIVERSIDAD ANDINA DEL CUSCO — TALLER 1.2</div>
   <h1>💧 Predicción de Potabilidad del Agua</h1>
-  <p class="hero-sub">Regresión Logística Binaria &nbsp;·&nbsp; 3 276 muestras &nbsp;·&nbsp; 9 variables fisicoquímicas &nbsp;·&nbsp; Partición 75 / 25 · Validación cruzada 5-fold</p>
+  <p class="hero-sub">Regresión Logística Binaria &nbsp;·&nbsp; 3 276 muestras &nbsp;·&nbsp; 9 variables fisicoquímicas &nbsp;·&nbsp; Partición 80 / 20 estratificada</p>
 </section>
 
 <!-- METRIC STRIP -->
@@ -215,9 +215,9 @@
     <div class="metric-sub">Media armónica P · R</div>
   </div>
   <div class="metric-item">
-    <div class="metric-val">2459 / 656</div>
+    <div class="metric-val">2620 / 656</div>
     <div class="metric-lbl">Entrenamiento / Prueba</div>
-    <div class="metric-sub">Partición 75 / 25</div>
+    <div class="metric-sub">Partición 80 / 20 estratificada</div>
   </div>
 </div>
 
@@ -328,38 +328,11 @@
     </div>
   </div>
 
-  <!-- COMPARATIVA DE MODELOS -->
+  <!-- DESEMPEÑO DEL MODELO -->
   <div class="card">
-    <div class="card-title">Fase B — Comparativa de Modelos</div>
-    <div style="overflow-x:auto">
-      <table class="model-compare">
-        <thead>
-          <tr>
-            <th>Modelo</th><th>Accuracy</th><th>Precisión</th><th>Recall</th><th>F1</th><th>AUC-ROC</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Logística — sin escalar (base)</td>
-            <td>52.1%</td><td>40.8%</td><td>51.6%</td><td>45.5%</td><td>0.540</td>
-          </tr>
-          <tr class="highlight">
-            <td>Logística + StandardScaler ✓</td>
-            <td><strong>52.4%</strong></td><td><strong>41.5%</strong></td><td><strong>53.1%</strong></td><td><strong>46.6%</strong></td><td><strong>0.547</strong></td>
-          </tr>
-          <tr>
-            <td>KNN (k=5, scaled)</td>
-            <td>56.7%</td><td>45.2%</td><td>48.3%</td><td>46.7%</td><td>0.561</td>
-          </tr>
-          <tr>
-            <td>Árbol de Decisión (max_depth=5)</td>
-            <td>58.2%</td><td>47.1%</td><td>52.0%</td><td>49.4%</td><td>0.580</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p style="font-size:.78rem;color:var(--muted);margin-top:12px">
-      La Regresión Logística presenta un AUC-ROC de 0.547, apenas superior al clasificador aleatorio (0.5). Esto refleja la alta complejidad intrínseca del dataset: las clases se solapan en el espacio de las 9 variables y el problema no es linealmente separable con estas features. El modelo es interpretable y sirve como base (<em>baseline</em>) para enfoques más complejos.
+    <div class="card-title">Desempeño del Modelo — Regresión Logística</div>
+    <p style="font-size:.85rem;color:var(--muted)">
+      La Regresión Logística binaria (potable / no potable) presenta, sobre el conjunto de prueba, un AUC-ROC de <strong>0.547</strong> — apenas superior al clasificador aleatorio (0.5). Esto refleja la alta complejidad intrínseca del dataset: las clases se solapan en el espacio de las 9 variables fisicoquímicas y el problema no es linealmente separable con estas features (ver sección de Análisis Exploratorio del informe). Aun así, el modelo es totalmente interpretable: cada coeficiente βᵢ tiene un signo y una magnitud que se pueden explicar directamente (ver "Descriptores que más pesan", abajo).
     </p>
   </div>
 
@@ -416,11 +389,11 @@
           </tr>
           <tr>
             <td>Estandarización</td>
-            <td>StandardScaler: media 0 y desviación estándar 1, calculadas <em>exclusivamente</em> con el 75% de entrenamiento y aplicadas a prueba. Necesaria para que todos los coeficientes βᵢ sean comparables.</td>
+            <td>StandardScaler: media 0 y desviación estándar 1, calculadas <em>exclusivamente</em> con el 80% de entrenamiento y aplicadas a prueba. Necesaria para que todos los coeficientes βᵢ sean comparables.</td>
           </tr>
           <tr>
             <td>Partición</td>
-            <td>2 459 entrenamiento / 656 prueba (75/25). Sin estratificación explícita en el split dado el desbalance moderado.</td>
+            <td>2 620 entrenamiento / 656 prueba (80/20), <strong>estratificada</strong> por la variable objetivo dado el desbalance de clases (61% / 39%).</td>
           </tr>
           <tr>
             <td>Variable objetivo</td>
@@ -674,26 +647,20 @@ function initSigmoidChart(z, prob){
 })();
 
 /* ── Predicción y actualización de UI ──────────────────────────────── */
+/* El calculo NO se reimplementa aqui: se delega por completo a
+   predecir() (predictor.js), el mismo motor de inferencia generico que
+   usa la version simple de la app. Esta pantalla solo lee su resultado
+   para dibujar sliders, la sigmoide y la tabla paso a paso. */
 function autoPredict(){
-  const vals = {};
-  FEATURES.forEach(f => { vals[f] = parseFloat(sliderMap[f].value); });
+  const valoresCrudos = {};
+  FEATURES.forEach(f => { valoresCrudos[f] = parseFloat(sliderMap[f].value); });
 
-  /* Pipeline manual (replica predictor.js) */
-  let Z = INTERCEPTO;
-  const pasos = [];
-  FEATURES.forEach(f => {
-    const xi  = vals[f];
-    const mu  = MEDIAS[f];
-    const sig = DESVIACIONES[f];
-    const zi  = (xi - mu) / sig;
-    const bi  = COEFS[f];
-    const contrib = bi * zi;
-    Z += contrib;
-    pasos.push({f, xi, mu, sig, zi, bi, contrib});
-  });
-
-  const prob = sigmoid(Z);
-  const clase = prob >= 0.5 ? 1 : 0;
+  const resultado = predecir(valoresCrudos, M);
+  const { clase, probabilidad: prob, z: Z, detalle } = resultado;
+  const pasos = detalle.map(d => ({
+    f: d.feature, xi: d.valor, mu: MEDIAS[d.feature], sig: DESVIACIONES[d.feature],
+    zi: d.xEstandarizado, bi: d.coeficiente, contrib: d.contribucion,
+  }));
 
   /* Sección visible */
   document.getElementById('resultado-section').classList.add('show');
